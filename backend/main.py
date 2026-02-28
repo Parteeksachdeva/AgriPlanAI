@@ -1,31 +1,36 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from model import CropYieldModel
+from model import CropRecommendationModel, YieldPredictionModel, PricePredictionModel
 from contextlib import asynccontextmanager
 import os
 from rag.retrieve import get_relevant_context
 from rag.generate import generate_answer
 
-# Define Data Directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "data", "model1_training.csv")
+MODEL1_DATA = os.path.join(BASE_DIR, "data", "model1_training.csv")
+MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training.csv")
 
-# Initialize Model
-model = CropYieldModel(data_path=DATA_PATH)
+crop_recommender = CropRecommendationModel(MODEL1_DATA)
+yield_predictor = YieldPredictionModel(MODEL1_DATA)
+price_predictor = PricePredictionModel(MODEL2_DATA)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Train model on startup
-    print("Starting up and training model...")
+    print("Starting up — training models...")
     try:
-        model.train()
+        crop_recommender.train()
+        yield_predictor.train()
+        price_predictor.train()
+        print("All models ready.")
     except Exception as e:
         print(f"Error during model training: {e}")
     yield
-    print("Shutting down...")
+    print("Shutting down.")
 
-app = FastAPI(title="Crop Yield Recommendation System", lifespan=lifespan)
+
+app = FastAPI(title="AgriPlanAI — Crop Recommendation System", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +39,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ── Request / Response schemas ──────────────────────────────────────────────
 
 class PredictionInput(BaseModel):
     state: str
@@ -48,113 +56,94 @@ class PredictionInput(BaseModel):
     temperature: float = None
     humidity: float = None
     ph: float = None
-    crop: str
+    top_n: int = 5
 
-class CropRecommendation(BaseModel):
+
+class CropResult(BaseModel):
     crop: str
-    expected_profit: float
+    predicted_yield: float    # t/ha
+    avg_price: float          # INR/quintal
+    expected_revenue: float   # INR  (yield_t/ha × area × 10 quintals/t × price/quintal)
+
 
 class PredictionOutput(BaseModel):
-    predicted_yield: float
-    expected_profit: float
-    top_3_crops: list[CropRecommendation]
+    recommendations: list[CropResult]
+
 
 class AskRequest(BaseModel):
     question: str
+
 
 class AskResponse(BaseModel):
     answer: str
     context_used: str
 
-# Static reference data for Indian agriculture contexts (per hectare basis, example values)
-CROP_COST = {
-    "Wheat": 25000, 
-    "Rice": 30000, 
-    "Maize": 20000,
-    "Mustard": 15000,
-    "Soybean": 22000
-}
 
-AVERAGE_MANDI_PRICE = {
-    "Wheat": 2200,   # Price per quintal (~100kg), assuming yield in tonnes -> 22000/tonne
-    "Rice": 2500,    # 25000/tonne
-    "Maize": 1800,   # 18000/tonne
-    "Mustard": 5000, # 50000/tonne
-    "Soybean": 4500  # 45000/tonne
-}
+# ── Endpoints ────────────────────────────────────────────────────────────────
 
 @app.post("/predict", response_model=PredictionOutput)
-def predict_yield(data: PredictionInput):
+def predict(data: PredictionInput):
+    """
+    Pipeline:
+      1. Model 1a  → top-N crop recommendations (classification)
+      2. Model 1b  → predicted yield per crop (regression, t/ha)
+      3. Model 2   → predicted mandi price per crop (regression, INR/quintal)
+      4. App layer → expected_revenue = yield × area × 10 × avg_price
+      5. Return list sorted by expected_revenue descending
+    """
     try:
-        input_dict = getattr(data, "model_dump", data.dict)()
-        
-        # 1. Predict for the requested crop
-        requested_crop = input_dict["crop"]
-        predicted_yield = model.predict(input_dict)
-        
-        # 2. Calculate requested crop's profit (assuming yield is in tonnes/hectare)
-        # Convert Mandi price per quintal (100kg = 0.1 tonne) to price per tonne
-        price_per_tonne = AVERAGE_MANDI_PRICE.get(requested_crop, 0) * 10
-        cost_per_hectare = CROP_COST.get(requested_crop, 0)
-        expected_profit = (predicted_yield * price_per_tonne) - cost_per_hectare
-        
-        # 3. Recommend the top 3 crops for the same conditions based on profitability
-        all_crops = list(CROP_COST.keys())
-        profit_scores = []
-        
-        for crop in all_crops:
-            # Substitute the crop feature and generate a prediction
-            test_input = input_dict.copy()
-            test_input["crop"] = crop
-            
-            crop_yield = model.predict(test_input)
-            
-            # Predict profit
-            c_price_per_tonne = AVERAGE_MANDI_PRICE.get(crop, 0) * 10
-            c_cost = CROP_COST.get(crop, 0)
-            c_profit = (crop_yield * c_price_per_tonne) - c_cost
-            
-            profit_scores.append({"crop": crop, "expected_profit": c_profit})
-            
-        # Sort and take top 3
-        profit_scores.sort(key=lambda x: x["expected_profit"], reverse=True)
-        top_3 = profit_scores[:3]
+        input_dict = data.model_dump()
+        top_n = input_dict.pop("top_n")
 
-        return PredictionOutput(
-            predicted_yield=predicted_yield,
-            expected_profit=expected_profit, 
-            top_3_crops=top_3
-        )
-        
+        base_features = {k: input_dict[k] for k in [
+            'state', 'season', 'annual_rainfall', 'fertilizer', 'pesticide',
+            'area', 'n_soil', 'p_soil', 'k_soil', 'temperature', 'humidity', 'ph'
+        ]}
+
+        # Step 1 — crop recommendations
+        top_crops = crop_recommender.predict_top_n(base_features, n=top_n)
+
+        results = []
+        for item in top_crops:
+            crop = item["crop"]
+
+            # Step 2 — yield prediction for this crop
+            predicted_yield = yield_predictor.predict({**base_features, 'crop': crop})
+
+            # Step 3 — mandi price prediction for this crop in the given state
+            avg_price = price_predictor.predict(
+                state=input_dict['state'], crop=crop
+            )
+
+            # Step 4 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
+            expected_revenue = predicted_yield * input_dict['area'] * avg_price
+
+            results.append(CropResult(
+                crop=crop,
+                predicted_yield=round(predicted_yield, 3),
+                avg_price=round(avg_price, 2),
+                expected_revenue=round(expected_revenue, 2),
+            ))
+
+        results.sort(key=lambda x: x.expected_revenue, reverse=True)
+        return PredictionOutput(recommendations=results)
+
     except ValueError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
-@app.get("/feature-importance")
-def get_feature_importance():
-    try:
-        importances = model.get_feature_importance()
-        return {"feature_importance": importances}
-    except ValueError as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get feature importance: {str(e)}")
 
 @app.post("/api/ask", response_model=AskResponse)
 def ask_question(request: AskRequest):
     try:
-        # 1. Retrieve context
         context = get_relevant_context(request.question)
-        
-        # 2. Generate answer
         answer = generate_answer(request.question, context)
-        
-        # 3. Return response
         return AskResponse(answer=answer, context_used=context)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to process RAG query: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"RAG query failed: {str(e)}")
+
 
 @app.get("/")
 def read_root():
-    return {"message": "Crop Yield Recommendation System API is running."}
+    return {"message": "AgriPlanAI API is running."}

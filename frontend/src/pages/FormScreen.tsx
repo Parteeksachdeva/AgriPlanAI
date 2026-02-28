@@ -15,14 +15,6 @@ const STATE_OPTIONS = [
 
 const SEASON_OPTIONS = ['Whole Year', 'Kharif', 'Rabi', 'Autumn', 'Summer', 'Winter']
 
-const CROP_OPTIONS = [
-  'Arecanut', 'Castor seed', 'ChickPea', 'Coconut', 'Cotton',
-  'Dry chillies', 'Jute', 'Linseed', 'Maize', 'Mesta', 'Niger seed',
-  'Onion', 'Potato', 'PigeonPeas', 'Rapeseed &Mustard', 'Rice',
-  'Sesamum', 'Small millets', 'Sugarcane', 'Sweet potato', 'Tapioca',
-  'Tobacco', 'Turmeric', 'Wheat',
-]
-
 const inputClass =
   'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
 const labelClass = 'text-sm font-medium leading-none text-foreground'
@@ -41,7 +33,6 @@ export function FormScreen() {
       fertilizer: 50000,
       pesticide: 163,
       area: 500,
-      crop: 'Wheat',
     },
   })
 
@@ -62,10 +53,10 @@ export function FormScreen() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="rounded-2xl border bg-card p-8 shadow-sm">
         <h2 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
-          Yield prediction
+          Crop recommendation
         </h2>
         <p className="mb-8 text-muted-foreground">
-          Enter farm and location details. Our AI model will predict yield and suggest the most profitable crops.
+          Enter your farm and location details. Our AI will recommend the most profitable crops ranked by expected revenue.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -151,16 +142,6 @@ export function FormScreen() {
                 {...register('pesticide', { valueAsNumber: true })}
               />
             </div>
-          </div>
-
-          {/* Crop */}
-          <div className="space-y-2">
-            <label htmlFor="crop" className={labelClass}>Crop</label>
-            <select id="crop" className={inputClass} {...register('crop')}>
-              {CROP_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
           </div>
 
           {/* Optional soil / weather */}
@@ -257,7 +238,7 @@ export function FormScreen() {
               disabled={isSubmitting}
               className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 sm:w-auto sm:min-w-[180px]"
             >
-              {isSubmitting ? 'Predicting…' : 'Get prediction'}
+              {isSubmitting ? 'Analysing…' : 'Get recommendations'}
             </button>
           </div>
         </form>

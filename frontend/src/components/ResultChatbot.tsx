@@ -14,7 +14,7 @@ interface ResultChatbotProps {
   formData: PredictionFormData
 }
 
-const GREETING = `I'm your crop prediction assistant. You can ask me about your yield prediction, recommended crops, profit estimates, or your input summary. Try: "What's my predicted yield?", "Which crop is most profitable?", or "What did I enter for rainfall?"`
+const GREETING = `I'm your crop recommendation assistant. Ask me about your top crop, expected revenue, predicted yield, mandi prices, or your input summary. Try: "Which crop is most profitable?", "What's the yield for the top crop?", or "Show me my inputs."`
 
 function buildResponse(
   query: string,
@@ -22,73 +22,68 @@ function buildResponse(
   formData: ResultChatbotProps['formData']
 ): string {
   const q = query.toLowerCase().trim()
+  const { recommendations } = result
+  const top = recommendations[0]
 
-  // Predicted yield
+  // Top / best crop
   if (
-    /(my|the|predicted) ?yield|yield ?prediction/.test(q) &&
-    !q.includes('report') &&
-    result.predictedYield != null
+    /(best|top|most profitable|highest revenue|recommended) ?crop|which crop/.test(q) &&
+    top
   ) {
-    return `Your predicted yield for **${formData.cropType}** is **${result.predictedYield.toLocaleString(undefined, { maximumFractionDigits: 2 })} tonnes per hectare**.`
-  }
-
-  // Profit
-  if (
-    /(my|expected) ?profit|my ?revenue|my ?earning/.test(q) &&
-    !q.includes('report') &&
-    result.expectedProfit != null
-  ) {
-    return `For **${formData.cropType}**, the expected profit is **₹${result.expectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })} per hectare**.`
-  }
-
-  // Best / top crop
-  if (
-    /(my|best|top|alternative) ?crop|(most|highest) ?profit|recommend.*crop/.test(q) &&
-    !q.includes('report') && !q.includes('disease') &&
-    result.top3Crops?.length
-  ) {
-    const top = result.top3Crops[0]
-    const list = result.top3Crops
+    const list = recommendations
       .map(
         (c, i) =>
-          `${i + 1}. **${c.crop}**: ₹${c.expected_profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha`
+          `${i + 1}. **${c.crop}**: ₹${c.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })} revenue`
       )
       .join('\n')
-    return `Based on your conditions, the most profitable alternative crop is **${top.crop}** (₹${top.expected_profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha). Top 3 alternatives:\n${list}`
+    return `The most profitable crop for your conditions is **${top.crop}** with expected revenue of **₹${top.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}**.\n\nFull ranking:\n${list}`
   }
 
-  // Recommendation
-  if (/(my|the) ?recommendation|my ?suggestion|what should i do/.test(q) && !q.includes('report') && result.recommendation) {
-    return `**Recommendation:** ${result.recommendation}`
+  // Yield for top crop
+  if (
+    /(my|the|predicted) ?yield|yield ?prediction/.test(q) &&
+    top
+  ) {
+    return `The predicted yield for **${top.crop}** (top recommendation) is **${top.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })} tonnes per hectare**.`
+  }
+
+  // Revenue / profit / earnings
+  if (
+    /(my|expected) ?(revenue|profit|earning)/.test(q) &&
+    top
+  ) {
+    return `The expected revenue for **${top.crop}** is **₹${top.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}** (based on ${formData.area} ha × ${top.predicted_yield.toFixed(2)} t/ha × 10 quintals/t × ₹${top.avg_price.toFixed(0)}/quintal).`
+  }
+
+  // Mandi / market price
+  if (/(mandi|market|price|rate) ?(per|of|for)?/.test(q) && top) {
+    const list = recommendations
+      .map((c) => `**${c.crop}**: ₹${c.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}/quintal`)
+      .join('\n')
+    return `Predicted mandi prices:\n${list}`
   }
 
   // Input summary
   if (/my ?inputs?|what (did )?i ?enter(ed)?|input ?summary|show ?me ?my ?data/.test(q)) {
     const parts: string[] = [
-      `Rainfall: ${formData.rainfall} mm`,
-      `Average temperature: ${formData.averageTemperature} °C`,
-      `Soil type: ${formData.soilType}`,
-      `Irrigation: ${formData.irrigation}`,
+      `State: ${formData.state}`,
       `Season: ${formData.season}`,
-      `Crop: ${formData.cropType}`,
-      `Historical yield: ${formData.historicalYield} kg/ha`,
+      `Annual rainfall: ${formData.annual_rainfall} mm`,
+      `Area: ${formData.area} ha`,
+      `Fertilizer: ${formData.fertilizer} kg`,
+      `Pesticide: ${formData.pesticide} kg`,
     ]
-    if (formData.areaHectares != null) parts.push(`Area: ${formData.areaHectares} ha`)
-    if (formData.state) parts.push(`State: ${formData.state}`)
-    if (formData.district) parts.push(`District: ${formData.district}`)
-    if (formData.soilPh != null) parts.push(`Soil pH: ${formData.soilPh}`)
-    if (formData.previousCrop) parts.push(`Previous crop: ${formData.previousCrop}`)
-    if (formData.humidityPercent != null) parts.push(`Humidity: ${formData.humidityPercent}%`)
+    if (formData.temperature != null) parts.push(`Temperature: ${formData.temperature} °C`)
+    if (formData.humidity != null) parts.push(`Humidity: ${formData.humidity}%`)
+    if (formData.ph != null) parts.push(`Soil pH: ${formData.ph}`)
+    if (formData.n_soil != null) parts.push(`N: ${formData.n_soil}`)
+    if (formData.p_soil != null) parts.push(`P: ${formData.p_soil}`)
+    if (formData.k_soil != null) parts.push(`K: ${formData.k_soil}`)
     return `**Your inputs:**\n${parts.join('\n')}`
   }
 
-  // Confidence
-  if (/confidence|accuracy|how ?(reliable|accurate)/.test(q) && result.confidence != null) {
-    return `Model confidence for this prediction is **${Math.round(result.confidence * 100)}%**.`
-  }
-
-  // Default
-  return `I can answer questions about your **predicted yield**, **profit**, **top alternative crops**, **recommendations**, or **your input summary**. Ask something like: "What's my predicted yield?" or "Which crop is best for my conditions?"`
+  // Default — fall through to RAG
+  return `I can answer questions about your **top crop**, **predicted yield**, **expected revenue**, **mandi prices**, or **input summary**. What would you like to know?`
 }
 
 function formatMessageContent(text: string) {
@@ -137,11 +132,10 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     setInput('')
     setIsLoading(true)
 
-    // First try the built-in quick responses for basic input questions
     let reply = buildResponse(text, result, formData)
-    
-    // If the mock system returns the default fallback or is unsure, ask the real AI RAG
-    if (reply.includes("I can answer questions about your") || reply.includes("I don't know")) {
+
+    // Fall through to RAG for general agriculture questions
+    if (reply.includes('I can answer questions about your')) {
       reply = await askChatbot(text)
     }
 
@@ -160,7 +154,7 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
       <div className="border-b bg-muted/30 px-4 py-3">
         <h3 className="text-sm font-semibold text-foreground">Ask about your results</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Get answers about yield, profit, and recommendations
+          Get answers about yield, revenue, and recommendations
         </p>
       </div>
       <div className="flex flex-col h-[320px]">
@@ -198,7 +192,7 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about your prediction..."
+              placeholder="Ask about your recommendations..."
               className="flex-1 rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
               disabled={isLoading}
             />

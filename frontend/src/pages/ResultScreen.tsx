@@ -27,87 +27,89 @@ export function ResultScreen() {
   }
 
   const { result, formData } = state
+  const { recommendations } = result
+  const top = recommendations[0]
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="rounded-2xl border bg-card p-8 shadow-sm">
         <h2 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
-          Prediction result
+          Crop recommendations
         </h2>
         <p className="mb-8 text-muted-foreground">
-          AI model output based on your inputs.
+          Crops ranked by expected revenue for your conditions.
         </p>
 
         <div className="space-y-6">
-          {(result.predictedYield != null || result.expectedProfit != null) && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {result.predictedYield != null && (
-                <div className="rounded-xl bg-primary/5 p-5">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Predicted yield
-                  </p>
-                  <p className="mt-1 text-3xl font-bold text-foreground">
-                    {result.predictedYield.toLocaleString(undefined, { maximumFractionDigits: 2 })} tonnes/ha
-                  </p>
-                </div>
-              )}
-              {result.expectedProfit != null && (
-                <div className="rounded-xl bg-green-500/10 p-5">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Expected Profit
-                  </p>
-                  <p className="mt-1 text-3xl font-bold text-green-700 dark:text-green-400">
-                    ₹{result.expectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha
-                  </p>
-                </div>
-              )}
+
+          {/* Top pick highlight */}
+          {top && (
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-xl bg-primary/5 p-5">
+                <p className="text-sm font-medium text-muted-foreground">Top crop</p>
+                <p className="mt-1 text-2xl font-bold text-foreground">{top.crop}</p>
+              </div>
+              <div className="rounded-xl bg-primary/5 p-5">
+                <p className="text-sm font-medium text-muted-foreground">Predicted yield</p>
+                <p className="mt-1 text-2xl font-bold text-foreground">
+                  {top.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })} t/ha
+                </p>
+              </div>
+              <div className="rounded-xl bg-green-500/10 p-5">
+                <p className="text-sm font-medium text-muted-foreground">Expected revenue</p>
+                <p className="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">
+                  ₹{top.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
             </div>
           )}
 
-          {result.top3Crops && result.top3Crops.length > 0 && (
-            <div className="rounded-lg border p-4">
-              <p className="mb-3 text-sm font-medium text-foreground">
-                Top Alternative Crops by Profit
-              </p>
-              <ul className="space-y-2">
-                {result.top3Crops.map((item, index) => (
-                  <li key={item.crop} className="flex items-center justify-between rounded bg-muted/30 px-3 py-2 text-sm">
-                    <span className="font-medium text-foreground">{index + 1}. {item.crop}</span>
-                    <span className="text-green-600 dark:text-green-400">₹{item.expected_profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha</span>
-                  </li>
-                ))}
-              </ul>
+          {/* Full ranked list */}
+          {recommendations.length > 0 && (
+            <div className="rounded-lg border overflow-hidden">
+              <div className="bg-muted/30 px-4 py-2.5 text-sm font-medium text-foreground">
+                All recommendations
+              </div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-muted-foreground">
+                    <th className="px-4 py-2.5 font-medium">#</th>
+                    <th className="px-4 py-2.5 font-medium">Crop</th>
+                    <th className="px-4 py-2.5 font-medium text-right">Yield (t/ha)</th>
+                    <th className="px-4 py-2.5 font-medium text-right">Mandi price (₹/q)</th>
+                    <th className="px-4 py-2.5 font-medium text-right">Revenue (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recommendations.map((item, i) => (
+                    <tr
+                      key={item.crop}
+                      className={`border-b last:border-0 ${i === 0 ? 'bg-green-500/5' : ''}`}
+                    >
+                      <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
+                      <td className="px-4 py-2.5 font-medium text-foreground">{item.crop}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        {item.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-medium text-green-700 dark:text-green-400">
+                        ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 
-          {result.confidence != null && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Confidence:</span>
-              <span className="font-medium">{Math.round(result.confidence * 100)}%</span>
-            </div>
-          )}
-
-          {result.recommendation && (
-            <div className="rounded-lg border bg-muted/30 p-4">
-              <p className="text-sm font-medium text-foreground">Recommendation</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {result.recommendation}
-              </p>
-            </div>
-          )}
-
-          {result.message && (
-            <p className="text-sm text-muted-foreground">{result.message}</p>
-          )}
-
+          {/* Input summary */}
           <div className="rounded-lg border p-4">
-            <p className="mb-3 text-sm font-medium text-foreground">
-              Summary of your inputs
-            </p>
+            <p className="mb-3 text-sm font-medium text-foreground">Your inputs</p>
             <ul className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
               <li>State: {formData.state}</li>
               <li>Season: {formData.season}</li>
-              <li>Crop: {formData.crop}</li>
               <li>Annual rainfall: {formData.annual_rainfall} mm</li>
               <li>Area: {formData.area} ha</li>
               <li>Fertilizer: {formData.fertilizer} kg</li>
@@ -122,7 +124,7 @@ export function ResultScreen() {
           </div>
         </div>
 
-        <div className="mt-8 flex gap-3">
+        <div className="mt-8">
           <button
             type="button"
             onClick={() => navigate('/')}

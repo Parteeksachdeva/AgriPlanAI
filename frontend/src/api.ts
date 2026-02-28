@@ -12,7 +12,6 @@ export async function submitPrediction(
     fertilizer: data.fertilizer,
     pesticide: data.pesticide,
     area: data.area,
-    crop: data.crop,
     n_soil: data.n_soil ?? null,
     p_soil: data.p_soil ?? null,
     k_soil: data.k_soil ?? null,
@@ -29,16 +28,7 @@ export async function submitPrediction(
   if (!res.ok) throw new Error(`API error: ${res.status}`)
 
   const result = await res.json()
-  return {
-    predictedYield: result.predicted_yield,
-    expectedProfit: result.expected_profit,
-    top3Crops: result.top_3_crops,
-    message: 'Prediction generated successfully from the model.',
-    confidence: 0.92,
-    recommendation: result.top_3_crops?.[0]
-      ? `Consider switching to ${result.top_3_crops[0].crop} for higher profitability if conditions allow.`
-      : undefined,
-  }
+  return { recommendations: result.recommendations }
 }
 
 export async function askChatbot(question: string): Promise<string> {
