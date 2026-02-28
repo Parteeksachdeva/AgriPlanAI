@@ -38,14 +38,44 @@ export function ResultScreen() {
         </p>
 
         <div className="space-y-6">
-          {result.predictedYield != null && (
-            <div className="rounded-xl bg-primary/5 p-5">
-              <p className="text-sm font-medium text-muted-foreground">
-                Predicted yield
+          {(result.predictedYield != null || result.expectedProfit != null) && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {result.predictedYield != null && (
+                <div className="rounded-xl bg-primary/5 p-5">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Predicted yield
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-foreground">
+                    {result.predictedYield.toLocaleString(undefined, { maximumFractionDigits: 2 })} tonnes/ha
+                  </p>
+                </div>
+              )}
+              {result.expectedProfit != null && (
+                <div className="rounded-xl bg-green-500/10 p-5">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Expected Profit
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-green-700 dark:text-green-400">
+                    ₹{result.expectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {result.top3Crops && result.top3Crops.length > 0 && (
+            <div className="rounded-lg border p-4">
+              <p className="mb-3 text-sm font-medium text-foreground">
+                Top Alternative Crops by Profit
               </p>
-              <p className="mt-1 text-3xl font-bold text-foreground">
-                {result.predictedYield.toLocaleString()} kg/ha
-              </p>
+              <ul className="space-y-2">
+                {result.top3Crops.map((item, index) => (
+                  <li key={item.crop} className="flex items-center justify-between rounded bg-muted/30 px-3 py-2 text-sm">
+                    <span className="font-medium text-foreground">{index + 1}. {item.crop}</span>
+                    <span className="text-green-600 dark:text-green-400">₹{item.expected_profit.toLocaleString(undefined, { maximumFractionDigits: 0 })}/ha</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
