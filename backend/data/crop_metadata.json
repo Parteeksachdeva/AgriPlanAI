@@ -1,0 +1,117 @@
+{
+    "rice": {
+        "season": "Kharif",
+        "traditional_states": ["West Bengal", "Uttar Pradesh", "Punjab", "Andhra Pradesh", "Tamil Nadu", "Bihar", "Chhattisgarh", "Odisha", "Assam"],
+        "min_rainfall": 1000
+    },
+    "maize": {
+        "season": "Kharif",
+        "traditional_states": ["Karnataka", "Madhya Pradesh", "Maharashtra", "Rajasthan", "Bihar", "Telangana", "Uttar Pradesh"],
+        "min_rainfall": 500
+    },
+    "chickpea": {
+        "season": "Rabi",
+        "traditional_states": ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Karnataka", "Uttar Pradesh", "Andhra Pradesh"],
+        "min_rainfall": 400
+    },
+    "kidneybeans": {
+        "season": "Rabi",
+        "traditional_states": ["Maharashtra", "Karnataka", "Uttar Pradesh"],
+        "min_rainfall": 600
+    },
+    "pigeonpeas": {
+        "season": "Kharif",
+        "traditional_states": ["Maharashtra", "Karnataka", "Madhya Pradesh", "Uttar Pradesh", "Gujarat", "Telangana"],
+        "min_rainfall": 600
+    },
+    "mothbeans": {
+        "season": "Kharif",
+        "traditional_states": ["Rajasthan", "Maharashtra", "Gujarat"],
+        "min_rainfall": 200
+    },
+    "mungbean": {
+        "season": "Kharif",
+        "traditional_states": ["Rajasthan", "Maharashtra", "Karnataka", "Andhra Pradesh", "Tamil Nadu"],
+        "min_rainfall": 400
+    },
+    "blackgram": {
+        "season": "Kharif",
+        "traditional_states": ["Madhya Pradesh", "Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu", "Maharashtra"],
+        "min_rainfall": 400
+    },
+    "lentil": {
+        "season": "Rabi",
+        "traditional_states": ["Madhya Pradesh", "Uttar Pradesh", "West Bengal", "Bihar"],
+        "min_rainfall": 400
+    },
+    "pomegranate": {
+        "season": "Whole Year",
+        "traditional_states": ["Maharashtra", "Gujarat", "Karnataka", "Andhra Pradesh"],
+        "min_rainfall": 500
+    },
+    "banana": {
+        "season": "Whole Year",
+        "traditional_states": ["Tamil Nadu", "Maharashtra", "Gujarat", "Andhra Pradesh", "Karnataka", "Kerala", "Bihar"],
+        "min_rainfall": 1200
+    },
+    "mango": {
+        "season": "Whole Year",
+        "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Karnataka", "Bihar", "Gujarat", "Tamil Nadu", "Maharashtra"],
+        "min_rainfall": 750
+    },
+    "grapes": {
+        "season": "Whole Year",
+        "traditional_states": ["Maharashtra", "Karnataka", "Tamil Nadu", "Mizoram"],
+        "min_rainfall": 500
+    },
+    "watermelon": {
+        "season": "Whole Year",
+        "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu", "Karnataka", "Maharashtra"],
+        "min_rainfall": 400
+    },
+    "muskmelon": {
+        "season": "Whole Year",
+        "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Punjab", "Maharashtra", "Haryana"],
+        "min_rainfall": 400
+    },
+    "apple": {
+        "season": "Whole Year",
+        "traditional_states": ["Jammu & Kashmir", "Himachal Pradesh", "Uttarakhand"],
+        "min_rainfall": 1000
+    },
+    "orange": {
+        "season": "Whole Year",
+        "traditional_states": ["Maharashtra", "Madhya Pradesh", "Assam", "Rajasthan", "Nagaland"],
+        "min_rainfall": 1000
+    },
+    "papaya": {
+        "season": "Whole Year",
+        "traditional_states": ["Andhra Pradesh", "Gujarat", "Karnataka", "Maharashtra", "Madhya Pradesh", "Tamil Nadu", "West Bengal", "Kerala"],
+        "min_rainfall": 1000
+    },
+    "coconut": {
+        "season": "Whole Year",
+        "traditional_states": ["Kerala", "Tamil Nadu", "Karnataka", "Andhra Pradesh", "Odisha", "West Bengal", "Gujarat"],
+        "min_rainfall": 1500
+    },
+    "cotton": {
+        "season": "Kharif",
+        "traditional_states": ["Gujarat", "Maharashtra", "Telangana", "Rajasthan", "Karnataka", "Andhra Pradesh", "Haryana", "Madhya Pradesh", "Punjab"],
+        "min_rainfall": 500
+    },
+    "jute": {
+        "season": "Kharif",
+        "traditional_states": ["West Bengal", "Bihar", "Assam", "Odisha", "Andhra Pradesh"],
+        "min_rainfall": 1500
+    },
+    "coffee": {
+        "season": "Whole Year",
+        "traditional_states": ["Karnataka", "Kerala", "Tamil Nadu", "Andhra Pradesh"],
+        "min_rainfall": 1500
+    },
+    "wheat": {
+        "season": "Rabi",
+        "traditional_states": ["Uttar Pradesh", "Madhya Pradesh", "Punjab", "Haryana", "Rajasthan", "Bihar"],
+        "min_rainfall": 400
+    }
+}

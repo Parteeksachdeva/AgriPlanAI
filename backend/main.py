@@ -64,6 +64,7 @@ class CropResult(BaseModel):
     predicted_yield: float    # t/ha
     avg_price: float          # INR/quintal
     expected_revenue: float   # INR  (yield_t/ha × area × 10 quintals/t × price/quintal)
+    suitability: str          # 'traditional', 'common', or 'rare'
 
 
 class PredictionOutput(BaseModel):
@@ -85,47 +86,83 @@ class AskResponse(BaseModel):
 def predict(data: PredictionInput):
     """
     Pipeline:
-      1. Model 1a  → top-N crop recommendations (classification)
-      2. Model 1b  → predicted yield per crop (regression, t/ha)
+      1. Model 1a  → top-N crop recommendations (classification) using Kaggle features
+      2. Model 1b  → predicted yield per crop (regression or fallback)
       3. Model 2   → predicted mandi price per crop (regression, INR/quintal)
-      4. App layer → expected_revenue = yield × area × 10 × avg_price
-      5. Return list sorted by expected_revenue descending
+      4. Suitability → Check if crop is historically grown in the state
+      5. App layer → expected_revenue = yield × area × 10 × avg_price
     """
     try:
         input_dict = data.model_dump()
         top_n = input_dict.pop("top_n")
+        selected_state = input_dict.get('state', 'Punjab')
 
-        base_features = {k: input_dict[k] for k in [
-            'state', 'season', 'annual_rainfall', 'fertilizer', 'pesticide',
-            'area', 'n_soil', 'p_soil', 'k_soil', 'temperature', 'humidity', 'ph'
-        ]}
+        # Map API fields to Model features
+        # Note: Kaggle model expect 'rainfall', API sends 'annual_rainfall'
+        base_features = {
+            'n_soil': input_dict.get('n_soil'),
+            'p_soil': input_dict.get('p_soil'),
+            'k_soil': input_dict.get('k_soil'),
+            'temperature': input_dict.get('temperature'),
+            'humidity': input_dict.get('humidity'),
+            'ph': input_dict.get('ph'),
+            'rainfall': input_dict.get('annual_rainfall'),
+            'area': input_dict.get('area')
+        }
 
         # Step 1 — crop recommendations
-        top_crops = crop_recommender.predict_top_n(base_features, n=top_n)
+        # Increase n slightly before filtering to ensure we have enough results after seasonal exclusion
+        top_crops = crop_recommender.predict_top_n(base_features, n=top_n * 2)
 
         results = []
         for item in top_crops:
             crop = item["crop"]
+
+            # Filter by season (Kharif/Rabi/Whole Year)
+            crop_season = price_predictor.get_crop_season(crop)
+            user_season = input_dict.get('season', 'Whole Year')
+            
+            # If user specifies a season, only show crops for that season or year-round crops
+            if user_season != "Whole Year" and crop_season != "Whole Year" and crop_season != user_season:
+                continue
 
             # Step 2 — yield prediction for this crop
             predicted_yield = yield_predictor.predict({**base_features, 'crop': crop})
 
             # Step 3 — mandi price prediction for this crop in the given state
             avg_price = price_predictor.predict(
-                state=input_dict['state'], crop=crop
+                state=selected_state, crop=crop
             )
 
-            # Step 4 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
-            expected_revenue = predicted_yield * input_dict['area'] * avg_price
+            # Step 4 — Suitability check
+            suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
+
+            # Step 4.1 — Environmental Safety Check (Rainfall, etc.)
+            env_score = price_predictor.check_environmental_suitability(crop, input_dict.get('annual_rainfall', 0))
+            
+            # If environmental score is very low, we skip or heavily penalize
+            # For now, let's skip if it's a severe mismatch (score < 0.5)
+            if env_score < 0.5:
+                continue
+
+            # Step 5 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
+            # Apply environmental penalty to expected revenue if any
+            expected_revenue = predicted_yield * input_dict['area'] * 10 * avg_price * env_score
 
             results.append(CropResult(
                 crop=crop,
                 predicted_yield=round(predicted_yield, 3),
                 avg_price=round(avg_price, 2),
                 expected_revenue=round(expected_revenue, 2),
+                suitability=suitability,
             ))
+            
+            if len(results) >= top_n:
+                break
 
-        results.sort(key=lambda x: x.expected_revenue, reverse=True)
+        # Sort by suitability first (traditional > common > rare), then revenue
+        suitability_map = {"traditional": 2, "common": 1, "rare": 0}
+        results.sort(key=lambda x: (suitability_map.get(x.suitability, 0), x.expected_revenue), reverse=True)
         return PredictionOutput(recommendations=results)
 
     except ValueError as e:

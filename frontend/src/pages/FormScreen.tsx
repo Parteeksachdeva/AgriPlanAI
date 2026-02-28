@@ -29,10 +29,16 @@ export function FormScreen() {
     defaultValues: {
       state: 'Punjab',
       season: 'Kharif',
-      annual_rainfall: 649,
-      fertilizer: 50000,
-      pesticide: 163,
-      area: 500,
+      annual_rainfall: 800,
+      area: 1,
+      n_soil: 80,
+      p_soil: 50,
+      k_soil: 40,
+      temperature: 25,
+      humidity: 70,
+      ph: 6.5,
+      fertilizer: 300,
+      pesticide: 2,
     },
   })
 
@@ -56,12 +62,12 @@ export function FormScreen() {
           Crop recommendation
         </h2>
         <p className="mb-8 text-muted-foreground">
-          Enter your farm and location details. Our AI will recommend the most profitable crops ranked by expected revenue.
+          Enter your soil and environmental details. Our AI will recommend the most suitable crops based on regional conditions.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* State + Season */}
+          {/* State + Area */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label htmlFor="state" className={labelClass}>State</label>
@@ -73,20 +79,73 @@ export function FormScreen() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="season" className={labelClass}>Season</label>
-              <select id="season" className={inputClass} {...register('season')}>
-                {SEASON_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <label htmlFor="area" className={labelClass}>
+                Area (hectares)
+              </label>
+              <input
+                id="area"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="e.g. 2"
+                {...register('area', { valueAsNumber: true })}
+              />
             </div>
           </div>
 
-          {/* Rainfall + Area */}
+          {/* Soil NPK */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-2">
+              <label htmlFor="n_soil" className={labelClass}>Nitrogen (N)</label>
+              <input
+                id="n_soil"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="0-140"
+                {...register('n_soil', { valueAsNumber: true })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="p_soil" className={labelClass}>Phosphorus (P)</label>
+              <input
+                id="p_soil"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="5-145"
+                {...register('p_soil', { valueAsNumber: true })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="k_soil" className={labelClass}>Potassium (K)</label>
+              <input
+                id="k_soil"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="5-205"
+                {...register('k_soil', { valueAsNumber: true })}
+              />
+            </div>
+          </div>
+
+          {/* pH + Rainfall */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
+              <label htmlFor="ph" className={labelClass}>Soil pH</label>
+              <input
+                id="ph"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="3.5 - 9.9"
+                {...register('ph', { valueAsNumber: true })}
+              />
+            </div>
+            <div className="space-y-2">
               <label htmlFor="annual_rainfall" className={labelClass}>
-                Annual rainfall (mm)
+                Recent Rainfall (mm)
               </label>
               <input
                 id="annual_rainfall"
@@ -97,130 +156,77 @@ export function FormScreen() {
                 {...register('annual_rainfall', { valueAsNumber: true })}
               />
             </div>
-
-            <div className="space-y-2">
-              <label htmlFor="area" className={labelClass}>
-                Area (hectares)
-              </label>
-              <input
-                id="area"
-                type="number"
-                step="any"
-                className={inputClass}
-                placeholder="e.g. 500"
-                {...register('area', { valueAsNumber: true })}
-              />
-            </div>
           </div>
 
-          {/* Fertilizer + Pesticide */}
+          {/* Weather Details (Primary) */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label htmlFor="fertilizer" className={labelClass}>
-                Fertilizer used (kg)
-              </label>
+              <label htmlFor="temperature" className={labelClass}>Temperature (°C)</label>
               <input
-                id="fertilizer"
+                id="temperature"
                 type="number"
                 step="any"
                 className={inputClass}
-                placeholder="e.g. 50000"
-                {...register('fertilizer', { valueAsNumber: true })}
+                placeholder="e.g. 28"
+                {...register('temperature', { valueAsNumber: true })}
               />
             </div>
-
             <div className="space-y-2">
-              <label htmlFor="pesticide" className={labelClass}>
-                Pesticide used (kg)
-              </label>
+              <label htmlFor="humidity" className={labelClass}>Humidity (%)</label>
               <input
-                id="pesticide"
+                id="humidity"
                 type="number"
                 step="any"
                 className={inputClass}
-                placeholder="e.g. 163"
-                {...register('pesticide', { valueAsNumber: true })}
+                placeholder="e.g. 65"
+                {...register('humidity', { valueAsNumber: true })}
               />
             </div>
           </div>
 
-          {/* Optional soil / weather */}
+          {/* Optional Sections */}
           <div>
             <button
               type="button"
               onClick={() => setShowOptional((v) => !v)}
               className="text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
-              {showOptional ? '− Hide' : '+ Add'} soil &amp; weather details (optional)
+              {showOptional ? '− Hide' : '+ Add'} technical details (season, fertilizer, etc.)
             </button>
 
             {showOptional && (
-              <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <label htmlFor="temperature" className={labelClass}>Temperature (°C)</label>
-                  <input
-                    id="temperature"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 28"
-                    {...register('temperature', { valueAsNumber: true })}
-                  />
+              <div className="mt-4 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor="season" className={labelClass}>Season</label>
+                    <select id="season" className={inputClass} {...register('season')}>
+                      {SEASON_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="fertilizer" className={labelClass}>Fertilizer used (kg)</label>
+                    <input
+                      id="fertilizer"
+                      type="number"
+                      step="any"
+                      className={inputClass}
+                      {...register('fertilizer', { valueAsNumber: true })}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="humidity" className={labelClass}>Humidity (%)</label>
-                  <input
-                    id="humidity"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 65"
-                    {...register('humidity', { valueAsNumber: true })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="ph" className={labelClass}>Soil pH</label>
-                  <input
-                    id="ph"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 6.5"
-                    {...register('ph', { valueAsNumber: true })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="n_soil" className={labelClass}>Nitrogen (N)</label>
-                  <input
-                    id="n_soil"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 80"
-                    {...register('n_soil', { valueAsNumber: true })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="p_soil" className={labelClass}>Phosphorus (P)</label>
-                  <input
-                    id="p_soil"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 47"
-                    {...register('p_soil', { valueAsNumber: true })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="k_soil" className={labelClass}>Potassium (K)</label>
-                  <input
-                    id="k_soil"
-                    type="number"
-                    step="any"
-                    className={inputClass}
-                    placeholder="e.g. 40"
-                    {...register('k_soil', { valueAsNumber: true })}
-                  />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor="pesticide" className={labelClass}>Pesticide used (kg)</label>
+                    <input
+                      id="pesticide"
+                      type="number"
+                      step="any"
+                      className={inputClass}
+                      {...register('pesticide', { valueAsNumber: true })}
+                    />
+                  </div>
                 </div>
               </div>
             )}

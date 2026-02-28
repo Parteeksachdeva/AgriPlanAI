@@ -19,6 +19,7 @@ export interface CropResult {
   predicted_yield: number;  // t/ha
   avg_price: number;        // INR/quintal
   expected_revenue: number; // INR
+  suitability: 'traditional' | 'common' | 'rare';
 }
 
 export interface PredictionResult {

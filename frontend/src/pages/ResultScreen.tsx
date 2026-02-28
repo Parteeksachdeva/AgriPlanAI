@@ -7,6 +7,8 @@ interface LocationState {
   formData: PredictionFormData
 }
 
+import { AlertTriangle, CheckCircle } from 'lucide-react'
+
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
@@ -37,7 +39,10 @@ export function ResultScreen() {
           Crop recommendations
         </h2>
         <p className="mb-8 text-muted-foreground">
-          Crops ranked by expected revenue for your conditions.
+          Crops ranked by suitability and expected revenue for your conditions.
+          <span className="mt-2 block text-xs italic">
+            Note: We prioritize crops traditionally or commonly grown in your state over those with higher revenue but lower suitability.
+          </span>
         </p>
 
         <div className="space-y-6">
@@ -45,9 +50,22 @@ export function ResultScreen() {
           {/* Top pick highlight */}
           {top && (
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl bg-primary/5 p-5">
-                <p className="text-sm font-medium text-muted-foreground">Top crop</p>
-                <p className="mt-1 text-2xl font-bold text-foreground">{top.crop}</p>
+              <div className="rounded-xl bg-primary/5 p-5 relative overflow-hidden">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Top crop</p>
+                    <p className="mt-1 text-2xl font-bold text-foreground">{top.crop}</p>
+                  </div>
+                  {top.suitability === 'rare' ? (
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  ) : (
+                    <CheckCircle className={`h-5 w-5 ${top.suitability === 'traditional' ? 'text-green-500' : 'text-blue-500'}`} />
+                  )}
+                </div>
+                <p className="mt-2 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60">
+                  {top.suitability === 'traditional' ? 'Traditionally grown in ' : 
+                   top.suitability === 'common' ? 'Commonly grown in ' : 'Low suitability for '}{formData.state}
+                </p>
               </div>
               <div className="rounded-xl bg-primary/5 p-5">
                 <p className="text-sm font-medium text-muted-foreground">Predicted yield</p>
@@ -81,24 +99,51 @@ export function ResultScreen() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recommendations.map((item, i) => (
-                    <tr
-                      key={item.crop}
-                      className={`border-b last:border-0 ${i === 0 ? 'bg-green-500/5' : ''}`}
-                    >
-                      <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
-                      <td className="px-4 py-2.5 font-medium text-foreground">{item.crop}</td>
-                      <td className="px-4 py-2.5 text-right">
-                        {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        {item.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-medium text-green-700 dark:text-green-400">
-                        ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </td>
-                    </tr>
-                  ))}
+                  {recommendations.map((item, i) => {
+                    const hasHigherRevenueThanBetterRank = recommendations
+                      .slice(0, i)
+                      .some(betterRanked => item.expected_revenue > betterRanked.expected_revenue);
+
+                    return (
+                      <tr
+                        key={item.crop}
+                        className={`border-b last:border-0 ${i === 0 ? 'bg-green-500/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
+                      >
+                        <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
+                        <td className="px-4 py-2.5 font-medium text-foreground">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{item.crop}</span>
+                            {item.suitability === 'rare' && (
+                              <span className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                                <AlertTriangle className="mr-0.5 h-3 w-3" />
+                                Rare in {formData.state}
+                              </span>
+                            )}
+                            {item.suitability === 'common' && (
+                              <span className="inline-flex items-center rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                <CheckCircle className="mr-0.5 h-3 w-3" />
+                                Commonly grown
+                              </span>
+                            )}
+                            {hasHigherRevenueThanBetterRank && (
+                              <span className="inline-flex items-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800/50 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                Higher revenue but ranked lower due to suitability
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2.5 text-right">
+                          {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        </td>
+                        <td className="px-4 py-2.5 text-right">
+                          {item.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </td>
+                        <td className="px-4 py-2.5 text-right font-medium text-green-700 dark:text-green-400">
+                          ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
