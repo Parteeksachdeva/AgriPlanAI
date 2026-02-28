@@ -2,19 +2,23 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import type { PredictionResult, PredictionFormData, CropResult } from '@/types'
 import { ResultChatbot } from '@/components/ResultChatbot'
 import { ProfitCalculator } from '@/components/ProfitCalculator'
+import { CropCalendar } from '@/components/CropCalendar'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
 
 interface LocationState {
   result: PredictionResult
   formData: PredictionFormData
 }
 
-import { AlertTriangle, CheckCircle, Calculator } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
+  const [showCalendar, setShowCalendar] = useState(true)
 
   if (!state?.result) {
     return (
@@ -40,6 +44,46 @@ export function ResultScreen() {
     setSelectedCropForCalculator(top);
   }
 
+  // Risk calculation logic
+  const getRiskInfo = (crop: string, suitability: string) => {
+    const meta = CROP_RISK_META[crop.toLowerCase()] || DEFAULT_RISK_META;
+    const minRainfall = CROP_MIN_RAINFALL[crop.toLowerCase()] || 0;
+    
+    let score = 0;
+    const reasons: string[] = [];
+
+    // 1. Suitability (Point Based)
+    if (suitability === 'rare') {
+      score += 2;
+      reasons.push("Rarely grown in your state");
+    } else if (suitability === 'common') {
+      score += 1;
+      reasons.push("Common but not a staple in your state");
+    }
+
+    // 2. Price Volatility
+    score += meta.volatility;
+    if (meta.volatility === 2) reasons.push("High price volatility");
+    else if (meta.volatility === 1) reasons.push("Moderate price shifts");
+
+    // 3. Yield Predictability
+    score += meta.predictability;
+    if (meta.predictability === 2) reasons.push("Yield is highly sensitive to climate");
+    else if (meta.predictability === 1) reasons.push("Moderate yield unpredictability");
+
+    // 4. Water Dependency
+    if (meta.water_sensitive && formData.annual_rainfall < minRainfall) {
+      score += 1;
+      reasons.push("High water needs vs rainfall shortage");
+    }
+
+    let level: RiskLevel = 'low';
+    if (score >= 4) level = 'high';
+    else if (score >= 2) level = 'medium';
+
+    return { level, reasons };
+  };
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="rounded-2xl border bg-card p-8 shadow-sm">
@@ -62,7 +106,7 @@ export function ResultScreen() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Top crop</p>
-                    <p className="mt-1 text-2xl font-bold text-foreground">{top.crop}</p>
+                    <p className="mt-1 text-2xl font-bold text-foreground capitalize">{top.crop}</p>
                   </div>
                   {top.suitability === 'rare' ? (
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -76,7 +120,9 @@ export function ResultScreen() {
                 </p>
               </div>
               <div className="rounded-xl bg-primary/5 p-5">
-                <p className="text-sm font-medium text-muted-foreground">Predicted yield</p>
+                <p className="text-sm font-medium text-muted-foreground font-bold flex items-center gap-1.5">
+                  Predicted yield
+                </p>
                 <p className="mt-1 text-2xl font-bold text-foreground">
                   {top.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })} t/ha
                 </p>
@@ -92,101 +138,144 @@ export function ResultScreen() {
 
           {/* Full ranked list */}
           {recommendations.length > 0 && (
-            <div className="rounded-lg border overflow-hidden">
-              <div className="bg-muted/30 px-4 py-2.5 text-sm font-medium text-foreground">
-                All recommendations
+            <div>
+              <div className="rounded-lg border overflow-hidden">
+                <div className="bg-muted/30 px-4 py-2.5 text-sm font-medium text-foreground flex justify-between items-center">
+                  <span>All recommendations</span>
+                  <span className="text-[10px] text-muted-foreground italic">Click <Calculator className="inline h-3 w-3" /> or <Calendar className="inline h-3 w-3" /> to analyze</span>
+                </div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="px-4 py-2.5 font-medium">#</th>
+                      <th className="px-4 py-2.5 font-medium">Crop</th>
+                      <th className="px-4 py-2.5 font-medium text-right">Yield</th>
+                      <th className="px-4 py-2.5 font-medium text-center">Risk</th>
+                      <th className="px-4 py-2.5 font-medium text-right">Revenue (₹)</th>
+                      <th className="px-4 py-2.5 font-medium text-center whitespace-nowrap">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recommendations.map((item, i) => {
+                      const { level, reasons } = getRiskInfo(item.crop, item.suitability);
+                      
+                      return (
+                        <tr
+                          key={item.crop}
+                          className={`border-b last:border-0 ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
+                        >
+                          <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
+                          <td className="px-4 py-2.5 font-medium text-foreground">
+                            <div className="flex flex-col">
+                              <span className="capitalize">{item.crop}</span>
+                              <span className="text-[9px] uppercase tracking-wide text-muted-foreground/60">{item.suitability}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-2.5 text-right font-medium">
+                            {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 1 })}
+                            <span className="text-[9px] text-muted-foreground ml-0.5">t/ha</span>
+                          </td>
+                          <td className="px-4 py-2.5 text-center">
+                            <div className="relative group inline-block">
+                              <span className={cn(
+                                "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter cursor-help whitespace-nowrap",
+                                level === 'low' ? 'bg-green-100 text-green-700' : 
+                                level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                              )}>
+                                {level === 'low' ? 'Low' : level === 'medium' ? 'Medium' : 'High'}
+                              </span>
+                              
+                              {/* Tooltip */}
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-48 p-2 bg-slate-900 text-white text-[10px] rounded-lg shadow-xl animate-in fade-in zoom-in-95 duration-200">
+                                <p className="font-bold mb-1 border-b border-white/20 pb-1">Risk Factors:</p>
+                                <ul className="space-y-1 list-disc list-inside">
+                                  {reasons.length > 0 ? reasons.map(r => <li key={r}>{r}</li>) : <li>Stable staple crop</li>}
+                                </ul>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-2.5 text-right font-bold text-green-700 dark:text-green-400">
+                            ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          </td>
+                          <td className="px-4 py-2.5 text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              <button 
+                                onClick={() => { setSelectedCropForCalculator(item); setShowCalendar(false); }}
+                                className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && !showCalendar ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                title="Calculate Profit"
+                              >
+                                <Calculator className="h-3.5 w-3.5" />
+                              </button>
+                              <button 
+                                onClick={() => { setSelectedCropForCalculator(item); setShowCalendar(true); }}
+                                className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && showCalendar ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                title="Crop Calendar"
+                              >
+                                <Calendar className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="px-4 py-2.5 font-medium">#</th>
-                    <th className="px-4 py-2.5 font-medium">Crop</th>
-                    <th className="px-4 py-2.5 font-medium text-right">Yield (t/ha)</th>
-                    <th className="px-4 py-2.5 font-medium text-right text-nowrap">Mandi price (₹/q)</th>
-                    <th className="px-4 py-2.5 font-medium text-right">Revenue (₹)</th>
-                    <th className="px-4 py-2.5 font-medium text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recommendations.map((item, i) => {
-                    const hasHigherRevenueThanBetterRank = recommendations
-                      .slice(0, i)
-                      .some(betterRanked => item.expected_revenue > betterRanked.expected_revenue);
-
-                    return (
-                      <tr
-                        key={item.crop}
-                        className={`border-b last:border-0 ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
-                      >
-                        <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
-                        <td className="px-4 py-2.5 font-medium text-foreground">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="capitalize">{item.crop}</span>
-                            {item.suitability === 'rare' && (
-                              <span className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                                <AlertTriangle className="mr-0.5 h-3 w-3" />
-                                Rare in {formData.state}
-                              </span>
-                            )}
-                            {item.suitability === 'traditional' && (
-                              <span className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                <CheckCircle className="mr-0.5 h-3 w-3" />
-                                Traditionally grown
-                              </span>
-                            )}
-                            {item.suitability === 'common' && (
-                              <span className="inline-flex items-center rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                <CheckCircle className="mr-0.5 h-3 w-3" />
-                                Commonly grown
-                              </span>
-                            )}
-                            {hasHigherRevenueThanBetterRank && (
-                              <span className="inline-flex items-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800/50 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                                Higher revenue but ranked lower
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-2.5 text-right">
-                          {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 1 })}
-                        </td>
-                        <td className="px-4 py-2.5 text-right">
-                          {item.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                        </td>
-                        <td className="px-4 py-2.5 text-right font-medium text-green-700 dark:text-green-400">
-                          ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                        </td>
-                        <td className="px-4 py-2.5 text-center">
-                          <button 
-                            onClick={() => setSelectedCropForCalculator(item)}
-                            className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'}`}
-                            title="Calculate Profit"
-                          >
-                            <Calculator className="h-4 w-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              
+              <div className="mt-3 flex items-center justify-end gap-4 text-[9px] text-muted-foreground font-medium uppercase tracking-wider">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" /> Low Risk</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-400" /> Medium Risk</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> High Risk</span>
+                <span className="flex items-center gap-1 ml-2 italic"><HelpCircle className="h-3 w-3" /> Hover for details</span>
+              </div>
             </div>
           )}
 
-          {/* Profit Calculator Section */}
+          {/* Analysis View (Calculator or Calendar) */}
           {selectedCropForCalculator && (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wider">
-                <Calculator className="h-4 w-4" />
-                <span>Profit Analysis</span>
+              <div className="flex border-b">
+                <button 
+                  onClick={() => setShowCalendar(false)}
+                  className={cn(
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2",
+                    !showCalendar ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Calculator className="h-3 w-3" />
+                    Profit Analysis
+                  </div>
+                </button>
+                <button 
+                  onClick={() => setShowCalendar(true)}
+                  className={cn(
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2",
+                    showCalendar ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3 w-3" />
+                    Crop Calendar
+                  </div>
+                </button>
               </div>
-              <ProfitCalculator
-                key={selectedCropForCalculator.crop}
-                initialCropName={selectedCropForCalculator.crop}
-                initialYield={selectedCropForCalculator.predicted_yield}
-                initialArea={formData.area}
-                initialMandiPrice={selectedCropForCalculator.avg_price}
-              />
+
+              {showCalendar ? (
+                <CropCalendar 
+                  cropName={selectedCropForCalculator.crop}
+                  season={formData.season}
+                />
+              ) : (
+                <ProfitCalculator
+                  key={selectedCropForCalculator.crop}
+                  initialCropName={selectedCropForCalculator.crop}
+                  initialYield={selectedCropForCalculator.predicted_yield}
+                  initialArea={formData.area}
+                  initialMandiPrice={selectedCropForCalculator.avg_price}
+                />
+              )}
             </div>
           )}
 
