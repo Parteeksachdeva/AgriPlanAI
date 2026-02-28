@@ -92,3 +92,12 @@ class CropYieldModel:
         feature_names = preprocessor.get_feature_names_out()
         importance_dict = {str(name): float(imp) for name, imp in zip(feature_names, importances)}
         return dict(sorted(importance_dict.items(), key=lambda item: item[1], reverse=True))
+
+
+if __name__ == "__main__":
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_PATH = os.path.join(BASE_DIR, "data", "model1_training.csv")
+    model = CropYieldModel(data_path=DATA_PATH)
+    print(f"Training model with data from: {DATA_PATH}")
+    model.train()
+    print("Training complete.")
