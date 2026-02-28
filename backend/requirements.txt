@@ -4,3 +4,8 @@ pandas
 scikit-learn
 xgboost
 pydantic
+langchain
+langchain-community
+langchain-chroma
+chromadb
+pypdf

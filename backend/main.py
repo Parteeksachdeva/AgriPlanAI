@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 from model import CropYieldModel
 from contextlib import asynccontextmanager
 import os
+from rag.retrieve import get_relevant_context
+from rag.generate import generate_answer
 
 # Define Data Directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,6 +51,13 @@ class PredictionOutput(BaseModel):
     predicted_yield: float
     expected_profit: float
     top_3_crops: list[CropRecommendation]
+
+class AskRequest(BaseModel):
+    question: str
+
+class AskResponse(BaseModel):
+    answer: str
+    context_used: str
 
 # Static reference data for Indian agriculture contexts (per hectare basis, example values)
 CROP_COST = {
@@ -124,6 +133,20 @@ def get_feature_importance():
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get feature importance: {str(e)}")
+
+@app.post("/api/ask", response_model=AskResponse)
+def ask_question(request: AskRequest):
+    try:
+        # 1. Retrieve context
+        context = get_relevant_context(request.question)
+        
+        # 2. Generate answer
+        answer = generate_answer(request.question, context)
+        
+        # 3. Return response
+        return AskResponse(answer=answer, context_used=context)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process RAG query: {str(e)}")
 
 @app.get("/")
 def read_root():
