@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from model import CropYieldModel
 from contextlib import asynccontextmanager
 import os
@@ -9,7 +9,7 @@ from rag.generate import generate_answer
 
 # Define Data Directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "data", "crop_data.csv")
+DATA_PATH = os.path.join(BASE_DIR, "data", "model1_training.csv")
 
 # Initialize Model
 model = CropYieldModel(data_path=DATA_PATH)
@@ -36,11 +36,18 @@ app.add_middleware(
 )
 
 class PredictionInput(BaseModel):
-    rainfall: float
-    temperature: float = Field(None, alias="averageTemperature")
-    soil_type: str
-    irrigation: int
+    state: str
     season: str
+    annual_rainfall: float
+    fertilizer: float
+    pesticide: float
+    area: float
+    n_soil: float = None
+    p_soil: float = None
+    k_soil: float = None
+    temperature: float = None
+    humidity: float = None
+    ph: float = None
     crop: str
 
 class CropRecommendation(BaseModel):
