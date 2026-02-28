@@ -194,5 +194,13 @@
         "ph_min": 6.0,
         "ph_max": 7.5,
         "mandi_commodity": "Wheat"
+    },
+    "mustard": {
+        "season": "Rabi",
+        "traditional_states": ["Rajasthan", "Haryana", "Madhya Pradesh", "Uttar Pradesh", "West Bengal", "Gujarat", "Punjab"],
+        "min_rainfall": 300,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Mustard"
     }
 }

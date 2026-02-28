@@ -3,6 +3,7 @@ import type { PredictionResult, PredictionFormData, CropResult } from '@/types'
 import { ResultChatbot } from '@/components/ResultChatbot'
 import { ProfitCalculator } from '@/components/ProfitCalculator'
 import { CropCalendar } from '@/components/CropCalendar'
+import { SoilRecommendations } from '@/components/SoilRecommendations'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
@@ -12,13 +13,13 @@ interface LocationState {
   formData: PredictionFormData
 }
 
-import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle, Beaker } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
-  const [showCalendar, setShowCalendar] = useState(true)
+  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil'>('calendar')
 
   if (!state?.result) {
     return (
@@ -200,20 +201,27 @@ export function ResultScreen() {
                           </td>
                           <td className="px-4 py-2.5 text-center">
                             <div className="flex items-center justify-center gap-2">
-                              <button 
-                                onClick={() => { setSelectedCropForCalculator(item); setShowCalendar(false); }}
-                                className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && !showCalendar ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                title="Calculate Profit"
-                              >
-                                <Calculator className="h-3.5 w-3.5" />
-                              </button>
-                              <button 
-                                onClick={() => { setSelectedCropForCalculator(item); setShowCalendar(true); }}
-                                className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && showCalendar ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                title="Crop Calendar"
-                              >
-                                <Calendar className="h-3.5 w-3.5" />
-                              </button>
+                                <button 
+                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('profit'); }}
+                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'profit' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                  title="Calculate Profit"
+                                >
+                                  <Calculator className="h-3.5 w-3.5" />
+                                </button>
+                                <button 
+                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('calendar'); }}
+                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'calendar' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                  title="Crop Calendar"
+                                >
+                                  <Calendar className="h-3.5 w-3.5" />
+                                </button>
+                                <button 
+                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('soil'); }}
+                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'soil' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                  title="Soil Health"
+                                >
+                                  <Beaker className="h-3.5 w-3.5" />
+                                </button>
                             </div>
                           </td>
                         </tr>
@@ -235,12 +243,12 @@ export function ResultScreen() {
           {/* Analysis View (Calculator or Calendar) */}
           {selectedCropForCalculator && (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex border-b">
+              <div className="flex border-b overflow-x-auto">
                 <button 
-                  onClick={() => setShowCalendar(false)}
+                  onClick={() => setActiveTab('profit')}
                   className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2",
-                    !showCalendar ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
+                    activeTab === 'profit' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -249,10 +257,10 @@ export function ResultScreen() {
                   </div>
                 </button>
                 <button 
-                  onClick={() => setShowCalendar(true)}
+                  onClick={() => setActiveTab('calendar')}
                   className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2",
-                    showCalendar ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
+                    activeTab === 'calendar' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -260,20 +268,42 @@ export function ResultScreen() {
                     Crop Calendar
                   </div>
                 </button>
+                <button 
+                  onClick={() => setActiveTab('soil')}
+                  className={cn(
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
+                    activeTab === 'soil' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Beaker className="h-3 w-3" />
+                    Soil Health
+                  </div>
+                </button>
               </div>
 
-              {showCalendar ? (
+              {activeTab === 'calendar' ? (
                 <CropCalendar 
                   cropName={selectedCropForCalculator.crop}
                   season={formData.season}
                 />
-              ) : (
+              ) : activeTab === 'profit' ? (
                 <ProfitCalculator
                   key={selectedCropForCalculator.crop}
                   initialCropName={selectedCropForCalculator.crop}
                   initialYield={selectedCropForCalculator.predicted_yield}
                   initialArea={formData.area}
                   initialMandiPrice={selectedCropForCalculator.avg_price}
+                />
+              ) : (
+                <SoilRecommendations
+                  currentSoil={{
+                    n: formData.n_soil || 50,
+                    p: formData.p_soil || 50,
+                    k: formData.k_soil || 50,
+                    ph: formData.ph || 6.5
+                  }}
+                  targetCrop={selectedCropForCalculator.crop}
                 />
               )}
             </div>

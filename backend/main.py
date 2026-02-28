@@ -111,19 +111,30 @@ def predict(data: PredictionInput):
         }
 
         # Step 1 — crop recommendations
-        # Increase n slightly before filtering to ensure we have enough results after seasonal exclusion
-        top_crops = crop_recommender.predict_top_n(base_features, n=top_n * 2)
+        # Increase n significantly to 25 (max classes) to ensure we find seasonal/traditional matches
+        # even if current soil conditions (like pH) favor other crops in the raw classifier.
+        top_crops = crop_recommender.predict_top_n(base_features, n=25)
 
         results = []
+        user_season = input_dict.get('season', 'Whole Year')
+
         for item in top_crops:
             crop = item["crop"]
 
             # Filter by season (Kharif/Rabi/Whole Year)
             crop_season = price_predictor.get_crop_season(crop)
-            user_season = input_dict.get('season', 'Whole Year')
             
-            # If user specifies a season, only show crops for that season or year-round crops
-            if user_season != "Whole Year" and crop_season != "Whole Year" and crop_season != user_season:
+            # Step 1.1 — Suitability check (needed early for seasonal filtering)
+            suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
+
+            # Strict Seasonal Filtering:
+            # 1. If user picks a specific season (Rabi/Kharif), exclude crops from the opposite season.
+            if user_season in ["Rabi", "Kharif"] and crop_season in ["Rabi", "Kharif"] and crop_season != user_season:
+                continue
+            
+            # 2. If user picks a specific season, only allow "Whole Year" crops if they are Traditional or Common.
+            # This prevents "Coconut" or "Coffee" (Whole Year) from showing in Punjab Rabi (Rare).
+            if user_season != "Whole Year" and crop_season == "Whole Year" and suitability == "rare":
                 continue
 
             # Step 2 — yield prediction for this crop
@@ -145,13 +156,12 @@ def predict(data: PredictionInput):
             if env_score < 0.05:
                 continue
 
-            # Step 4.1 — Suitability check (Stable Regional Tag)
-            suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
-
             # Step 5 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
-            # Apply environmental penalty to expected revenue.
-            # We use env_score^2 to penalize unsuitable crops more aggressively in the ranking.
-            expected_revenue = predicted_yield * input_dict['area'] * 10 * avg_price * (env_score ** 2)
+            # Apply environmental penalty. 
+            # Soften penalty for traditional crops: use env_score instead of env_score^2
+            # This acknowledges that farmers can fix soil (pH/nutrients) for their staple crops.
+            penalty = env_score if suitability == "traditional" else (env_score ** 2)
+            expected_revenue = predicted_yield * input_dict['area'] * 10 * avg_price * penalty
 
             results.append(CropResult(
                 crop=crop,
@@ -160,15 +170,12 @@ def predict(data: PredictionInput):
                 expected_revenue=round(expected_revenue, 2),
                 suitability=suitability,
             ))
-            
-            if len(results) >= top_n:
-                break
 
         # Balanced Ranking: Suitability weighting revenue
-        # Increase traditional weight to 2.0 to strongly favor local staples.
-        suitability_map = {"traditional": 2.0, "common": 1.2, "rare": 0.5}
+        # Boost traditional crops even more (3.0x) to ensure they show up as top picks.
+        suitability_map = {"traditional": 3.0, "common": 1.5, "rare": 0.5}
         results.sort(key=lambda x: suitability_map.get(x.suitability, 0) * x.expected_revenue, reverse=True)
-        return PredictionOutput(recommendations=results)
+        return PredictionOutput(recommendations=results[:top_n])
 
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
