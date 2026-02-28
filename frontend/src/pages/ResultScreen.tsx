@@ -1,17 +1,20 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import type { PredictionResult, PredictionFormData } from '@/types'
+import type { PredictionResult, PredictionFormData, CropResult } from '@/types'
 import { ResultChatbot } from '@/components/ResultChatbot'
+import { ProfitCalculator } from '@/components/ProfitCalculator'
+import { useState } from 'react'
 
 interface LocationState {
   result: PredictionResult
   formData: PredictionFormData
 }
 
-import { AlertTriangle, CheckCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Calculator } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
+  const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
 
   if (!state?.result) {
     return (
@@ -32,8 +35,13 @@ export function ResultScreen() {
   const { recommendations } = result
   const top = recommendations[0]
 
+  // Initialize selected crop if none selected
+  if (!selectedCropForCalculator && top) {
+    setSelectedCropForCalculator(top);
+  }
+
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="rounded-2xl border bg-card p-8 shadow-sm">
         <h2 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
           Crop recommendations
@@ -45,7 +53,7 @@ export function ResultScreen() {
           </span>
         </p>
 
-        <div className="space-y-6">
+        <div className="space-y-10">
 
           {/* Top pick highlight */}
           {top && (
@@ -94,8 +102,9 @@ export function ResultScreen() {
                     <th className="px-4 py-2.5 font-medium">#</th>
                     <th className="px-4 py-2.5 font-medium">Crop</th>
                     <th className="px-4 py-2.5 font-medium text-right">Yield (t/ha)</th>
-                    <th className="px-4 py-2.5 font-medium text-right">Mandi price (₹/q)</th>
+                    <th className="px-4 py-2.5 font-medium text-right text-nowrap">Mandi price (₹/q)</th>
                     <th className="px-4 py-2.5 font-medium text-right">Revenue (₹)</th>
+                    <th className="px-4 py-2.5 font-medium text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -107,12 +116,12 @@ export function ResultScreen() {
                     return (
                       <tr
                         key={item.crop}
-                        className={`border-b last:border-0 ${i === 0 ? 'bg-green-500/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
+                        className={`border-b last:border-0 ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
                       >
                         <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
                         <td className="px-4 py-2.5 font-medium text-foreground">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span>{item.crop}</span>
+                            <span className="capitalize">{item.crop}</span>
                             {item.suitability === 'rare' && (
                               <span className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
                                 <AlertTriangle className="mr-0.5 h-3 w-3" />
@@ -133,19 +142,28 @@ export function ResultScreen() {
                             )}
                             {hasHigherRevenueThanBetterRank && (
                               <span className="inline-flex items-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800/50 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                                Higher revenue but ranked lower due to suitability
+                                Higher revenue but ranked lower
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="px-4 py-2.5 text-right">
-                          {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 1 })}
                         </td>
                         <td className="px-4 py-2.5 text-right">
                           {item.avg_price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </td>
                         <td className="px-4 py-2.5 text-right font-medium text-green-700 dark:text-green-400">
                           ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          <button 
+                            onClick={() => setSelectedCropForCalculator(item)}
+                            className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'}`}
+                            title="Calculate Profit"
+                          >
+                            <Calculator className="h-4 w-4" />
+                          </button>
                         </td>
                       </tr>
                     );
@@ -155,34 +173,48 @@ export function ResultScreen() {
             </div>
           )}
 
+          {/* Profit Calculator Section */}
+          {selectedCropForCalculator && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary uppercase tracking-wider">
+                <Calculator className="h-4 w-4" />
+                <span>Profit Analysis</span>
+              </div>
+              <ProfitCalculator
+                key={selectedCropForCalculator.crop}
+                initialCropName={selectedCropForCalculator.crop}
+                initialYield={selectedCropForCalculator.predicted_yield}
+                initialArea={formData.area}
+                initialMandiPrice={selectedCropForCalculator.avg_price}
+              />
+            </div>
+          )}
+
           {/* Input summary */}
-          <div className="rounded-lg border p-4">
-            <p className="mb-3 text-sm font-medium text-foreground">Your inputs</p>
-            <ul className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-              <li>State: {formData.state}</li>
-              <li>Season: {formData.season}</li>
-              <li>Annual rainfall: {formData.annual_rainfall} mm</li>
-              <li>Area: {formData.area} ha</li>
-              <li>Fertilizer: {formData.fertilizer} kg</li>
-              <li>Pesticide: {formData.pesticide} kg</li>
-              {formData.temperature != null && <li>Temperature: {formData.temperature} °C</li>}
-              {formData.humidity != null && <li>Humidity: {formData.humidity}%</li>}
-              {formData.ph != null && <li>Soil pH: {formData.ph}</li>}
-              {formData.n_soil != null && <li>N: {formData.n_soil}</li>}
-              {formData.p_soil != null && <li>P: {formData.p_soil}</li>}
-              {formData.k_soil != null && <li>K: {formData.k_soil}</li>}
+          <div className="rounded-lg border p-4 bg-muted/20">
+            <p className="mb-3 text-sm font-medium text-foreground">Your farm configuration</p>
+            <ul className="grid gap-x-8 gap-y-1.5 text-xs text-muted-foreground sm:grid-cols-2">
+              <li className="flex justify-between border-b border-muted py-1"><span>State:</span> <span className="font-medium text-foreground">{formData.state}</span></li>
+              <li className="flex justify-between border-b border-muted py-1"><span>Season:</span> <span className="font-medium text-foreground">{formData.season}</span></li>
+              <li className="flex justify-between border-b border-muted py-1"><span>Annual rainfall:</span> <span className="font-medium text-foreground">{formData.annual_rainfall} mm</span></li>
+              <li className="flex justify-between border-b border-muted py-1"><span>Area:</span> <span className="font-medium text-foreground">{formData.area} ha</span></li>
+              <li className="flex justify-between border-b border-muted py-1"><span>Fertilizer:</span> <span className="font-medium text-foreground">{formData.fertilizer} kg</span></li>
+              <li className="flex justify-between border-b border-muted py-1"><span>Pesticide:</span> <span className="font-medium text-foreground">{formData.pesticide} kg</span></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex justify-between items-center">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all shadow-sm"
           >
             New prediction
           </button>
+          <span className="text-[10px] text-muted-foreground italic">
+            * Data based on historical Mandi prices & Kaggle Crop dataset.
+          </span>
         </div>
       </div>
 
