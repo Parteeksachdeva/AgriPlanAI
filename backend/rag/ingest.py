@@ -1,8 +1,13 @@
 import os
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
 from langchain_chroma import Chroma
+import boto3
+from langchain_aws import BedrockEmbeddings
+from dotenv import load_dotenv
+
+# Load AWS credentials from .env
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS_DIR = os.path.join(BASE_DIR, "docs")
@@ -36,14 +41,15 @@ def ingest_documents():
 
     print(f"Loaded {len(documents)} documents. Splitting into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=100
+        chunk_size=400,
+        chunk_overlap=50
     )
     chunks = text_splitter.split_documents(documents)
     print(f"Split into {len(chunks)} chunks.")
 
-    print("Initializing embeddings and creating Chroma DB...")
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    print("Initializing AWS Bedrock embeddings and creating Chroma DB...")
+    bedrock_client = boto3.client(service_name="bedrock-runtime", region_name="us-east-1")
+    embeddings = BedrockEmbeddings(client=bedrock_client, model_id="cohere.embed-multilingual-v3")
     
     # Store in Chroma DB
     Chroma.from_documents(

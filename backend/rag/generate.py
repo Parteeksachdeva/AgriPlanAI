@@ -1,9 +1,14 @@
-from langchain_community.llms import Ollama
+import boto3
+from langchain_aws import ChatBedrock
 from langchain_core.prompts import PromptTemplate
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def generate_answer(question: str, context: str) -> str:
-    # Use Llama3 as the language model
-    llm = Ollama(model="llama3")
+    # Use Anthropic Claude 3 Haiku via AWS Bedrock
+    bedrock_client = boto3.client(service_name="bedrock-runtime", region_name="us-east-1")
+    llm = ChatBedrock(client=bedrock_client, model_id="anthropic.claude-3-haiku-20240307-v1:0")
     
     # Define a prompt template that strictly limits response to context and supports multilingual queries
     template = """You are an agricultural expert AI assistant.
@@ -33,4 +38,4 @@ Answer:"""
         "question": question
     })
     
-    return response
+    return response.content

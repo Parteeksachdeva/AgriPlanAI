@@ -9,3 +9,7 @@ langchain-community
 langchain-chroma
 chromadb
 pypdf
+pdfplumber
+boto3
+langchain-aws
+python-dotenv

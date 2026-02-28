@@ -44,3 +44,21 @@ export async function submitPrediction(
     }
   }
 }
+
+export async function askChatbot(question: string): Promise<string> {
+  try {
+    const res = await fetch(`${API_BASE}/api/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    })
+    
+    if (!res.ok) throw new Error(`API error: ${res.status}`)
+    
+    const result = await res.json()
+    return result.answer
+  } catch (error) {
+    console.error('Failed to query RAG backend API:', error)
+    return "I'm sorry, I'm having trouble connecting to my agricultural knowledge base right now. Please try again later."
+  }
+}

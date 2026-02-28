@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import type { PredictionResult, PredictionFormData } from '@/types'
+import { askChatbot } from '@/api'
 
 interface ChatMessage {
   id: string
@@ -24,7 +25,8 @@ function buildResponse(
 
   // Predicted yield
   if (
-    /predicted? ?yield|yield ?prediction|how much.*yield|what.*yield/.test(q) &&
+    /(my|the|predicted) ?yield|yield ?prediction/.test(q) &&
+    !q.includes('report') &&
     result.predictedYield != null
   ) {
     return `Your predicted yield for **${formData.cropType}** is **${result.predictedYield.toLocaleString(undefined, { maximumFractionDigits: 2 })} tonnes per hectare**.`
@@ -32,7 +34,8 @@ function buildResponse(
 
   // Profit
   if (
-    /profit|expected ?profit|revenue|earning/.test(q) &&
+    /(my|expected) ?profit|my ?revenue|my ?earning/.test(q) &&
+    !q.includes('report') &&
     result.expectedProfit != null
   ) {
     return `For **${formData.cropType}**, the expected profit is **₹${result.expectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })} per hectare**.`
@@ -40,7 +43,8 @@ function buildResponse(
 
   // Best / top crop
   if (
-    /best ?crop|top ?crop|most ?profit|alternative|recommend.*crop|other ?crop/.test(q) &&
+    /(my|best|top|alternative) ?crop|(most|highest) ?profit|recommend.*crop/.test(q) &&
+    !q.includes('report') && !q.includes('disease') &&
     result.top3Crops?.length
   ) {
     const top = result.top3Crops[0]
@@ -54,12 +58,12 @@ function buildResponse(
   }
 
   // Recommendation
-  if (/recommendation|suggestion|advice|what should i do/.test(q) && result.recommendation) {
+  if (/(my|the) ?recommendation|my ?suggestion|what should i do/.test(q) && !q.includes('report') && result.recommendation) {
     return `**Recommendation:** ${result.recommendation}`
   }
 
   // Input summary
-  if (/my ?input|what i ?entered|rainfall|temperature|soil|irrigation|season|crop|historical/.test(q)) {
+  if (/my ?inputs?|what (did )?i ?enter(ed)?|input ?summary|show ?me ?my ?data/.test(q)) {
     const parts: string[] = [
       `Rainfall: ${formData.rainfall} mm`,
       `Average temperature: ${formData.averageTemperature} °C`,
@@ -118,7 +122,7 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   useEffect(scrollToBottom, [messages])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const text = input.trim()
     if (!text || isLoading) return
@@ -133,18 +137,22 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     setInput('')
     setIsLoading(true)
 
-    // Simulate a short delay, then respond from result data
-    setTimeout(() => {
-      const reply = buildResponse(text, result, formData)
-      const assistantMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: reply,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, assistantMsg])
-      setIsLoading(false)
-    }, 400)
+    // First try the built-in quick responses for basic input questions
+    let reply = buildResponse(text, result, formData)
+    
+    // If the mock system returns the default fallback or is unsure, ask the real AI RAG
+    if (reply.includes("I can answer questions about your") || reply.includes("I don't know")) {
+      reply = await askChatbot(text)
+    }
+
+    const assistantMsg: ChatMessage = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: reply,
+      timestamp: new Date(),
+    }
+    setMessages((prev) => [...prev, assistantMsg])
+    setIsLoading(false)
   }
 
   return (
