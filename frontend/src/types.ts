@@ -6,6 +6,12 @@ export interface PredictionFormData {
   season: string;
   cropType: string;
   historicalYield: number;
+  areaHectares?: number;
+  state?: string;
+  district?: string;
+  soilPh?: number;
+  previousCrop?: string;
+  humidityPercent?: number;
 }
 
 export interface CropRecommendation {

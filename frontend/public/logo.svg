@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#15803d"/>
+    </linearGradient>
+    <linearGradient id="grainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#eab308"/>
+      <stop offset="100%" style="stop-color:#a16207"/>
+    </linearGradient>
+  </defs>
+  <!-- Stylized wheat stalk -->
+  <path d="M24 4 L24 40 M20 8 Q24 12 28 8 M18 14 Q24 18 30 14 M20 20 Q24 24 28 20 M22 26 Q24 28 26 26" 
+        stroke="url(#leafGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Grain head -->
+  <ellipse cx="24" cy="6" rx="6" ry="3" fill="url(#grainGrad)"/>
+  <circle cx="20" cy="6" r="1.5" fill="#92400e"/>
+  <circle cx="24" cy="5.5" r="1.5" fill="#92400e"/>
+  <circle cx="28" cy="6" r="1.5" fill="#92400e"/>
+  <!-- Small AI / data node accent -->
+  <circle cx="38" cy="38" r="4" fill="none" stroke="#22c55e" stroke-width="1.5"/>
+  <path d="M36 38 L38 36 M38 36 L40 38 M40 38 L38 40 M38 40 L36 38" stroke="#22c55e" stroke-width="1" fill="none"/>
+</svg>

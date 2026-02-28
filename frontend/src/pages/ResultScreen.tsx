@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import type { PredictionResult, PredictionFormData } from '@/types'
+import { ResultChatbot } from '@/components/ResultChatbot'
 
 interface LocationState {
   result: PredictionResult
@@ -111,6 +112,12 @@ export function ResultScreen() {
               <li>Season: {formData.season}</li>
               <li>Crop: {formData.cropType}</li>
               <li>Historical yield: {formData.historicalYield} kg/ha</li>
+              {'areaHectares' in formData && formData.areaHectares != null && <li>Area: {formData.areaHectares} ha</li>}
+              {'state' in formData && formData.state && <li>State: {formData.state}</li>}
+              {'district' in formData && formData.district && <li>District: {formData.district}</li>}
+              {'soilPh' in formData && formData.soilPh != null && <li>Soil pH: {formData.soilPh}</li>}
+              {'previousCrop' in formData && formData.previousCrop && <li>Previous crop: {formData.previousCrop}</li>}
+              {'humidityPercent' in formData && formData.humidityPercent != null && <li>Humidity: {formData.humidityPercent}%</li>}
             </ul>
           </div>
         </div>
@@ -125,6 +132,8 @@ export function ResultScreen() {
           </button>
         </div>
       </div>
+
+      <ResultChatbot result={result} formData={formData} />
     </div>
   )
 }
