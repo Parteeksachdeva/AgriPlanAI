@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 from model import CropYieldModel
 from contextlib import asynccontextmanager
 import os
@@ -24,9 +25,17 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Crop Yield Recommendation System", lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class PredictionInput(BaseModel):
     rainfall: float
-    temperature: float
+    temperature: float = Field(None, alias="averageTemperature")
     soil_type: str
     irrigation: int
     season: str
