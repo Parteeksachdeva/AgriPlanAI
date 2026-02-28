@@ -119,6 +119,12 @@ export function ResultScreen() {
                                 Rare in {formData.state}
                               </span>
                             )}
+                            {item.suitability === 'traditional' && (
+                              <span className="inline-flex items-center rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                <CheckCircle className="mr-0.5 h-3 w-3" />
+                                Traditionally grown
+                              </span>
+                            )}
                             {item.suitability === 'common' && (
                               <span className="inline-flex items-center rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                                 <CheckCircle className="mr-0.5 h-3 w-3" />

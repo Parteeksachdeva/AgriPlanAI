@@ -26,6 +26,13 @@ print("All models ready.\n")
 
 scenarios = [
     {
+        "name": "0. Punjab User Scenario (Kharif)",
+        "inputs": {
+            "state": "Punjab", "season": "Kharif", "n_soil": 80, "p_soil": 50, "k_soil": 40,
+            "temperature": 25, "humidity": 70, "ph": 6.5, "annual_rainfall": 800, "area": 1.0
+        }
+    },
+    {
         "name": "1. Punjab Wheat Belt (Rabi)",
         "inputs": {
             "state": "Punjab", "season": "Rabi", "n_soil": 80, "p_soil": 60, "k_soil": 40,
@@ -62,8 +69,8 @@ scenarios = [
     }
 ]
 
-def run_test(scenario):
-    print(f"=== {scenario['name']} ===")
+def run_test(scenario, silent=False):
+    if not silent: print(f"=== {scenario['name']} ===")
     data = scenario['inputs']
     top_n = 5
     selected_state = data.get('state', 'Punjab')
@@ -104,7 +111,11 @@ def run_test(scenario):
         suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
 
         # Step 4.1 — Environmental Safety Check
-        env_score = price_predictor.check_environmental_suitability(crop, data.get('annual_rainfall', 0))
+        env_score = price_predictor.check_environmental_suitability(
+            crop, 
+            data.get('annual_rainfall', 0),
+            data.get('ph')
+        )
         if env_score < 0.5:
             continue
 
@@ -122,14 +133,30 @@ def run_test(scenario):
         if len(results) >= top_n:
             break
 
-    # Sort
-    suitability_map = {"traditional": 2, "common": 1, "rare": 0}
-    results.sort(key=lambda x: (suitability_map.get(x['suitability'], 0), x['expected_revenue']), reverse=True)
+    # Balanced Ranking: Suitability weighting revenue
+    suitability_map = {"traditional": 1.5, "common": 1.2, "rare": 0.8}
+    results.sort(key=lambda x: suitability_map.get(x['suitability'], 0) * x['expected_revenue'], reverse=True)
 
-    for i, res in enumerate(results):
-        print(f"{i+1}. {res['crop']:12s} | Suit: {res['suitability']:11s} | Yield: {res['predicted_yield']:6.2f} t/ha | Price: ₹{res['avg_price']:8.2f}/q | Rev: ₹{res['expected_revenue']:10.2f}")
-    print("\n")
+    if not silent:
+        for i, res in enumerate(results):
+            print(f"{i+1}. {res['crop']:12s} | Suit: {res['suitability']:11s} | Yield: {res['predicted_yield']:6.2f} t/ha | Price: ₹{res['avg_price']:8.2f}/q | Rev: ₹{res['expected_revenue']:10.2f}")
+        print("\n")
+    return results
 
 if __name__ == "__main__":
+    print("=== Reproducibility Check ===")
+    s = scenarios[0]
+    res1 = run_test(s, silent=True)
+    res2 = run_test(s, silent=True)
+    
+    match = True
+    for c1, c2 in zip(res1, res2):
+        if c1['avg_price'] != c2['avg_price']:
+            print(f"❌ Price mismatch for {c1['crop']}: {c1['avg_price']} != {c2['avg_price']}")
+            match = False
+    
+    if match:
+        print("✅ Mandi prices are 100% stable for identical inputs.\n")
+
     for s in scenarios:
         run_test(s)

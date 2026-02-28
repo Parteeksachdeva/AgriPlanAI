@@ -238,39 +238,46 @@ class PricePredictionModel:
         print(f"Model 2 trained — price regressor ({len(self.suitability_set)} state-crop pairs).")
 
     def get_commodity_mapping(self, crop: str) -> str:
-        """Scalable fuzzy matching to link model crops to mandi commodities."""
+        """Scalable mapping to link model crops to mandi commodities."""
+        crop_lower = crop.lower()
+        if crop_lower in self.crop_metadata:
+            meta = self.crop_metadata[crop_lower]
+            if isinstance(meta, dict) and "mandi_commodity" in meta:
+                return meta["mandi_commodity"]
+
         if not self.commodities:
             return None
-        # Use fuzzy matching to find the best commodity name
-        # score_cutoff helps avoid wildly incorrect matches
+        # Use fuzzy matching as fallback
         match, score = process.extractOne(crop, self.commodities, score_cutoff=60) or (None, 0)
         return match
 
     def get_suitability(self, state: str, crop: str) -> str:
-        """Determines the suitability tier for a crop in the given state."""
+        """
+        Determines the suitability tier for a crop in the given state.
+        Labels (traditional/common/rare) are stable regional tags based on historical records.
+        """
         crop_lower = crop.lower()
         
+        tier = "rare"
+
         # 1. Check rich metadata first
         if crop_lower in self.crop_metadata:
             meta = self.crop_metadata[crop_lower]
             if isinstance(meta, dict) and state in meta.get("traditional_states", []):
-                return "traditional"
+                tier = "traditional"
+            else:
+                # 2. Fallback to historical Mandi trading records
+                commodity = self.get_commodity_mapping(crop)
+                if commodity and (state, commodity) in self.suitability_set:
+                    tier = "common"
 
-        # 2. Fallback to historical Mandi trading records
-        commodity = self.get_commodity_mapping(crop)
-        if not commodity:
-            return "rare"
+        return tier
 
-        if (state, commodity) in self.suitability_set:
-            return "common"
-
-        return "rare"
-
-    def check_environmental_suitability(self, crop: str, rainfall: float) -> float:
+    def check_environmental_suitability(self, crop: str, rainfall: float, ph: float = None) -> float:
         """
         Returns a penalty score (0.0 to 1.0) based on environmental factors.
         1.0 means perfectly suitable, < 1.0 means penalty.
-        Currently focuses on rainfall requirements.
+        Checks: Rainfall (min/max), pH range.
         """
         crop_lower = crop.lower()
         if crop_lower not in self.crop_metadata:
@@ -280,16 +287,39 @@ class PricePredictionModel:
         if not isinstance(meta, dict):
             return 1.0
             
+        score = 1.0
+
+        # 1. Rainfall Constraints
         min_rf = meta.get("min_rainfall", 0)
+        max_rf = meta.get("max_rainfall", float('inf'))
+
         if rainfall < min_rf:
-            # Steep penalty if rainfall is way below requirement
-            # e.g., if rice (1000mm) is grown in 300mm: 300/1000 = 0.3
+            # Gentler penalty for rainfall deficit
             ratio = rainfall / min_rf
-            if ratio < 0.5:
-                return 0.1 # Severe penalty
-            return ratio
-            
-        return 1.0
+            if ratio < 0.4:
+                score *= 0.2 # Increased floor
+            else:
+                score *= (0.5 + 0.5 * ratio)
+        elif rainfall > max_rf:
+            # Gentler penalty for high rainfall
+            excess_ratio = rainfall / max_rf
+            if excess_ratio > 2.0:
+                score *= 0.2 # Increased floor
+            else:
+                # Linear drop from 1.0 to 0.2 as excess_ratio goes from 1.0 to 2.0
+                score *= max(0.2, 1.0 - 0.8 * (excess_ratio - 1.0))
+
+        # 2. pH Constraints
+        if ph is not None:
+            ph_min = meta.get("ph_min", 0)
+            ph_max = meta.get("ph_max", 14)
+            if ph < ph_min or ph > ph_max:
+                dist = min(abs(ph - ph_min), abs(ph - ph_max))
+                # Soften: 0.2 floor at 1.5 units away
+                # score drops from 1.0 to 0.2 as dist goes from 0 to 1.5
+                score *= max(0.1, 1.0 - (0.6 * dist))
+
+        return max(0.1, score)
 
     def predict(self, state: str, crop: str) -> float:
         """

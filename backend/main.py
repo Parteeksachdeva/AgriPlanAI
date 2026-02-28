@@ -134,20 +134,24 @@ def predict(data: PredictionInput):
                 state=selected_state, crop=crop
             )
 
-            # Step 4 — Suitability check
-            suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
-
-            # Step 4.1 — Environmental Safety Check (Rainfall, etc.)
-            env_score = price_predictor.check_environmental_suitability(crop, input_dict.get('annual_rainfall', 0))
+            # Step 4.0 — Environmental Safety Check (Rainfall, pH, etc.)
+            env_score = price_predictor.check_environmental_suitability(
+                crop, 
+                input_dict.get('annual_rainfall', 0),
+                input_dict.get('ph')
+            )
             
             # If environmental score is very low, we skip or heavily penalize
-            # For now, let's skip if it's a severe mismatch (score < 0.5)
-            if env_score < 0.5:
+            if env_score < 0.05:
                 continue
 
+            # Step 4.1 — Suitability check (Stable Regional Tag)
+            suitability = price_predictor.get_suitability(state=selected_state, crop=crop)
+
             # Step 5 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
-            # Apply environmental penalty to expected revenue if any
-            expected_revenue = predicted_yield * input_dict['area'] * 10 * avg_price * env_score
+            # Apply environmental penalty to expected revenue.
+            # We use env_score^2 to penalize unsuitable crops more aggressively in the ranking.
+            expected_revenue = predicted_yield * input_dict['area'] * 10 * avg_price * (env_score ** 2)
 
             results.append(CropResult(
                 crop=crop,
@@ -160,9 +164,10 @@ def predict(data: PredictionInput):
             if len(results) >= top_n:
                 break
 
-        # Sort by suitability first (traditional > common > rare), then revenue
-        suitability_map = {"traditional": 2, "common": 1, "rare": 0}
-        results.sort(key=lambda x: (suitability_map.get(x.suitability, 0), x.expected_revenue), reverse=True)
+        # Balanced Ranking: Suitability weighting revenue
+        # Increase traditional weight to 2.0 to strongly favor local staples.
+        suitability_map = {"traditional": 2.0, "common": 1.2, "rare": 0.5}
+        results.sort(key=lambda x: suitability_map.get(x.suitability, 0) * x.expected_revenue, reverse=True)
         return PredictionOutput(recommendations=results)
 
     except ValueError as e:

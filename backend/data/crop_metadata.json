@@ -1,117 +1,198 @@
 {
     "rice": {
         "season": "Kharif",
-        "traditional_states": ["West Bengal", "Uttar Pradesh", "Punjab", "Andhra Pradesh", "Tamil Nadu", "Bihar", "Chhattisgarh", "Odisha", "Assam"],
-        "min_rainfall": 1000
+        "traditional_states": ["West Bengal", "Uttar Pradesh", "Punjab", "Andhra Pradesh", "Tamil Nadu", "Bihar", "Chhattisgarh", "Odisha", "Assam", "Kerala"],
+        "min_rainfall": 1000,
+        "ph_min": 5.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Paddy(Common)"
     },
     "maize": {
         "season": "Kharif",
-        "traditional_states": ["Karnataka", "Madhya Pradesh", "Maharashtra", "Rajasthan", "Bihar", "Telangana", "Uttar Pradesh"],
-        "min_rainfall": 500
+        "traditional_states": ["Karnataka", "Madhya Pradesh", "Maharashtra", "Rajasthan", "Bihar", "Telangana", "Uttar Pradesh", "Punjab", "Haryana"],
+        "min_rainfall": 500,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Maize"
     },
     "chickpea": {
         "season": "Rabi",
         "traditional_states": ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Karnataka", "Uttar Pradesh", "Andhra Pradesh"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 6.0,
+        "ph_max": 9.0,
+        "mandi_commodity": "Bengal Gram(Gram)(Whole)"
     },
     "kidneybeans": {
         "season": "Rabi",
         "traditional_states": ["Maharashtra", "Karnataka", "Uttar Pradesh"],
-        "min_rainfall": 600
+        "min_rainfall": 600,
+        "ph_min": 5.5,
+        "ph_max": 8.0,
+        "mandi_commodity": "Beans"
     },
     "pigeonpeas": {
         "season": "Kharif",
         "traditional_states": ["Maharashtra", "Karnataka", "Madhya Pradesh", "Uttar Pradesh", "Gujarat", "Telangana"],
-        "min_rainfall": 600
+        "min_rainfall": 600,
+        "ph_min": 5.0,
+        "ph_max": 8.5,
+        "mandi_commodity": "Arhar(Tur/Red Gram)(Whole)"
     },
     "mothbeans": {
         "season": "Kharif",
         "traditional_states": ["Rajasthan", "Maharashtra", "Gujarat"],
-        "min_rainfall": 200
+        "min_rainfall": 200,
+        "max_rainfall": 1000,
+        "ph_min": 5.5,
+        "ph_max": 8.0,
+        "mandi_commodity": "Moth Beans"
     },
     "mungbean": {
         "season": "Kharif",
         "traditional_states": ["Rajasthan", "Maharashtra", "Karnataka", "Andhra Pradesh", "Tamil Nadu"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Green Gram (Moong)(Whole)"
     },
     "blackgram": {
         "season": "Kharif",
         "traditional_states": ["Madhya Pradesh", "Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu", "Maharashtra"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 5.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Black Gram (Urd Beans)(Whole)"
     },
     "lentil": {
         "season": "Rabi",
         "traditional_states": ["Madhya Pradesh", "Uttar Pradesh", "West Bengal", "Bihar"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Lentil (Masur)(Whole)"
     },
     "pomegranate": {
         "season": "Whole Year",
         "traditional_states": ["Maharashtra", "Gujarat", "Karnataka", "Andhra Pradesh"],
-        "min_rainfall": 500
+        "min_rainfall": 500,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Pomegranate"
     },
     "banana": {
         "season": "Whole Year",
-        "traditional_states": ["Tamil Nadu", "Maharashtra", "Gujarat", "Andhra Pradesh", "Karnataka", "Kerala", "Bihar"],
-        "min_rainfall": 1200
+        "traditional_states": ["Tamil Nadu", "Maharashtra", "Gujarat", "Andhra Pradesh", "Karnataka", "Kerala", "Bihar", "Punjab", "Haryana"],
+        "min_rainfall": 1200,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Banana"
     },
     "mango": {
         "season": "Whole Year",
         "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Karnataka", "Bihar", "Gujarat", "Tamil Nadu", "Maharashtra"],
-        "min_rainfall": 750
+        "min_rainfall": 750,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Mango"
     },
     "grapes": {
         "season": "Whole Year",
         "traditional_states": ["Maharashtra", "Karnataka", "Tamil Nadu", "Mizoram"],
-        "min_rainfall": 500
+        "min_rainfall": 500,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Grapes"
     },
     "watermelon": {
         "season": "Whole Year",
         "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu", "Karnataka", "Maharashtra"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Water Melon"
     },
     "muskmelon": {
         "season": "Whole Year",
         "traditional_states": ["Uttar Pradesh", "Andhra Pradesh", "Punjab", "Maharashtra", "Haryana"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 6.0,
+        "ph_max": 7.0,
+        "mandi_commodity": "Musk Melon"
     },
     "apple": {
         "season": "Whole Year",
         "traditional_states": ["Jammu & Kashmir", "Himachal Pradesh", "Uttarakhand"],
-        "min_rainfall": 1000
+        "min_rainfall": 1000,
+        "max_rainfall": 1500,
+        "ph_min": 5.5,
+        "ph_max": 6.5,
+        "mandi_commodity": "Apple"
     },
     "orange": {
         "season": "Whole Year",
-        "traditional_states": ["Maharashtra", "Madhya Pradesh", "Assam", "Rajasthan", "Nagaland"],
-        "min_rainfall": 1000
+        "traditional_states": ["Maharashtra", "Madhya Pradesh", "Assam", "Rajasthan", "Nagaland", "Punjab"],
+        "min_rainfall": 1000,
+        "max_rainfall": 1500,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Orange"
     },
     "papaya": {
         "season": "Whole Year",
         "traditional_states": ["Andhra Pradesh", "Gujarat", "Karnataka", "Maharashtra", "Madhya Pradesh", "Tamil Nadu", "West Bengal", "Kerala"],
-        "min_rainfall": 1000
+        "min_rainfall": 1000,
+        "max_rainfall": 2000,
+        "ph_min": 6.0,
+        "ph_max": 7.0,
+        "mandi_commodity": "Papaya"
     },
     "coconut": {
         "season": "Whole Year",
         "traditional_states": ["Kerala", "Tamil Nadu", "Karnataka", "Andhra Pradesh", "Odisha", "West Bengal", "Gujarat"],
-        "min_rainfall": 1500
+        "min_rainfall": 1500,
+        "ph_min": 5.0,
+        "ph_max": 8.0,
+        "mandi_commodity": "Coconut"
     },
     "cotton": {
         "season": "Kharif",
         "traditional_states": ["Gujarat", "Maharashtra", "Telangana", "Rajasthan", "Karnataka", "Andhra Pradesh", "Haryana", "Madhya Pradesh", "Punjab"],
-        "min_rainfall": 500
+        "min_rainfall": 500,
+        "ph_min": 5.5,
+        "ph_max": 8.5,
+        "mandi_commodity": "Cotton"
     },
     "jute": {
         "season": "Kharif",
         "traditional_states": ["West Bengal", "Bihar", "Assam", "Odisha", "Andhra Pradesh"],
-        "min_rainfall": 1500
+        "min_rainfall": 1500,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Jute"
     },
     "coffee": {
         "season": "Whole Year",
         "traditional_states": ["Karnataka", "Kerala", "Tamil Nadu", "Andhra Pradesh"],
-        "min_rainfall": 1500
+        "min_rainfall": 1500,
+        "ph_min": 5.5,
+        "ph_max": 6.5,
+        "mandi_commodity": "Coffee"
+    },
+    "tea": {
+        "season": "Whole Year",
+        "traditional_states": ["Assam", "West Bengal", "Tamil Nadu", "Kerala", "Himachal Pradesh"],
+        "min_rainfall": 1500,
+        "ph_min": 4.0,
+        "ph_max": 5.5,
+        "mandi_commodity": "Tea"
     },
     "wheat": {
         "season": "Rabi",
         "traditional_states": ["Uttar Pradesh", "Madhya Pradesh", "Punjab", "Haryana", "Rajasthan", "Bihar"],
-        "min_rainfall": 400
+        "min_rainfall": 400,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Wheat"
     }
 }
