@@ -4,55 +4,55 @@ import { useState } from 'react'
 import type { PredictionFormData, PredictionResult } from '@/types'
 import { submitPrediction } from '@/api'
 
-const SOIL_OPTIONS = [
-  'Alluvial',
-  'Black',
-  'Red',
-  'Laterite',
-  'Sandy',
-  'Clay',
-  'Loam',
+const STATE_OPTIONS = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya',
+  'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim',
+  'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand',
+  'West Bengal',
 ]
 
-const SEASON_OPTIONS = ['Kharif', 'Rabi', 'Zaid', 'Summer', 'Winter', 'Monsoon']
+const SEASON_OPTIONS = ['Whole Year', 'Kharif', 'Rabi', 'Autumn', 'Summer', 'Winter']
 
 const CROP_OPTIONS = [
-  'Wheat',
-  'Rice',
-  'Maize',
-  'Cotton',
-  'Sugarcane',
-  'Pulses',
-  'Oilseeds',
-  'Barley',
-  'Millets',
+  'Arecanut', 'Castor seed', 'ChickPea', 'Coconut', 'Cotton',
+  'Dry chillies', 'Jute', 'Linseed', 'Maize', 'Mesta', 'Niger seed',
+  'Onion', 'Potato', 'PigeonPeas', 'Rapeseed &Mustard', 'Rice',
+  'Sesamum', 'Small millets', 'Sugarcane', 'Sweet potato', 'Tapioca',
+  'Tobacco', 'Turmeric', 'Wheat',
 ]
+
+const inputClass =
+  'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+const labelClass = 'text-sm font-medium leading-none text-foreground'
 
 export function FormScreen() {
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showOptional, setShowOptional] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   const { register, handleSubmit } = useForm<PredictionFormData>({
     defaultValues: {
-      rainfall: 800,
-      averageTemperature: 28,
-      soilType: 'Alluvial',
-      irrigation: 'No',
+      state: 'Punjab',
       season: 'Kharif',
-      cropType: 'Rice',
-      historicalYield: 3500,
+      annual_rainfall: 649,
+      fertilizer: 50000,
+      pesticide: 163,
+      area: 500,
+      crop: 'Wheat',
     },
   })
 
   async function onSubmit(data: PredictionFormData) {
     setIsSubmitting(true)
+    setError(null)
     try {
-      const result: PredictionResult = await submitPrediction({
-        ...data,
-        rainfall: Number(data.rainfall),
-        averageTemperature: Number(data.averageTemperature),
-        historicalYield: Number(data.historicalYield),
-      })
+      const result: PredictionResult = await submitPrediction(data)
       navigate('/result', { state: { result, formData: data } })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Prediction failed. Is the backend running?')
     } finally {
       setIsSubmitting(false)
     }
@@ -65,150 +65,191 @@ export function FormScreen() {
           Yield prediction
         </h2>
         <p className="mb-8 text-muted-foreground">
-          Enter farm and weather details. Our AI model will predict yield and suggest actions.
+          Enter farm and location details. Our AI model will predict yield and suggest the most profitable crops.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+          {/* State + Season */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label
-                htmlFor="rainfall"
-                className="text-sm font-medium leading-none text-foreground"
-              >
-                Rainfall (mm)
+              <label htmlFor="state" className={labelClass}>State</label>
+              <select id="state" className={inputClass} {...register('state')}>
+                {STATE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="season" className={labelClass}>Season</label>
+              <select id="season" className={inputClass} {...register('season')}>
+                {SEASON_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Rainfall + Area */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label htmlFor="annual_rainfall" className={labelClass}>
+                Annual rainfall (mm)
               </label>
               <input
-                id="rainfall"
+                id="annual_rainfall"
                 type="number"
                 step="any"
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className={inputClass}
                 placeholder="e.g. 800"
-                {...register('rainfall', { valueAsNumber: true })}
+                {...register('annual_rainfall', { valueAsNumber: true })}
               />
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="averageTemperature"
-                className="text-sm font-medium leading-none text-foreground"
-              >
-                Average temperature (°C)
+              <label htmlFor="area" className={labelClass}>
+                Area (hectares)
               </label>
               <input
-                id="averageTemperature"
+                id="area"
                 type="number"
                 step="any"
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                placeholder="e.g. 28"
-                {...register('averageTemperature', { valueAsNumber: true })}
+                className={inputClass}
+                placeholder="e.g. 500"
+                {...register('area', { valueAsNumber: true })}
               />
             </div>
           </div>
 
+          {/* Fertilizer + Pesticide */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label htmlFor="fertilizer" className={labelClass}>
+                Fertilizer used (kg)
+              </label>
+              <input
+                id="fertilizer"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="e.g. 50000"
+                {...register('fertilizer', { valueAsNumber: true })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="pesticide" className={labelClass}>
+                Pesticide used (kg)
+              </label>
+              <input
+                id="pesticide"
+                type="number"
+                step="any"
+                className={inputClass}
+                placeholder="e.g. 163"
+                {...register('pesticide', { valueAsNumber: true })}
+              />
+            </div>
+          </div>
+
+          {/* Crop */}
           <div className="space-y-2">
-            <label
-              htmlFor="soilType"
-              className="text-sm font-medium leading-none text-foreground"
-            >
-              Soil type
-            </label>
-            <select
-              id="soilType"
-              className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              {...register('soilType')}
-            >
-              {SOIL_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
+            <label htmlFor="crop" className={labelClass}>Crop</label>
+            <select id="crop" className={inputClass} {...register('crop')}>
+              {CROP_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium leading-none text-foreground">
-              Irrigation
-            </label>
-            <div className="flex gap-6">
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  value="Yes"
-                  className="h-4 w-4 border-input text-primary focus:ring-ring"
-                  {...register('irrigation')}
-                />
-                <span className="text-sm">Yes</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  value="No"
-                  className="h-4 w-4 border-input text-primary focus:ring-ring"
-                  {...register('irrigation')}
-                />
-                <span className="text-sm">No</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label
-                htmlFor="season"
-                className="text-sm font-medium leading-none text-foreground"
-              >
-                Season
-              </label>
-              <select
-                id="season"
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                {...register('season')}
-              >
-                {SEASON_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="cropType"
-                className="text-sm font-medium leading-none text-foreground"
-              >
-                Crop type
-              </label>
-              <select
-                id="cropType"
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                {...register('cropType')}
-              >
-                {CROP_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="historicalYield"
-              className="text-sm font-medium leading-none text-foreground"
+          {/* Optional soil / weather */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowOptional((v) => !v)}
+              className="text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
-              Historical yield (kg/ha)
-            </label>
-            <input
-              id="historicalYield"
-              type="number"
-              step="any"
-              className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 sm:max-w-xs"
-              placeholder="e.g. 3500"
-              {...register('historicalYield', { valueAsNumber: true })}
-            />
+              {showOptional ? '− Hide' : '+ Add'} soil &amp; weather details (optional)
+            </button>
+
+            {showOptional && (
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <label htmlFor="temperature" className={labelClass}>Temperature (°C)</label>
+                  <input
+                    id="temperature"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 28"
+                    {...register('temperature', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="humidity" className={labelClass}>Humidity (%)</label>
+                  <input
+                    id="humidity"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 65"
+                    {...register('humidity', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="ph" className={labelClass}>Soil pH</label>
+                  <input
+                    id="ph"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 6.5"
+                    {...register('ph', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="n_soil" className={labelClass}>Nitrogen (N)</label>
+                  <input
+                    id="n_soil"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 80"
+                    {...register('n_soil', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="p_soil" className={labelClass}>Phosphorus (P)</label>
+                  <input
+                    id="p_soil"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 47"
+                    {...register('p_soil', { valueAsNumber: true })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="k_soil" className={labelClass}>Potassium (K)</label>
+                  <input
+                    id="k_soil"
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="e.g. 40"
+                    {...register('k_soil', { valueAsNumber: true })}
+                  />
+                </div>
+              </div>
+            )}
           </div>
+
+          {error && (
+            <p className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          )}
 
           <div className="pt-4">
             <button

@@ -105,19 +105,19 @@ export function ResultScreen() {
               Summary of your inputs
             </p>
             <ul className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-              <li>Rainfall: {formData.rainfall} mm</li>
-              <li>Avg temp: {formData.averageTemperature} °C</li>
-              <li>Soil: {formData.soilType}</li>
-              <li>Irrigation: {formData.irrigation}</li>
+              <li>State: {formData.state}</li>
               <li>Season: {formData.season}</li>
-              <li>Crop: {formData.cropType}</li>
-              <li>Historical yield: {formData.historicalYield} kg/ha</li>
-              {'areaHectares' in formData && formData.areaHectares != null && <li>Area: {formData.areaHectares} ha</li>}
-              {'state' in formData && formData.state && <li>State: {formData.state}</li>}
-              {'district' in formData && formData.district && <li>District: {formData.district}</li>}
-              {'soilPh' in formData && formData.soilPh != null && <li>Soil pH: {formData.soilPh}</li>}
-              {'previousCrop' in formData && formData.previousCrop && <li>Previous crop: {formData.previousCrop}</li>}
-              {'humidityPercent' in formData && formData.humidityPercent != null && <li>Humidity: {formData.humidityPercent}%</li>}
+              <li>Crop: {formData.crop}</li>
+              <li>Annual rainfall: {formData.annual_rainfall} mm</li>
+              <li>Area: {formData.area} ha</li>
+              <li>Fertilizer: {formData.fertilizer} kg</li>
+              <li>Pesticide: {formData.pesticide} kg</li>
+              {formData.temperature != null && <li>Temperature: {formData.temperature} °C</li>}
+              {formData.humidity != null && <li>Humidity: {formData.humidity}%</li>}
+              {formData.ph != null && <li>Soil pH: {formData.ph}</li>}
+              {formData.n_soil != null && <li>N: {formData.n_soil}</li>}
+              {formData.p_soil != null && <li>P: {formData.p_soil}</li>}
+              {formData.k_soil != null && <li>K: {formData.k_soil}</li>}
             </ul>
           </div>
         </div>

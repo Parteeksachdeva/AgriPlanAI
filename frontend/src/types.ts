@@ -1,17 +1,18 @@
 export interface PredictionFormData {
-  rainfall: number;
-  averageTemperature: number;
-  soilType: string;
-  irrigation: "Yes" | "No";
+  state: string;
   season: string;
-  cropType: string;
-  historicalYield: number;
-  areaHectares?: number;
-  state?: string;
-  district?: string;
-  soilPh?: number;
-  previousCrop?: string;
-  humidityPercent?: number;
+  annual_rainfall: number;
+  fertilizer: number;
+  pesticide: number;
+  area: number;
+  crop: string;
+  // optional soil / weather
+  n_soil?: number | null;
+  p_soil?: number | null;
+  k_soil?: number | null;
+  temperature?: number | null;
+  humidity?: number | null;
+  ph?: number | null;
 }
 
 export interface CropRecommendation {
