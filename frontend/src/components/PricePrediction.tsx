@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { formatIndianNumber } from '../lib/utils';
-import { TrendingUp, TrendingDown, Minus, AlertCircle, Calendar, DollarSign, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, AlertCircle, Calendar, DollarSign, Activity, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Mapping from crop keys to mandi commodity names used in price data
 const CROP_TO_MANDI_COMMODITY: Record<string, string> = {
-  // Cereals
   rice: 'Paddy(Common)',
   wheat: 'Wheat',
   maize: 'Maize',
-  
-  // Pulses
   chickpea: 'Bengal Gram(Gram)(Whole)',
   kidneybeans: 'Beans',
   pigeonpeas: 'Arhar(Tur/Red Gram)(Whole)',
@@ -17,8 +15,6 @@ const CROP_TO_MANDI_COMMODITY: Record<string, string> = {
   mungbean: 'Green Gram (Moong)(Whole)',
   blackgram: 'Black Gram (Urd Beans)(Whole)',
   lentil: 'Lentil (Masur)(Whole)',
-  
-  // Fruits
   pomegranate: 'Pomegranate',
   banana: 'Banana',
   mango: 'Mango',
@@ -29,19 +25,11 @@ const CROP_TO_MANDI_COMMODITY: Record<string, string> = {
   orange: 'Orange',
   papaya: 'Papaya',
   coconut: 'Coconut',
-  
-  // Cash Crops
   cotton: 'Cotton',
   jute: 'Jute',
-  
-  // Plantation
   coffee: 'Coffee',
   tea: 'Tea',
-  
-  // Oilseeds
   mustard: 'Mustard',
-  
-  // Vegetables
   tomato: 'Tomato',
   onion: 'Onion',
   potato: 'Potato',
@@ -101,7 +89,6 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
   const [error, setError] = useState<string | null>(null);
   const [daysAhead, setDaysAhead] = useState(7);
 
-  // Map crop key to mandi commodity name
   const mandiCommodity = CROP_TO_MANDI_COMMODITY[commodity.toLowerCase()] || commodity;
 
   useEffect(() => {
@@ -146,147 +133,144 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
     }
   };
 
-  const getRecommendationColor = (recommendation: string) => {
+  const getRecommendationStyle = (recommendation: string) => {
     switch (recommendation) {
       case 'SELL_NOW':
       case 'SELL_SOON':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return { bg: 'bg-rose-500', light: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', icon: TrendingDown };
       case 'WAIT':
       case 'HOLD':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return { bg: 'bg-emerald-500', light: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: TrendingUp };
       default:
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return { bg: 'bg-amber-500', light: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: Minus };
     }
   };
 
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'UP':
-        return <TrendingUp className="h-5 w-5 text-green-600" />;
-      case 'DOWN':
-        return <TrendingDown className="h-5 w-5 text-red-600" />;
-      default:
-        return <Minus className="h-5 w-5 text-amber-600" />;
+  const getRecommendationLabel = (recommendation: string) => {
+    switch (recommendation) {
+      case 'SELL_NOW': return 'Sell Immediately';
+      case 'SELL_SOON': return 'Sell Soon';
+      case 'WAIT': return 'Wait for Better Price';
+      case 'HOLD': return 'Hold & Monitor';
+      default: return 'Neutral';
     }
   };
 
   if (loading) {
     return (
-      <div className="rounded-xl border bg-card p-6 animate-pulse">
-        <div className="h-4 bg-muted rounded w-1/3 mb-4"></div>
-        <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
-        <div className="h-4 bg-muted rounded w-2/3"></div>
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-32 bg-gray-100 rounded-2xl animate-pulse" />
+          <div className="h-32 bg-gray-100 rounded-2xl animate-pulse" />
+        </div>
+        <div className="h-48 bg-gray-100 rounded-2xl animate-pulse" />
       </div>
     );
   }
 
   if (error || !prediction) {
     return (
-      <div className="rounded-xl border bg-gradient-to-br from-amber-50 to-orange-50 p-6">
-        <div className="flex items-center gap-2 text-amber-800">
-          <AlertCircle className="h-5 w-5" />
-          <p className="font-medium">Price forecast coming soon!</p>
+      <div className="text-center py-12">
+        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="h-8 w-8 text-amber-500" />
         </div>
-        <p className="text-sm text-amber-700 mt-2">
-          We're currently expanding our mandi price database to include more crops. 
-          Price predictions for {commodity} will be available shortly.
+        <h3 className="text-lg font-semibold text-foreground mb-2">Price data coming soon</h3>
+        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+          We're expanding our mandi price database. Predictions for {commodity} will be available shortly.
         </p>
-        <div className="mt-4 p-3 bg-white rounded-lg border text-sm text-gray-600">
-          <p className="font-medium text-gray-800 mb-1">What this feature will offer:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>7-30 day price forecasts</li>
-            <li>"Sell now" or "Wait" recommendations</li>
-            <li>Price confidence intervals</li>
-            <li>Historical price trends</li>
-          </ul>
-        </div>
       </div>
     );
   }
 
+  const style = getRecommendationStyle(prediction.recommendation);
+  const TrendIcon = style.icon;
+  const isPriceUp = prediction.predicted_price > prediction.current_price;
+
   return (
     <div className="space-y-6">
-      {/* Price Prediction Card */}
-      <div className="rounded-xl border bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-blue-600" />
-            <h4 className="font-bold text-blue-900">Mandi Price Prediction</h4>
+      {/* Header with Time Selector */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Sparkles className="h-5 w-5 text-blue-600" />
           </div>
-          <select
-            value={daysAhead}
-            onChange={(e) => setDaysAhead(Number(e.target.value))}
-            className="text-sm border rounded px-2 py-1 bg-white"
-          >
-            <option value={3}>3 days</option>
-            <option value={7}>7 days</option>
-            <option value={14}>14 days</option>
-            <option value={30}>30 days</option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-xs text-gray-600 uppercase font-medium">Current Price</p>
-            <p className="text-2xl font-bold text-gray-900">₹{formatIndianNumber(prediction.current_price)}</p>
-            <p className="text-xs text-gray-500">per quintal</p>
-          </div>
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-xs text-gray-600 uppercase font-medium">Predicted ({daysAhead} days)</p>
-            <p className={`text-2xl font-bold ${prediction.predicted_price > prediction.current_price ? 'text-green-700' : 'text-red-700'}`}>
-              ₹{formatIndianNumber(prediction.predicted_price)}
-            </p>
-            <p className={`text-xs font-medium ${prediction.price_change_pct > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {prediction.price_change_pct > 0 ? '+' : ''}{prediction.price_change_pct}% expected
-            </p>
+          <div>
+            <h3 className="font-bold text-foreground">AI Price Forecast</h3>
+            <p className="text-xs text-muted-foreground">Based on mandi market trends</p>
           </div>
         </div>
+        <select
+          value={daysAhead}
+          onChange={(e) => setDaysAhead(Number(e.target.value))}
+          className="text-sm border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+        >
+          <option value={3}>Next 3 days</option>
+          <option value={7}>Next 7 days</option>
+          <option value={14}>Next 14 days</option>
+          <option value={30}>Next 30 days</option>
+        </select>
+      </div>
 
-        {/* Confidence Interval */}
-        <div className="bg-white rounded-lg p-4 border mb-4">
-          <p className="text-xs text-gray-600 uppercase font-medium mb-2">Price Range (95% Confidence)</p>
-          <div className="relative h-2 bg-gray-200 rounded-full">
-            <div 
-              className="absolute h-full bg-blue-500 rounded-full"
-              style={{
-                left: `${((prediction.confidence_interval.lower - prediction.confidence_interval.lower) / (prediction.confidence_interval.upper - prediction.confidence_interval.lower)) * 100}%`,
-                width: '100%'
-              }}
-            />
-            <div 
-              className="absolute w-3 h-3 bg-blue-700 rounded-full -mt-0.5 transform -translate-x-1/2"
-              style={{
-                left: `${((prediction.current_price - prediction.confidence_interval.lower) / (prediction.confidence_interval.upper - prediction.confidence_interval.lower)) * 100}%`
-              }}
-            />
+      {/* Price Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="h-4 w-4 text-slate-500" />
+            <span className="text-xs font-medium text-slate-500 uppercase">Current Price</span>
           </div>
-          <div className="flex justify-between text-xs text-gray-600 mt-1">
-            <span>₹{formatIndianNumber(prediction.confidence_interval.lower)}</span>
-            <span className="font-medium">Current: ₹{formatIndianNumber(prediction.current_price)}</span>
-            <span>₹{formatIndianNumber(prediction.confidence_interval.upper)}</span>
-          </div>
+          <p className="text-3xl font-bold text-slate-900">₹{formatIndianNumber(prediction.current_price)}</p>
+          <p className="text-xs text-slate-500 mt-1">per quintal</p>
         </div>
 
-        {/* Recommendation */}
-        <div className={`rounded-lg p-4 border-2 ${getRecommendationColor(prediction.recommendation)}`}>
-          <div className="flex items-start gap-3">
-            {getTrendIcon(prediction.price_trend)}
-            <div>
-              <p className="font-bold text-lg">
-                {prediction.recommendation === 'SELL_NOW' ? 'Sell Immediately' :
-                 prediction.recommendation === 'SELL_SOON' ? 'Sell Soon' :
-                 prediction.recommendation === 'WAIT' ? 'Wait for Better Price' :
-                 prediction.recommendation === 'HOLD' ? 'Hold & Monitor' : 'Neutral'}
-              </p>
-              <p className="text-sm mt-1 opacity-90">{prediction.recommendation_reason}</p>
-              <div className="flex items-center gap-4 mt-3 text-xs">
-                <span className="flex items-center gap-1">
-                  <Activity className="h-3 w-3" />
-                  Confidence: {prediction.confidence_score}
+        <div className={cn(
+          "rounded-2xl p-5 border",
+          isPriceUp ? "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200" : "bg-gradient-to-br from-rose-50 to-rose-100 border-rose-200"
+        )}>
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar className={cn("h-4 w-4", isPriceUp ? "text-emerald-600" : "text-rose-600")} />
+            <span className={cn("text-xs font-medium uppercase", isPriceUp ? "text-emerald-600" : "text-rose-600")}>
+              Predicted ({daysAhead}d)
+            </span>
+          </div>
+          <p className={cn("text-3xl font-bold", isPriceUp ? "text-emerald-700" : "text-rose-700")}>
+            ₹{formatIndianNumber(prediction.predicted_price)}
+          </p>
+          <div className="flex items-center gap-1 mt-1">
+            {isPriceUp ? (
+              <TrendingUp className="h-3 w-3 text-emerald-600" />
+            ) : (
+              <TrendingDown className="h-3 w-3 text-rose-600" />
+            )}
+            <span className={cn("text-xs font-medium", isPriceUp ? "text-emerald-600" : "text-rose-600")}>
+              {prediction.price_change_pct > 0 ? '+' : ''}{prediction.price_change_pct}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendation Card */}
+      <div className={cn("rounded-2xl p-5 border-2", style.light, style.border)}>
+        <div className="flex items-start gap-4">
+          <div className={cn("p-3 rounded-xl", style.bg)}>
+            <TrendIcon className="h-6 w-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <h4 className={cn("font-bold text-lg", style.text)}>
+              {getRecommendationLabel(prediction.recommendation)}
+            </h4>
+            <p className="text-sm text-slate-600 mt-1">{prediction.recommendation_reason}</p>
+            
+            <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5">
+                <Activity className="h-4 w-4 text-slate-400" />
+                <span className="text-xs text-slate-500">
+                  Confidence: <span className="font-medium text-slate-700">{prediction.confidence_score}</span>
                 </span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  Prediction for: {new Date(prediction.prediction_date).toLocaleDateString()}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-slate-400" />
+                <span className="text-xs text-slate-500">
+                  For: <span className="font-medium text-slate-700">{new Date(prediction.prediction_date).toLocaleDateString()}</span>
                 </span>
               </div>
             </div>
@@ -294,42 +278,52 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
         </div>
       </div>
 
-      {/* Market Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border bg-white p-4 text-center">
-          <p className="text-xs text-gray-600 uppercase font-medium">Trend</p>
-          <div className="flex items-center justify-center gap-1 mt-1">
-            {getTrendIcon(prediction.price_trend)}
-            <span className="font-bold">{prediction.price_trend}</span>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white rounded-xl p-4 border text-center">
+          <p className="text-xs text-slate-500 uppercase mb-1">Trend</p>
+          <div className="flex items-center justify-center gap-1">
+            {prediction.price_trend === 'UP' ? (
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+            ) : prediction.price_trend === 'DOWN' ? (
+              <TrendingDown className="h-4 w-4 text-rose-500" />
+            ) : (
+              <Minus className="h-4 w-4 text-amber-500" />
+            )}
+            <span className="font-bold text-sm">{prediction.price_trend}</span>
           </div>
         </div>
-        <div className="rounded-lg border bg-white p-4 text-center">
-          <p className="text-xs text-gray-600 uppercase font-medium">Volatility</p>
-          <p className={`font-bold mt-1 ${prediction.volatility_level === 'HIGH' ? 'text-red-600' : prediction.volatility_level === 'MEDIUM' ? 'text-amber-600' : 'text-green-600'}`}>
+        <div className="bg-white rounded-xl p-4 border text-center">
+          <p className="text-xs text-slate-500 uppercase mb-1">Volatility</p>
+          <span className={cn(
+            "font-bold text-sm",
+            prediction.volatility_level === 'HIGH' ? 'text-rose-600' : 
+            prediction.volatility_level === 'MEDIUM' ? 'text-amber-600' : 'text-emerald-600'
+          )}>
             {prediction.volatility_level}
-          </p>
+          </span>
         </div>
-        <div className="rounded-lg border bg-white p-4 text-center">
-          <p className="text-xs text-gray-600 uppercase font-medium">Data Quality</p>
-          <p className="font-bold text-blue-600 mt-1">{prediction.confidence_score}</p>
+        <div className="bg-white rounded-xl p-4 border text-center">
+          <p className="text-xs text-slate-500 uppercase mb-1">Range</p>
+          <span className="font-bold text-sm text-slate-700">
+            ₹{formatIndianNumber(prediction.confidence_interval.lower)} - ₹{formatIndianNumber(prediction.confidence_interval.upper)}
+          </span>
         </div>
       </div>
 
-      {/* Price History Chart (Simple) */}
+      {/* Price History */}
       {history.length > 0 && (
-        <div className="rounded-xl border bg-white p-6">
-          <h5 className="font-bold text-gray-900 mb-4">Recent Price History</h5>
+        <div className="bg-white rounded-2xl border p-5">
+          <h4 className="font-semibold text-foreground mb-4">Recent Price History</h4>
           <div className="space-y-2">
-            {history.slice(-7).map((point, idx) => (
-              <div key={idx} className="flex items-center justify-between text-sm py-2 border-b last:border-0">
-                <span className="text-gray-600">{new Date(point.date).toLocaleDateString()}</span>
-                <div className="flex items-center gap-4">
-                  <span className="text-xs text-gray-500">
+            {history.slice(-5).map((point, idx) => (
+              <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                <span className="text-sm text-slate-500">{new Date(point.date).toLocaleDateString()}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400">
                     ₹{formatIndianNumber(point.min_price)} - ₹{formatIndianNumber(point.max_price)}
                   </span>
-                  <span className="font-bold text-gray-900">
-                    ₹{formatIndianNumber(point.modal_price)}
-                  </span>
+                  <span className="font-bold text-slate-700">₹{formatIndianNumber(point.modal_price)}</span>
                 </div>
               </div>
             ))}

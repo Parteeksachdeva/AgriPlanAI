@@ -14,7 +14,18 @@ interface LocationState {
   formData: PredictionFormData
 }
 
-import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle, Beaker, TrendingUp } from 'lucide-react'
+import { 
+  AlertTriangle, 
+  CheckCircle, 
+  Calendar, 
+  Beaker, 
+  TrendingUp,
+  Sprout,
+  ArrowLeft,
+  Sparkles,
+  Wallet,
+  Leaf
+} from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
@@ -24,15 +35,20 @@ export function ResultScreen() {
 
   if (!state?.result) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-10 text-center">
-        <p className="text-muted-foreground">No prediction data. Submit the form first.</p>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          Go to form
-        </button>
+      <div className="min-h-screen bg-gradient-to-br from-green-50/50 to-emerald-50/30 flex items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+            <AlertTriangle className="h-8 w-8 text-amber-600" />
+          </div>
+          <p className="text-muted-foreground">No prediction data available</p>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
+          >
+            Start New Analysis
+          </button>
+        </div>
       </div>
     )
   }
@@ -54,29 +70,25 @@ export function ResultScreen() {
     let score = 0;
     const reasons: string[] = [];
 
-    // 1. Suitability (Point Based)
     if (suitability === 'rare') {
       score += 2;
       reasons.push("Rarely grown in your state");
     } else if (suitability === 'common') {
       score += 1;
-      reasons.push("Common but not a staple in your state");
+      reasons.push("Common but not a staple");
     }
 
-    // 2. Price Volatility
     score += meta.volatility;
     if (meta.volatility === 2) reasons.push("High price volatility");
     else if (meta.volatility === 1) reasons.push("Moderate price shifts");
 
-    // 3. Yield Predictability
     score += meta.predictability;
-    if (meta.predictability === 2) reasons.push("Yield is highly sensitive to climate");
+    if (meta.predictability === 2) reasons.push("Yield sensitive to climate");
     else if (meta.predictability === 1) reasons.push("Moderate yield unpredictability");
 
-    // 4. Water Dependency
     if (meta.water_sensitive && formData.annual_rainfall < minRainfall) {
       score += 1;
-      reasons.push("High water needs vs rainfall shortage");
+      reasons.push("High water needs vs rainfall");
     }
 
     let level: RiskLevel = 'low';
@@ -86,290 +98,260 @@ export function ResultScreen() {
     return { level, reasons };
   };
 
+  const getRiskColor = (level: RiskLevel) => {
+    switch (level) {
+      case 'low': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'high': return 'bg-rose-100 text-rose-700 border-rose-200';
+    }
+  };
+
+  const getSuitabilityIcon = (suitability: string) => {
+    switch (suitability) {
+      case 'traditional': return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+      case 'common': return <Leaf className="h-4 w-4 text-blue-500" />;
+      default: return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+    }
+  };
+
+  const getSuitabilityColor = (suitability: string) => {
+    switch (suitability) {
+      case 'traditional': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      case 'common': return 'bg-blue-50 text-blue-700 border-blue-100';
+      default: return 'bg-amber-50 text-amber-700 border-amber-100';
+    }
+  };
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <div className="rounded-2xl border bg-card p-8 shadow-sm">
-        <h2 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
-          Crop recommendations
-        </h2>
-        <p className="mb-8 text-muted-foreground">
-          Crops ranked by suitability and expected revenue for your conditions.
-          <span className="mt-2 block text-xs italic">
-            Note: We prioritize crops traditionally or commonly grown in your state over those with higher revenue but lower suitability.
-          </span>
-        </p>
-
-        <div className="space-y-10">
-
-          {/* Top pick highlight */}
-          {top && (
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl bg-primary/5 p-5 relative overflow-hidden">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Top crop</p>
-                    <p className="mt-1 text-2xl font-bold text-foreground capitalize">{top.crop}</p>
-                  </div>
-                  {top.suitability === 'rare' ? (
-                    <AlertTriangle className="h-5 w-5 text-amber-500" />
-                  ) : (
-                    <CheckCircle className={`h-5 w-5 ${top.suitability === 'traditional' ? 'text-green-500' : 'text-blue-500'}`} />
-                  )}
-                </div>
-                <p className="mt-2 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60">
-                  {top.suitability === 'traditional' ? 'Traditionally grown in ' : 
-                   top.suitability === 'common' ? 'Commonly grown in ' : 'Low suitability for '}{formData.state}
-                </p>
-              </div>
-              <div className="rounded-xl bg-primary/5 p-5">
-                <p className="text-sm font-medium text-muted-foreground font-bold flex items-center gap-1.5">
-                  Predicted yield
-                </p>
-                <p className="mt-1 text-2xl font-bold text-foreground">
-                  {top.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 2 })} t/ha
-                </p>
-              </div>
-              <div className="rounded-xl bg-green-500/10 p-5">
-                <p className="text-sm font-medium text-muted-foreground">Expected revenue</p>
-                <p className="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">
-                  ₹{top.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-emerald-50/20">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Form
+            </button>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              <span className="font-semibold text-foreground">AI Crop Analysis</span>
             </div>
-          )}
-
-          {/* Full ranked list */}
-          {recommendations.length > 0 && (
-            <div>
-              <div className="rounded-lg border overflow-hidden">
-                <div className="bg-muted/30 px-4 py-2.5 text-sm font-medium text-foreground flex justify-between items-center">
-                  <span>All recommendations</span>
-                  <span className="text-[10px] text-muted-foreground italic">Click <Calculator className="inline h-3 w-3" /> or <Calendar className="inline h-3 w-3" /> to analyze</span>
-                </div>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b text-left text-muted-foreground">
-                      <th className="px-4 py-2.5 font-medium">#</th>
-                      <th className="px-4 py-2.5 font-medium">Crop</th>
-                      <th className="px-4 py-2.5 font-medium text-right">Yield</th>
-                      <th className="px-4 py-2.5 font-medium text-center">Risk</th>
-                      <th className="px-4 py-2.5 font-medium text-right">Revenue (₹)</th>
-                      <th className="px-4 py-2.5 font-medium text-center whitespace-nowrap">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recommendations.map((item, i) => {
-                      const { level, reasons } = getRiskInfo(item.crop, item.suitability);
-                      
-                      return (
-                        <tr
-                          key={item.crop}
-                          className={`border-b last:border-0 ${item.crop === selectedCropForCalculator?.crop ? 'bg-primary/5' : ''} ${item.suitability === 'rare' ? 'opacity-80' : ''}`}
-                        >
-                          <td className="px-4 py-2.5 text-muted-foreground">{i + 1}</td>
-                          <td className="px-4 py-2.5 font-medium text-foreground">
-                            <div className="flex flex-col">
-                              <span className="capitalize">{item.crop}</span>
-                              <span className="text-[9px] uppercase tracking-wide text-muted-foreground/60">{item.suitability}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2.5 text-right font-medium">
-                            {item.predicted_yield.toLocaleString(undefined, { maximumFractionDigits: 1 })}
-                            <span className="text-[9px] text-muted-foreground ml-0.5">t/ha</span>
-                          </td>
-                          <td className="px-4 py-2.5 text-center">
-                            <div className="relative group inline-block">
-                              <span className={cn(
-                                "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter cursor-help whitespace-nowrap",
-                                level === 'low' ? 'bg-green-100 text-green-700' : 
-                                level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-                              )}>
-                                {level === 'low' ? 'Low' : level === 'medium' ? 'Medium' : 'High'}
-                              </span>
-                              
-                              {/* Tooltip */}
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-48 p-2 bg-slate-900 text-white text-[10px] rounded-lg shadow-xl animate-in fade-in zoom-in-95 duration-200">
-                                <p className="font-bold mb-1 border-b border-white/20 pb-1">Risk Factors:</p>
-                                <ul className="space-y-1 list-disc list-inside">
-                                  {reasons.length > 0 ? reasons.map(r => <li key={r}>{r}</li>) : <li>Stable staple crop</li>}
-                                </ul>
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2.5 text-right font-bold text-green-700 dark:text-green-400">
-                            ₹{item.expected_revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                          </td>
-                          <td className="px-4 py-2.5 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                                <button 
-                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('profit'); }}
-                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'profit' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                  title="Calculate Profit"
-                                >
-                                  <Calculator className="h-3.5 w-3.5" />
-                                </button>
-                                <button 
-                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('calendar'); }}
-                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'calendar' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                  title="Crop Calendar"
-                                >
-                                  <Calendar className="h-3.5 w-3.5" />
-                                </button>
-                                <button 
-                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('soil'); }}
-                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'soil' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                  title="Soil Health"
-                                >
-                                  <Beaker className="h-3.5 w-3.5" />
-                                </button>
-                                <button 
-                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('prices'); }}
-                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'prices' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
-                                  title="Price Prediction"
-                                >
-                                  <TrendingUp className="h-3.5 w-3.5" />
-                                </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="mt-3 flex items-center justify-end gap-4 text-[9px] text-muted-foreground font-medium uppercase tracking-wider">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" /> Low Risk</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-400" /> Medium Risk</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" /> High Risk</span>
-                <span className="flex items-center gap-1 ml-2 italic"><HelpCircle className="h-3 w-3" /> Hover for details</span>
-              </div>
-            </div>
-          )}
-
-          {/* Analysis View (Calculator or Calendar) */}
-          {selectedCropForCalculator && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex border-b overflow-x-auto">
-                <button 
-                  onClick={() => setActiveTab('profit')}
-                  className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
-                    activeTab === 'profit' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <Calculator className="h-3 w-3" />
-                    Profit Analysis
-                  </div>
-                </button>
-                <button 
-                  onClick={() => setActiveTab('calendar')}
-                  className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
-                    activeTab === 'calendar' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-3 w-3" />
-                    Crop Calendar
-                  </div>
-                </button>
-                <button 
-                  onClick={() => setActiveTab('soil')}
-                  className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
-                    activeTab === 'soil' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <Beaker className="h-3 w-3" />
-                    Soil Health
-                  </div>
-                </button>
-                <button 
-                  onClick={() => setActiveTab('prices')}
-                  className={cn(
-                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
-                    activeTab === 'prices' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-3 w-3" />
-                    Price Forecast
-                  </div>
-                </button>
-              </div>
-
-              {activeTab === 'calendar' ? (
-                <CropCalendar 
-                  cropName={selectedCropForCalculator.crop}
-                  season={formData.season}
-                />
-              ) : activeTab === 'profit' ? (
-                <ProfitCalculator
-                  key={selectedCropForCalculator.crop}
-                  initialCropName={selectedCropForCalculator.crop}
-                  initialYield={selectedCropForCalculator.predicted_yield}
-                  initialArea={formData.area}
-                  initialMandiPrice={selectedCropForCalculator.avg_price}
-                  currentSoil={{
-                    n: formData.n_soil || 50,
-                    p: formData.p_soil || 50,
-                    k: formData.k_soil || 50,
-                    ph: formData.ph || 6.5
-                  }}
-                  annualRainfall={formData.annual_rainfall || 800}
-                />
-              ) : activeTab === 'prices' ? (
-                <PricePrediction
-                  commodity={selectedCropForCalculator.crop}
-                  state={formData.state}
-                />
-              ) : (
-                <SoilRecommendations
-                  currentSoil={{
-                    n: formData.n_soil || 50,
-                    p: formData.p_soil || 50,
-                    k: formData.k_soil || 50,
-                    ph: formData.ph || 6.5
-                  }}
-                  targetCrop={selectedCropForCalculator.crop}
-                />
-              )}
-            </div>
-          )}
-
-          {/* Input summary */}
-          <div className="rounded-lg border p-4 bg-muted/20">
-            <p className="mb-3 text-sm font-medium text-foreground">Your farm configuration</p>
-            <ul className="grid gap-x-8 gap-y-1.5 text-xs text-muted-foreground sm:grid-cols-2">
-              <li className="flex justify-between border-b border-muted py-1"><span>State:</span> <span className="font-medium text-foreground">{formData.state}</span></li>
-              <li className="flex justify-between border-b border-muted py-1"><span>Season:</span> <span className="font-medium text-foreground">{formData.season}</span></li>
-              <li className="flex justify-between border-b border-muted py-1"><span>Annual rainfall:</span> <span className="font-medium text-foreground">{formData.annual_rainfall} mm</span></li>
-              <li className="flex justify-between border-b border-muted py-1"><span>Area:</span> <span className="font-medium text-foreground">{formData.area} ha</span></li>
-              <li className="flex justify-between border-b border-muted py-1"><span>Fertilizer:</span> <span className="font-medium text-foreground">{formData.fertilizer} kg</span></li>
-              <li className="flex justify-between border-b border-muted py-1"><span>Pesticide:</span> <span className="font-medium text-foreground">{formData.pesticide} kg</span></li>
-            </ul>
           </div>
-        </div>
-
-        <div className="mt-8 flex justify-between items-center">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all shadow-sm"
-          >
-            New prediction
-          </button>
-          <span className="text-[10px] text-muted-foreground italic">
-            * Data based on historical Mandi prices & Kaggle Crop dataset.
-          </span>
         </div>
       </div>
 
-      <ResultChatbot result={result} formData={formData} />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Top Recommendation Hero */}
+        {top && (
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-emerald-600 to-green-700 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium backdrop-blur-sm">
+                    Top Recommendation
+                  </span>
+                  <span className={cn(
+                    "px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1.5",
+                    getSuitabilityColor(top.suitability).replace('bg-', 'bg-white/').replace('text-', 'text-').replace('border-', '')
+                  )}>
+                    {getSuitabilityIcon(top.suitability)}
+                    {top.suitability === 'traditional' ? 'Traditional Crop' : top.suitability === 'common' ? 'Common Crop' : 'New Crop'}
+                  </span>
+                </div>
+                
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-bold capitalize mb-2">{top.crop}</h1>
+                    <p className="text-green-100 text-lg">
+                      Best match for {formData.state} • {formData.season} season
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 min-w-[140px]">
+                      <p className="text-green-200 text-sm mb-1">Expected Yield</p>
+                      <p className="text-2xl font-bold">{top.predicted_yield.toFixed(1)} <span className="text-lg font-normal">t/ha</span></p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 min-w-[140px]">
+                      <p className="text-green-200 text-sm mb-1">Revenue</p>
+                      <p className="text-2xl font-bold">₹{(top.expected_revenue / 1000).toFixed(0)}K</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Crop List */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="bg-white rounded-2xl shadow-sm border p-6">
+              <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                <Sprout className="h-5 w-5 text-emerald-500" />
+                All Recommendations
+              </h2>
+              
+              <div className="space-y-3">
+                {recommendations.map((item, i) => {
+                  const { level } = getRiskInfo(item.crop, item.suitability);
+                  const isSelected = item.crop === selectedCropForCalculator?.crop;
+                  
+                  return (
+                    <button
+                      key={item.crop}
+                      onClick={() => setSelectedCropForCalculator(item)}
+                      className={cn(
+                        "w-full text-left p-4 rounded-xl transition-all duration-200 border",
+                        isSelected 
+                          ? "bg-emerald-50 border-emerald-300 shadow-md ring-2 ring-emerald-100" 
+                          : "bg-white border-gray-100 hover:border-emerald-200 hover:shadow-sm"
+                      )}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold text-muted-foreground">#{i + 1}</span>
+                            <span className="font-semibold capitalize text-foreground">{item.crop}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "px-2 py-0.5 rounded-full text-[10px] font-medium border",
+                              getRiskColor(level)
+                            )}>
+                              {level} risk
+                            </span>
+                            <span className={cn(
+                              "px-2 py-0.5 rounded-full text-[10px] font-medium border",
+                              getSuitabilityColor(item.suitability)
+                            )}>
+                              {item.suitability}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-emerald-600">
+                            ₹{(item.expected_revenue / 1000).toFixed(0)}K
+                          </p>
+                          <p className="text-xs text-muted-foreground">{item.predicted_yield.toFixed(1)} t/ha</p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Farm Summary Card */}
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white">
+              <h3 className="text-sm font-medium text-slate-300 mb-4 uppercase tracking-wider">Your Farm</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Location</span>
+                  <span className="font-medium">{formData.state}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Season</span>
+                  <span className="font-medium">{formData.season}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Area</span>
+                  <span className="font-medium">{formData.area} ha</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Rainfall</span>
+                  <span className="font-medium">{formData.annual_rainfall} mm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Analysis Tabs */}
+          <div className="lg:col-span-2">
+            {selectedCropForCalculator && (
+              <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                {/* Tab Navigation */}
+                <div className="border-b bg-gray-50/50">
+                  <div className="flex overflow-x-auto">
+                    {[
+                      { id: 'calendar', label: 'Calendar', icon: Calendar },
+                      { id: 'profit', label: 'Profit', icon: Wallet },
+                      { id: 'prices', label: 'Prices', icon: TrendingUp },
+                      { id: 'soil', label: 'Soil', icon: Beaker },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                        className={cn(
+                          "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all border-b-2 whitespace-nowrap",
+                          activeTab === tab.id
+                            ? "border-emerald-500 text-emerald-700 bg-white"
+                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/50"
+                        )}
+                      >
+                        <tab.icon className="h-4 w-4" />
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tab Content */}
+                <div className="p-6">
+                  {activeTab === 'calendar' ? (
+                    <CropCalendar 
+                      cropName={selectedCropForCalculator.crop}
+                      season={formData.season}
+                    />
+                  ) : activeTab === 'profit' ? (
+                    <ProfitCalculator
+                      key={selectedCropForCalculator.crop}
+                      initialCropName={selectedCropForCalculator.crop}
+                      initialYield={selectedCropForCalculator.predicted_yield}
+                      initialArea={formData.area}
+                      initialMandiPrice={selectedCropForCalculator.avg_price}
+                      currentSoil={{
+                        n: formData.n_soil || 50,
+                        p: formData.p_soil || 50,
+                        k: formData.k_soil || 50,
+                        ph: formData.ph || 6.5
+                      }}
+                      annualRainfall={formData.annual_rainfall || 800}
+                    />
+                  ) : activeTab === 'prices' ? (
+                    <PricePrediction
+                      commodity={selectedCropForCalculator.crop}
+                      state={formData.state}
+                    />
+                  ) : (
+                    <SoilRecommendations
+                      currentSoil={{
+                        n: formData.n_soil || 50,
+                        p: formData.p_soil || 50,
+                        k: formData.k_soil || 50,
+                        ph: formData.ph || 6.5
+                      }}
+                      targetCrop={selectedCropForCalculator.crop}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Chatbot Section */}
+        <div className="mt-8">
+          <ResultChatbot result={result} formData={formData} />
+        </div>
+      </div>
     </div>
   )
 }

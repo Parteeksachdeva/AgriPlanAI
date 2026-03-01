@@ -1,7 +1,7 @@
 import { CROP_CALENDARS } from '../lib/crop_calendar_data';
 import type { ActivityType } from '../lib/crop_calendar_data';
 import { cn } from '../lib/utils';
-import { Info } from 'lucide-react';
+import { CalendarDays, Info, Sprout } from 'lucide-react';
 
 interface CropCalendarProps {
   cropName: string;
@@ -13,71 +13,106 @@ const MONTHS = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-const ACTIVITY_COLORS: Record<ActivityType, string> = {
-  land_prep: 'bg-[#8B4513]',  // Brown
-  sowing: 'bg-[#FFD700]',     // Yellow
-  irrigation: 'bg-[#1E90FF]',  // Blue
-  fertilizer: 'bg-[#32CD32]',  // Green
-  pesticide: 'bg-[#FF4500]',   // Red
-  harvest: 'bg-[#FFA500]',      // Orange
-};
-
-const ACTIVITY_LABELS: Record<ActivityType, string> = {
-  land_prep: 'Land Preparation',
-  sowing: 'Sowing/Planting',
-  irrigation: 'Irrigation',
-  fertilizer: 'Fertilizer',
-  pesticide: 'Pest Watch',
-  harvest: 'Harvesting',
+const ACTIVITY_CONFIG: Record<ActivityType, { color: string; bg: string; label: string; icon: string }> = {
+  land_prep: { 
+    color: 'text-amber-700', 
+    bg: 'bg-amber-100', 
+    label: 'Land Prep',
+    icon: '🚜'
+  },
+  sowing: { 
+    color: 'text-yellow-700', 
+    bg: 'bg-yellow-100', 
+    label: 'Sowing',
+    icon: '🌱'
+  },
+  irrigation: { 
+    color: 'text-blue-700', 
+    bg: 'bg-blue-100', 
+    label: 'Irrigation',
+    icon: '💧'
+  },
+  fertilizer: { 
+    color: 'text-emerald-700', 
+    bg: 'bg-emerald-100', 
+    label: 'Fertilizer',
+    icon: '🧪'
+  },
+  pesticide: { 
+    color: 'text-rose-700', 
+    bg: 'bg-rose-100', 
+    label: 'Pest Control',
+    icon: '🛡️'
+  },
+  harvest: { 
+    color: 'text-orange-700', 
+    bg: 'bg-orange-100', 
+    label: 'Harvest',
+    icon: '🌾'
+  },
 };
 
 export function CropCalendar({ cropName, season }: CropCalendarProps) {
   const cropKey = cropName.toLowerCase();
   const timeline = CROP_CALENDARS[cropKey]?.[season] || CROP_CALENDARS[cropKey]?.['Whole Year'];
-
   const currentMonth = new Date().getMonth();
 
   if (!timeline) {
     return (
-      <div className="rounded-xl border border-dashed p-6 text-center">
-        <p className="text-sm text-muted-foreground italic">No detailed calendar data available for {cropName} ({season}).</p>
+      <div className="text-center py-12">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CalendarDays className="h-8 w-8 text-slate-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Calendar Coming Soon</h3>
+        <p className="text-muted-foreground text-sm">
+          Detailed calendar for {cropName} will be available shortly.
+        </p>
       </div>
     );
   }
 
-  const getDayPosition = (monthIdx: number) => {
-    return (monthIdx / 12) * 100;
-  };
-
-  const getActivityWidth = (start: number, end: number) => {
-    if (end >= start) {
-      return ((end - start + 1) / 12) * 100;
+  // Get active months for each activity
+  const getActivityMonths = (startMonth: number, endMonth: number) => {
+    const months: number[] = [];
+    if (endMonth >= startMonth) {
+      for (let i = startMonth; i <= endMonth; i++) months.push(i);
     } else {
-      // Wraps around the year
-      return ((12 - start + end + 1) / 12) * 100;
+      for (let i = startMonth; i < 12; i++) months.push(i);
+      for (let i = 0; i <= endMonth; i++) months.push(i);
     }
+    return months;
   };
 
   return (
-    <div className="rounded-2xl border bg-background p-6 shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-          Crop Activity Calendar: <span className="capitalize">{cropName}</span>
-        </h3>
-        <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-md uppercase tracking-wider">
-          {season} Cycle
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-emerald-100 rounded-lg">
+            <Sprout className="h-5 w-5 text-emerald-600" />
+          </div>
+          <div>
+            <h3 className="font-bold text-foreground capitalize">{cropName} Calendar</h3>
+            <p className="text-xs text-muted-foreground">{season} season schedule</p>
+          </div>
+        </div>
+        <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600">
+          {MONTHS[currentMonth]} (Current)
         </span>
       </div>
 
-      <div className="relative pt-8 pb-4">
-        {/* Month Labels */}
-        <div className="flex w-full mb-4 border-b border-muted">
+      {/* Calendar Grid */}
+      <div className="bg-white rounded-2xl border overflow-hidden">
+        {/* Month Headers */}
+        <div className="grid grid-cols-12 bg-slate-50 border-b">
           {MONTHS.map((month, idx) => (
             <div 
-              key={month} 
+              key={month}
               className={cn(
-                "flex-1 text-[10px] font-bold text-center pb-2 uppercase tracking-tighter transition-colors",
-                idx === currentMonth ? "text-primary border-b-2 border-primary" : "text-muted-foreground"
+                "py-2 text-center text-xs font-medium border-r last:border-r-0",
+                idx === currentMonth 
+                  ? "bg-emerald-100 text-emerald-700 font-bold" 
+                  : "text-slate-500"
               )}
             >
               {month}
@@ -85,89 +120,67 @@ export function CropCalendar({ cropName, season }: CropCalendarProps) {
           ))}
         </div>
 
-        {/* Calendar Grid & Activity Bands */}
-        <div className="relative h-48 bg-muted/10 rounded-lg overflow-hidden border border-muted/50">
-          {/* Vertical Grid Lines */}
-          <div className="absolute inset-0 flex">
-            {MONTHS.map((_, idx) => (
-              <div key={idx} className="flex-1 border-r border-muted/20 last:border-0" />
-            ))}
-          </div>
+        {/* Activity Rows */}
+        <div className="divide-y">
+          {(['land_prep', 'sowing', 'irrigation', 'fertilizer', 'pesticide', 'harvest'] as ActivityType[]).map((type) => {
+            const activity = timeline.activities.find(a => a.type === type);
+            if (!activity) return null;
 
-          {/* Current Month Highlight */}
-          <div 
-            className="absolute top-0 bottom-0 bg-primary/5 border-x border-primary/20 z-0 pointer-events-none"
-            style={{ 
-              left: `${(currentMonth / 12) * 100}%`,
-              width: `${(1 / 12) * 100}%`
-            }}
-          />
+            const config = ACTIVITY_CONFIG[type];
+            const activeMonths = getActivityMonths(activity.startMonth, activity.endMonth);
 
-          {/* Activity Bands */}
-          <div className="absolute inset-x-0 top-0 bottom-0 py-2 space-y-1 z-10">
-            {(['land_prep', 'sowing', 'irrigation', 'fertilizer', 'pesticide', 'harvest'] as ActivityType[]).map((type) => {
-              const activity = timeline.activities.find(a => a.type === type);
-              if (!activity) return null;
-
-              const left = getDayPosition(activity.startMonth);
-              const width = getActivityWidth(activity.startMonth, activity.endMonth);
-
-              // Handle wrap around for the visual band
-              if (activity.endMonth < activity.startMonth) {
-                const firstPartWidth = ((12 - activity.startMonth) / 12) * 100;
-                const secondPartWidth = ((activity.endMonth + 1) / 12) * 100;
-
-                return (
-                  <div key={type} className="relative h-6 group">
-                    <div 
-                      className={cn("absolute h-4 top-1 rounded-r-md opacity-80 group-hover:opacity-100 transition-opacity", ACTIVITY_COLORS[type])}
-                      style={{ left: `${left}%`, width: `${firstPartWidth}%` }}
-                    />
-                    <div 
-                      className={cn("absolute h-4 top-1 rounded-l-md opacity-80 group-hover:opacity-100 transition-opacity", ACTIVITY_COLORS[type])}
-                      style={{ left: '0%', width: `${secondPartWidth}%` }}
-                    />
-                    <div className="absolute inset-y-0 flex items-center px-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                      <span className="text-[9px] font-bold text-white drop-shadow-sm whitespace-nowrap">
-                        {ACTIVITY_LABELS[type]}
-                      </span>
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <div key={type} className="relative h-6 group">
-                  <div 
-                    className={cn("absolute h-4 top-1 rounded-md opacity-80 group-hover:opacity-100 transition-opacity", ACTIVITY_COLORS[type])}
-                    style={{ left: `${left}%`, width: `${width}%` }}
-                  />
-                  <div className="absolute inset-y-0 flex items-center px-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20" style={{ left: `${left}%` }}>
-                    <span className="text-[9px] font-bold text-white drop-shadow-sm whitespace-nowrap">
-                      {ACTIVITY_LABELS[type]}
-                    </span>
-                  </div>
+            return (
+              <div key={type} className="grid grid-cols-12">
+                {/* Activity Label */}
+                <div className="col-span-12 sm:col-span-2 p-3 bg-slate-50/50 border-r flex items-center gap-2">
+                  <span className="text-lg">{config.icon}</span>
+                  <span className="text-xs font-medium text-slate-700">{config.label}</span>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Month Cells */}
+                <div className="col-span-12 sm:col-span-10 grid grid-cols-12">
+                  {MONTHS.map((_, monthIdx) => {
+                    const isActive = activeMonths.includes(monthIdx);
+                    const isCurrentMonth = monthIdx === currentMonth;
+
+                    return (
+                      <div
+                        key={monthIdx}
+                        className={cn(
+                          "h-10 border-r last:border-r-0 flex items-center justify-center transition-all",
+                          isActive && config.bg,
+                          isCurrentMonth && !isActive && "bg-slate-100",
+                          isActive && isCurrentMonth && "ring-2 ring-inset ring-emerald-400"
+                        )}
+                      >
+                        {isActive && (
+                          <div className={cn("w-2 h-2 rounded-full", config.bg.replace('bg-', 'bg-').replace('100', '500'))} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
-        {(Object.entries(ACTIVITY_LABELS) as [ActivityType, string][]).map(([type, label]) => (
-          <div key={type} className="flex items-center gap-1.5">
-            <div className={cn("w-2.5 h-2.5 rounded-sm", ACTIVITY_COLORS[type])} />
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-tight">{label}</span>
+      <div className="flex flex-wrap gap-2">
+        {(Object.entries(ACTIVITY_CONFIG) as [ActivityType, typeof ACTIVITY_CONFIG['land_prep']][]).map(([type, config]) => (
+          <div key={type} className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs", config.bg, config.color)}>
+            <span>{config.icon}</span>
+            <span className="font-medium">{config.label}</span>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 p-3 bg-blue-50/50 border border-blue-100 rounded-lg flex gap-3 items-start">
-        <Info className="h-4 w-4 text-blue-500 mt-0.5" />
-        <p className="text-[11px] text-blue-700 leading-relaxed italic">
-          This calendar shows ideal timelines for a bumper harvest. Adjust based on local monsoon onset and specific variety duration. Current month is highlighted.
+      {/* Info Note */}
+      <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+        <Info className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+        <p className="text-sm text-blue-700">
+          This calendar shows ideal timelines for optimal yield. Adjust based on local monsoon patterns and specific variety duration. Current month is highlighted.
         </p>
       </div>
     </div>
