@@ -30,7 +30,8 @@ import {
   Leaf,
   BarChart3,
   Brain,
-  RotateCcw
+  RotateCcw,
+  Home
 } from 'lucide-react'
 
 export function ResultScreen() {
@@ -130,12 +131,42 @@ export function ResultScreen() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-emerald-50/20">
+      {/* Progress Steps */}
+      <div className="bg-emerald-50 border-b">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <CheckCircle className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-emerald-700">Enter Details</span>
+              </div>
+              <div className="w-12 h-0.5 bg-emerald-300" />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <CheckCircle className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-medium text-emerald-700">AI Analysis</span>
+              </div>
+              <div className="w-12 h-0.5 bg-emerald-300" />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center ring-4 ring-emerald-100">
+                  <span className="text-sm font-bold text-white">3</span>
+                </div>
+                <span className="text-sm font-bold text-emerald-800">Get Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
+      <div className="bg-white/80 backdrop-blur-md border-b sticky top-[73px] z-40">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/form')}
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -143,7 +174,16 @@ export function ResultScreen() {
             </button>
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-amber-500" />
-              <span className="font-semibold text-foreground">AI Crop Analysis</span>
+              <span className="font-semibold text-foreground">Your AI Crop Analysis</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Home className="h-4 w-4" />
+                Home
+              </button>
             </div>
           </div>
         </div>
