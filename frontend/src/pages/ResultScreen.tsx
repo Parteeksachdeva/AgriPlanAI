@@ -294,6 +294,12 @@ export function ResultScreen() {
                   initialYield={selectedCropForCalculator.predicted_yield}
                   initialArea={formData.area}
                   initialMandiPrice={selectedCropForCalculator.avg_price}
+                  currentSoil={{
+                    n: formData.n_soil || 50,
+                    p: formData.p_soil || 50,
+                    k: formData.k_soil || 50,
+                    ph: formData.ph || 6.5
+                  }}
                 />
               ) : (
                 <SoilRecommendations

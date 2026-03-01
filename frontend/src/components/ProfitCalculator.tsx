@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { CROP_COSTS, DEFAULT_COSTS } from '../lib/crop_costs';
 import { formatIndianNumber } from '../lib/utils';
 import { Separator } from './ui/separator';
+import { calculateSoilRecommendations } from '../lib/soil_data';
+import type { SoilNutrients } from '../lib/soil_data';
 
 interface ProfitCalculatorProps {
   initialCropName: string;
   initialYield: number; // t/ha
   initialArea: number;  // ha
   initialMandiPrice: number; // ₹/quintal
+  currentSoil?: SoilNutrients; // Optional: for soil amendment cost calculation
 }
 
 export function ProfitCalculator({
@@ -15,6 +18,7 @@ export function ProfitCalculator({
   initialYield,
   initialArea,
   initialMandiPrice,
+  currentSoil,
 }: ProfitCalculatorProps) {
   const cropKey = initialCropName.toLowerCase();
   const costDefaults = CROP_COSTS[cropKey] || DEFAULT_COSTS;
@@ -30,10 +34,17 @@ export function ProfitCalculator({
   const [irrigationCost, setIrrigationCost] = useState(costDefaults.irrigation_cost_avg);
   const [pesticideCost, setPesticideCost] = useState(costDefaults.pesticide_cost_avg);
 
+  // Calculate soil amendment costs if current soil data is provided
+  const soilAmendmentCost = currentSoil 
+    ? calculateSoilRecommendations(currentSoil, initialCropName)
+        .reduce((sum, rec) => sum + rec.cost, 0)
+    : 0;
+
   // Derived values
   const totalLaborCost = laborDays * laborRate;
   const revenue = yieldVal * area * 10 * mandiPrice; // 1 ton = 10 quintals
-  const totalCost = (seedCost + totalLaborCost + fertilizerCost + irrigationCost + pesticideCost) * area;
+  const baseTotalCost = (seedCost + totalLaborCost + fertilizerCost + irrigationCost + pesticideCost) * area;
+  const totalCost = baseTotalCost + (soilAmendmentCost * area);
   const netProfit = revenue - totalCost;
   const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
   const isLoss = netProfit < 0;
@@ -155,8 +166,18 @@ export function ProfitCalculator({
               <span className="text-foreground font-bold">{formatIndianNumber(revenue)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground font-medium">Total Expenses ({area} ha)</span>
-              <span className="text-red-600 font-bold"> - {formatIndianNumber(totalCost)}</span>
+              <span className="text-muted-foreground font-medium">Base Production Costs</span>
+              <span className="text-red-600 font-bold">- {formatIndianNumber(baseTotalCost)}</span>
+            </div>
+            {soilAmendmentCost > 0 && (
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground font-medium">Soil Amendments</span>
+                <span className="text-amber-600 font-bold">- {formatIndianNumber(soilAmendmentCost * area)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center text-sm font-medium border-t border-dashed pt-2">
+              <span className="text-muted-foreground">Total Expenses ({area} ha)</span>
+              <span className="text-red-700 font-bold">{formatIndianNumber(totalCost)}</span>
             </div>
             <Separator className="bg-foreground/5" />
             
