@@ -5,6 +5,8 @@ import { ProfitCalculator } from '@/components/ProfitCalculator'
 import { CropCalendar } from '@/components/CropCalendar'
 import { SoilRecommendations } from '@/components/SoilRecommendations'
 import { PricePrediction } from '@/components/PricePrediction'
+import { CropComparison } from '@/components/CropComparison'
+import { AIExplanation } from '@/components/AIExplanation'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
@@ -24,14 +26,16 @@ import {
   ArrowLeft,
   Sparkles,
   Wallet,
-  Leaf
+  Leaf,
+  BarChart3,
+  Brain
 } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
-  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices'>('calendar')
+  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices' | 'compare' | 'ai'>('calendar')
 
   if (!state?.result) {
     return (
@@ -281,10 +285,12 @@ export function ResultScreen() {
                 <div className="border-b bg-gray-50/50">
                   <div className="flex overflow-x-auto">
                     {[
+                      { id: 'ai', label: 'AI Analysis', icon: Brain },
                       { id: 'calendar', label: 'Calendar', icon: Calendar },
                       { id: 'profit', label: 'Profit', icon: Wallet },
                       { id: 'prices', label: 'Prices', icon: TrendingUp },
                       { id: 'soil', label: 'Soil', icon: Beaker },
+                      { id: 'compare', label: 'Compare', icon: BarChart3 },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -305,7 +311,22 @@ export function ResultScreen() {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  {activeTab === 'calendar' ? (
+                  {activeTab === 'ai' ? (
+                    <AIExplanation 
+                      crop={selectedCropForCalculator}
+                      formData={{
+                        state: formData.state,
+                        season: formData.season,
+                        annual_rainfall: formData.annual_rainfall,
+                        temperature: formData.temperature || undefined,
+                        humidity: formData.humidity || undefined,
+                        ph: formData.ph || undefined,
+                        n_soil: formData.n_soil || undefined,
+                        p_soil: formData.p_soil || undefined,
+                        k_soil: formData.k_soil || undefined
+                      }}
+                    />
+                  ) : activeTab === 'calendar' ? (
                     <CropCalendar 
                       cropName={selectedCropForCalculator.crop}
                       season={formData.season}
@@ -329,6 +350,16 @@ export function ResultScreen() {
                     <PricePrediction
                       commodity={selectedCropForCalculator.crop}
                       state={formData.state}
+                    />
+                  ) : activeTab === 'compare' ? (
+                    <CropComparison 
+                      crops={recommendations}
+                      formData={{
+                        state: formData.state,
+                        season: formData.season,
+                        annual_rainfall: formData.annual_rainfall,
+                        area: formData.area
+                      }}
                     />
                   ) : (
                     <SoilRecommendations
