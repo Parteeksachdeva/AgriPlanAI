@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { CROP_COSTS, DEFAULT_COSTS } from '../lib/crop_costs';
 import { formatIndianNumber } from '../lib/utils';
 import { Separator } from './ui/separator';
-import { calculateSoilRecommendations } from '../lib/soil_data';
+import { calculateSoilRecommendations, SOIL_REQUIREMENTS, DEFAULT_REQUIREMENT } from '../lib/soil_data';
 import type { SoilNutrients } from '../lib/soil_data';
+import { TrendingUp, AlertTriangle, CheckCircle, Calculator } from 'lucide-react';
 
 interface ProfitCalculatorProps {
   initialCropName: string;
@@ -11,6 +12,7 @@ interface ProfitCalculatorProps {
   initialArea: number;  // ha
   initialMandiPrice: number; // ₹/quintal
   currentSoil?: SoilNutrients; // Optional: for soil amendment cost calculation
+  annualRainfall?: number; // Optional: for weather risk calculation
 }
 
 export function ProfitCalculator({
@@ -19,6 +21,7 @@ export function ProfitCalculator({
   initialArea,
   initialMandiPrice,
   currentSoil,
+  annualRainfall = 800,
 }: ProfitCalculatorProps) {
   const cropKey = initialCropName.toLowerCase();
   const costDefaults = CROP_COSTS[cropKey] || DEFAULT_COSTS;
@@ -34,20 +37,55 @@ export function ProfitCalculator({
   const [irrigationCost, setIrrigationCost] = useState(costDefaults.irrigation_cost_avg);
   const [pesticideCost, setPesticideCost] = useState(costDefaults.pesticide_cost_avg);
 
-  // Calculate soil amendment costs if current soil data is provided
-  const soilAmendmentCost = currentSoil 
-    ? calculateSoilRecommendations(currentSoil, initialCropName)
-        .reduce((sum, rec) => sum + rec.cost, 0)
-    : 0;
-
-  // Derived values
+  // Derived values - base calculations first
   const totalLaborCost = laborDays * laborRate;
   const revenue = yieldVal * area * 10 * mandiPrice; // 1 ton = 10 quintals
+  
+  // Calculate soil amendment costs if current soil data is provided
+  const soilAmendments = currentSoil 
+    ? calculateSoilRecommendations(currentSoil, initialCropName)
+    : [];
+  const soilAmendmentCost = soilAmendments.reduce((sum, rec) => sum + rec.cost, 0);
+  
   const baseTotalCost = (seedCost + totalLaborCost + fertilizerCost + irrigationCost + pesticideCost) * area;
   const totalCost = baseTotalCost + (soilAmendmentCost * area);
   const netProfit = revenue - totalCost;
   const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
   const isLoss = netProfit < 0;
+  
+  // Calculate improved yield scenario (if soil is amended)
+  const req = SOIL_REQUIREMENTS[initialCropName.toLowerCase()] || DEFAULT_REQUIREMENT;
+  const nGap = currentSoil ? Math.max(0, req.ideal.n - currentSoil.n) : 0;
+  const pGap = currentSoil ? Math.max(0, req.ideal.p - currentSoil.p) : 0;
+  const kGap = currentSoil ? Math.max(0, req.ideal.k - currentSoil.k) : 0;
+  const hasDeficiency = nGap > 0 || pGap > 0 || kGap > 0;
+  
+  // Yield improvement factor based on agronomic research
+  // If all nutrients are brought to optimal, yield can increase by 15-30%
+  const yieldImprovementFactor = hasDeficiency 
+    ? 1 + (0.15 * (nGap > 0 ? 0.4 : 0) + 0.10 * (pGap > 0 ? 0.3 : 0) + 0.08 * (kGap > 0 ? 0.3 : 0))
+    : 1;
+  const improvedYield = yieldVal * Math.min(1.25, yieldImprovementFactor);
+  const improvedRevenue = improvedYield * area * 10 * mandiPrice;
+  const improvedProfit = improvedRevenue - totalCost;
+  const additionalProfitFromAmendments = improvedProfit - netProfit;
+  const roiOnAmendments = soilAmendmentCost > 0 
+    ? ((improvedProfit - netProfit) / (soilAmendmentCost * area)) * 100 
+    : 0;
+  
+  // Weather risk calculation
+  // Higher rainfall variability = higher risk
+  const rainfallRiskFactor = annualRainfall < 500 ? 0.85 : annualRainfall > 1500 ? 0.90 : 0.95;
+  const worstCaseYield = yieldVal * rainfallRiskFactor * 0.85; // 15% weather impact
+  const bestCaseYield = yieldVal * 1.05; // 5% above average
+  const worstCaseRevenue = worstCaseYield * area * 10 * mandiPrice;
+  const bestCaseRevenue = bestCaseYield * area * 10 * mandiPrice;
+  const worstCaseProfit = worstCaseRevenue - totalCost;
+  const bestCaseProfit = bestCaseRevenue - totalCost;
+  
+  // Break-even analysis
+  const breakEvenYield = totalCost / (area * 10 * mandiPrice); // t/ha needed
+  const breakEvenMargin = ((yieldVal - breakEvenYield) / yieldVal) * 100;
 
   return (
     <div className={`rounded-2xl border p-6 shadow-sm transition-colors ${
@@ -211,6 +249,128 @@ export function ProfitCalculator({
           </div>
         </div>
       </div>
+      
+      {/* Decision Support Section */}
+      {currentSoil && (
+        <div className="mt-8 space-y-6">
+          <Separator className="bg-foreground/10" />
+          
+          <div className="flex items-center gap-2 mb-4">
+            <Calculator className="h-5 w-5 text-primary" />
+            <h4 className="text-lg font-bold text-foreground">Decision Support Analysis</h4>
+          </div>
+          
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* ROI Card */}
+            {soilAmendmentCost > 0 && (
+              <div className="rounded-xl border bg-gradient-to-br from-blue-50 to-blue-100/50 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <h5 className="font-bold text-blue-900">Soil Investment ROI</h5>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-blue-700">Investment:</span>
+                    <span className="font-bold text-blue-900">₹{formatIndianNumber(soilAmendmentCost * area)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-blue-700">Expected Return:</span>
+                    <span className="font-bold text-green-700">+₹{formatIndianNumber(additionalProfitFromAmendments)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm border-t border-blue-200 pt-2">
+                    <span className="text-blue-700">ROI:</span>
+                    <span className={`font-bold ${roiOnAmendments > 100 ? 'text-green-700' : 'text-amber-700'}`}>
+                      {roiOnAmendments.toFixed(0)}%
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-blue-600 mt-2">
+                    {roiOnAmendments > 200 
+                      ? 'Excellent investment! High return on soil improvement.'
+                      : roiOnAmendments > 100
+                      ? 'Good investment. Soil amendments will pay off.'
+                      : 'Moderate returns. Consider priority amendments only.'}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            {/* Scenario Comparison */}
+            <div className="rounded-xl border bg-gradient-to-br from-purple-50 to-purple-100/50 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle className="h-4 w-4 text-purple-600" />
+                <h5 className="font-bold text-purple-900">Yield Scenarios</h5>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-purple-700">Current Soil:</span>
+                  <span className="font-medium">{yieldVal.toFixed(1)} t/ha</span>
+                </div>
+                {hasDeficiency && (
+                  <div className="flex justify-between">
+                    <span className="text-green-700">After Amendments:</span>
+                    <span className="font-medium text-green-700">{improvedYield.toFixed(1)} t/ha</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-red-600">
+                  <span>Bad Weather:</span>
+                  <span className="font-medium">{worstCaseYield.toFixed(1)} t/ha</span>
+                </div>
+                <div className="flex justify-between text-green-600">
+                  <span>Good Weather:</span>
+                  <span className="font-medium">{bestCaseYield.toFixed(1)} t/ha</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Break-even Analysis */}
+            <div className="rounded-xl border bg-gradient-to-br from-amber-50 to-amber-100/50 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <h5 className="font-bold text-amber-900">Break-even Analysis</h5>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-amber-700">Break-even Yield:</span>
+                  <span className="font-bold text-amber-900">{breakEvenYield.toFixed(2)} t/ha</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-amber-700">Safety Margin:</span>
+                  <span className={`font-bold ${breakEvenMargin > 30 ? 'text-green-700' : breakEvenMargin > 15 ? 'text-amber-700' : 'text-red-700'}`}>
+                    {breakEvenMargin.toFixed(1)}%
+                  </span>
+                </div>
+                <p className="text-[10px] text-amber-700 mt-2">
+                  {breakEvenMargin > 30 
+                    ? 'Safe margin. Low risk of losses.'
+                    : breakEvenMargin > 15
+                    ? 'Moderate margin. Monitor costs closely.'
+                    : 'Tight margin. High risk if yields drop.'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Risk Summary */}
+          <div className="rounded-xl border bg-slate-50 p-4">
+            <h5 className="font-bold text-slate-900 mb-3">Profit Range (Weather Risk)</h5>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <div className="h-3 bg-gradient-to-r from-red-400 via-yellow-400 to-green-400 rounded-full relative">
+                  <div 
+                    className="absolute top-0 w-1 h-4 bg-slate-900 -mt-0.5 rounded"
+                    style={{ left: `${Math.min(100, Math.max(0, (netProfit - worstCaseProfit) / (bestCaseProfit - worstCaseProfit) * 100))}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs mt-2 text-slate-600">
+                  <span>Worst: ₹{formatIndianNumber(worstCaseProfit)}</span>
+                  <span className="font-bold">Expected: ₹{formatIndianNumber(netProfit)}</span>
+                  <span>Best: ₹{formatIndianNumber(bestCaseProfit)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

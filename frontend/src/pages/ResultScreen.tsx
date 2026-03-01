@@ -300,6 +300,7 @@ export function ResultScreen() {
                     k: formData.k_soil || 50,
                     ph: formData.ph || 6.5
                   }}
+                  annualRainfall={formData.annual_rainfall || 800}
                 />
               ) : (
                 <SoilRecommendations
