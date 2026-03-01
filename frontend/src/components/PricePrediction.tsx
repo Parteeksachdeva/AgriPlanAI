@@ -2,6 +2,66 @@ import { useState, useEffect } from 'react';
 import { formatIndianNumber } from '../lib/utils';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, Calendar, DollarSign, Activity } from 'lucide-react';
 
+// Mapping from crop keys to mandi commodity names used in price data
+const CROP_TO_MANDI_COMMODITY: Record<string, string> = {
+  // Cereals
+  rice: 'Paddy(Common)',
+  wheat: 'Wheat',
+  maize: 'Maize',
+  
+  // Pulses
+  chickpea: 'Bengal Gram(Gram)(Whole)',
+  kidneybeans: 'Beans',
+  pigeonpeas: 'Arhar(Tur/Red Gram)(Whole)',
+  mothbeans: 'Moth Beans',
+  mungbean: 'Green Gram (Moong)(Whole)',
+  blackgram: 'Black Gram (Urd Beans)(Whole)',
+  lentil: 'Lentil (Masur)(Whole)',
+  
+  // Fruits
+  pomegranate: 'Pomegranate',
+  banana: 'Banana',
+  mango: 'Mango',
+  grapes: 'Grapes',
+  watermelon: 'Water Melon',
+  muskmelon: 'Musk Melon',
+  apple: 'Apple',
+  orange: 'Orange',
+  papaya: 'Papaya',
+  coconut: 'Coconut',
+  
+  // Cash Crops
+  cotton: 'Cotton',
+  jute: 'Jute',
+  
+  // Plantation
+  coffee: 'Coffee',
+  tea: 'Tea',
+  
+  // Oilseeds
+  mustard: 'Mustard',
+  
+  // Vegetables
+  tomato: 'Tomato',
+  onion: 'Onion',
+  potato: 'Potato',
+  brinjal: 'Brinjal',
+  'green chilli': 'Green Chilli',
+  carrot: 'Carrot',
+  cabbage: 'Cabbage',
+  cauliflower: 'Cauliflower',
+  'bottle gourd': 'Bottle gourd',
+  'bitter gourd': 'Bitter gourd',
+  pumpkin: 'Pumpkin',
+  bhindi: 'Bhindi(Ladies Finger)',
+  garlic: 'Garlic',
+  ginger: 'Ginger(Green)',
+  coriander: 'Coriander(Leaves)',
+  drumstick: 'Drumstick',
+  'sweet potato': 'Sweet Potato',
+  tapioca: 'Tapioca',
+};
+
 interface PricePredictionProps {
   commodity: string;
   state: string;
@@ -41,6 +101,9 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
   const [error, setError] = useState<string | null>(null);
   const [daysAhead, setDaysAhead] = useState(7);
 
+  // Map crop key to mandi commodity name
+  const mandiCommodity = CROP_TO_MANDI_COMMODITY[commodity.toLowerCase()] || commodity;
+
   useEffect(() => {
     fetchPrediction();
     fetchHistory();
@@ -52,7 +115,7 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
       const response = await fetch('http://localhost:8000/api/price-prediction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ commodity, state, days_ahead: daysAhead })
+        body: JSON.stringify({ commodity: mandiCommodity, state, days_ahead: daysAhead })
       });
       
       if (!response.ok) {
@@ -70,7 +133,7 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
 
   const fetchHistory = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/price-history/${encodeURIComponent(commodity)}/${encodeURIComponent(state)}?days=30`);
+      const response = await fetch(`http://localhost:8000/api/price-history/${encodeURIComponent(mandiCommodity)}/${encodeURIComponent(state)}?days=30`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch history');

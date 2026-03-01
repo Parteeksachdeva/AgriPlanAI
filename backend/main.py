@@ -10,7 +10,7 @@ from rag.generate import generate_answer
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL1_DATA = os.path.join(BASE_DIR, "data", "model1_training.csv")
-MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training.csv")
+MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training_extended.csv")
 
 crop_recommender = CropRecommendationModel(MODEL1_DATA)
 yield_predictor = YieldPredictionModel(MODEL1_DATA)

@@ -300,7 +300,7 @@ if __name__ == "__main__":
     # Test the predictor
     import os
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_path = os.path.join(base_dir, "data", "model2_training.csv")
+    data_path = os.path.join(base_dir, "data", "model2_training_extended.csv")
     
     predictor = MandiPricePredictor(data_path)
     predictor.load_data()
