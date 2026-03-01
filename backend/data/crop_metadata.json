@@ -202,5 +202,167 @@
         "ph_min": 6.0,
         "ph_max": 7.5,
         "mandi_commodity": "Mustard"
+    },
+    "tomato": {
+        "season": "Whole Year",
+        "traditional_states": ["Maharashtra", "Karnataka", "Andhra Pradesh", "Tamil Nadu", "Gujarat", "Madhya Pradesh", "Haryana", "Punjab", "Uttar Pradesh"],
+        "min_rainfall": 600,
+        "max_rainfall": 1200,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Tomato"
+    },
+    "onion": {
+        "season": "Rabi",
+        "traditional_states": ["Maharashtra", "Karnataka", "Gujarat", "Madhya Pradesh", "Rajasthan", "Haryana", "Uttar Pradesh", "Andhra Pradesh"],
+        "min_rainfall": 350,
+        "max_rainfall": 600,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Onion"
+    },
+    "potato": {
+        "season": "Rabi",
+        "traditional_states": ["Uttar Pradesh", "West Bengal", "Bihar", "Gujarat", "Madhya Pradesh", "Punjab", "Haryana", "Uttarakhand"],
+        "min_rainfall": 500,
+        "max_rainfall": 700,
+        "ph_min": 5.0,
+        "ph_max": 6.5,
+        "mandi_commodity": "Potato"
+    },
+    "brinjal": {
+        "season": "Whole Year",
+        "traditional_states": ["West Bengal", "Odisha", "Bihar", "Gujarat", "Maharashtra", "Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu"],
+        "min_rainfall": 600,
+        "max_rainfall": 1200,
+        "ph_min": 5.5,
+        "ph_max": 6.8,
+        "mandi_commodity": "Brinjal"
+    },
+    "green chilli": {
+        "season": "Whole Year",
+        "traditional_states": ["Andhra Pradesh", "Telangana", "Karnataka", "Maharashtra", "Madhya Pradesh", "Gujarat", "Tamil Nadu"],
+        "min_rainfall": 600,
+        "max_rainfall": 1200,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Green Chilli"
+    },
+    "carrot": {
+        "season": "Rabi",
+        "traditional_states": ["Haryana", "Punjab", "Uttar Pradesh", "Bihar", "West Bengal", "Karnataka", "Tamil Nadu"],
+        "min_rainfall": 400,
+        "max_rainfall": 600,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Carrot"
+    },
+    "cabbage": {
+        "season": "Rabi",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Odisha", "Maharashtra", "Karnataka", "Tamil Nadu"],
+        "min_rainfall": 400,
+        "max_rainfall": 600,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Cabbage"
+    },
+    "cauliflower": {
+        "season": "Rabi",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Maharashtra", "Gujarat", "Karnataka", "Tamil Nadu"],
+        "min_rainfall": 400,
+        "max_rainfall": 600,
+        "ph_min": 5.5,
+        "ph_max": 6.5,
+        "mandi_commodity": "Cauliflower"
+    },
+    "bottle gourd": {
+        "season": "Kharif",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Odisha", "Andhra Pradesh", "Tamil Nadu", "Karnataka", "Maharashtra"],
+        "min_rainfall": 600,
+        "max_rainfall": 1000,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Bottle gourd"
+    },
+    "bitter gourd": {
+        "season": "Kharif",
+        "traditional_states": ["Maharashtra", "Karnataka", "Tamil Nadu", "Andhra Pradesh", "Uttar Pradesh", "Bihar", "West Bengal"],
+        "min_rainfall": 600,
+        "max_rainfall": 1000,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Bitter gourd"
+    },
+    "pumpkin": {
+        "season": "Kharif",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Odisha", "Karnataka", "Maharashtra", "Tamil Nadu"],
+        "min_rainfall": 600,
+        "max_rainfall": 1000,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Pumpkin"
+    },
+    "bhindi": {
+        "season": "Kharif",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Odisha", "Andhra Pradesh", "Tamil Nadu", "Karnataka", "Maharashtra"],
+        "min_rainfall": 500,
+        "max_rainfall": 800,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Bhindi(Ladies Finger)"
+    },
+    "garlic": {
+        "season": "Rabi",
+        "traditional_states": ["Madhya Pradesh", "Rajasthan", "Gujarat", "Uttar Pradesh", "Maharashtra", "Haryana", "Punjab"],
+        "min_rainfall": 400,
+        "max_rainfall": 600,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Garlic"
+    },
+    "ginger": {
+        "season": "Kharif",
+        "traditional_states": ["Kerala", "Karnataka", "Maharashtra", "Tamil Nadu", "West Bengal", "Odisha", "Assam"],
+        "min_rainfall": 1200,
+        "max_rainfall": 2000,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Ginger(Green)"
+    },
+    "coriander": {
+        "season": "Rabi",
+        "traditional_states": ["Rajasthan", "Madhya Pradesh", "Gujarat", "Uttar Pradesh", "Andhra Pradesh", "Tamil Nadu"],
+        "min_rainfall": 400,
+        "max_rainfall": 600,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Coriander(Leaves)"
+    },
+    "drumstick": {
+        "season": "Whole Year",
+        "traditional_states": ["Tamil Nadu", "Karnataka", "Andhra Pradesh", "Kerala", "Maharashtra", "Gujarat"],
+        "min_rainfall": 600,
+        "max_rainfall": 1000,
+        "ph_min": 6.0,
+        "ph_max": 7.5,
+        "mandi_commodity": "Drumstick"
+    },
+    "sweet potato": {
+        "season": "Kharif",
+        "traditional_states": ["Uttar Pradesh", "Bihar", "West Bengal", "Odisha", "Karnataka", "Maharashtra", "Tamil Nadu"],
+        "min_rainfall": 500,
+        "max_rainfall": 800,
+        "ph_min": 5.5,
+        "ph_max": 7.0,
+        "mandi_commodity": "Sweet Potato"
+    },
+    "tapioca": {
+        "season": "Whole Year",
+        "traditional_states": ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh"],
+        "min_rainfall": 1000,
+        "max_rainfall": 1500,
+        "ph_min": 5.5,
+        "ph_max": 7.5,
+        "mandi_commodity": "Tapioca"
     }
 }

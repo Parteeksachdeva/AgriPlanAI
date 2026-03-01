@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import CropRecommendationModel, YieldPredictionModel, PricePredictionModel
+from price_prediction import MandiPricePredictor
 from contextlib import asynccontextmanager
 import os
 from rag.retrieve import get_relevant_context
@@ -14,6 +15,7 @@ MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training.csv")
 crop_recommender = CropRecommendationModel(MODEL1_DATA)
 yield_predictor = YieldPredictionModel(MODEL1_DATA)
 price_predictor = PricePredictionModel(MODEL2_DATA)
+mandi_price_predictor = MandiPricePredictor(MODEL2_DATA)
 
 
 @asynccontextmanager
@@ -23,6 +25,7 @@ async def lifespan(app: FastAPI):
         crop_recommender.train()
         yield_predictor.train()
         price_predictor.train()
+        mandi_price_predictor.load_data()
         print("All models ready.")
     except Exception as e:
         print(f"Error during model training: {e}")
@@ -78,6 +81,46 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     context_used: str
+
+
+class PricePredictionRequest(BaseModel):
+    commodity: str
+    state: str
+    days_ahead: int = 7
+
+
+class PricePredictionResponse(BaseModel):
+    commodity: str
+    state: str
+    current_price: float
+    predicted_price: float
+    price_change_pct: float
+    confidence_interval: dict
+    prediction_date: str
+    days_ahead: int
+    recommendation: str
+    recommendation_reason: str
+    confidence_score: str
+    price_trend: str
+    volatility_level: str
+
+
+class PriceHistoryResponse(BaseModel):
+    commodity: str
+    state: str
+    history: list[dict]
+
+
+class MarketInsightsResponse(BaseModel):
+    commodity: str
+    state: str
+    average_price: float
+    price_range: dict
+    volatility: float
+    trend: float
+    recent_average: float
+    price_stability: str
+    available_states: list[str]
 
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
@@ -196,3 +239,76 @@ def ask_question(request: AskRequest):
 @app.get("/")
 def read_root():
     return {"message": "AgriPlanAI API is running."}
+
+
+# ── Price Prediction Endpoints ──────────────────────────────────────────────
+
+@app.post("/api/price-prediction", response_model=PricePredictionResponse)
+def get_price_prediction(request: PricePredictionRequest):
+    """
+    Predict future mandi prices and provide sell recommendations.
+    """
+    try:
+        prediction = mandi_price_predictor.predict_price(
+            commodity=request.commodity,
+            state=request.state,
+            days_ahead=request.days_ahead
+        )
+        
+        if prediction.get('current_price') is None:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No price data available for {request.commodity} in {request.state}"
+            )
+            
+        return PricePredictionResponse(**prediction)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Price prediction failed: {str(e)}")
+
+
+@app.get("/api/price-history/{commodity}/{state}")
+def get_price_history(commodity: str, state: str, days: int = 30):
+    """
+    Get historical price data for a commodity in a state.
+    """
+    try:
+        history = mandi_price_predictor.get_price_history(commodity, state, days)
+        
+        if not history:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No price history available for {commodity} in {state}"
+            )
+            
+        return PriceHistoryResponse(
+            commodity=commodity,
+            state=state,
+            history=history
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch price history: {str(e)}")
+
+
+@app.get("/api/market-insights/{commodity}/{state}")
+def get_market_insights(commodity: str, state: str):
+    """
+    Get comprehensive market insights for a commodity.
+    """
+    try:
+        insights = mandi_price_predictor.get_market_insights(commodity, state)
+        
+        if 'error' in insights:
+            raise HTTPException(status_code=404, detail=insights['error'])
+            
+        return MarketInsightsResponse(**insights)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch market insights: {str(e)}")

@@ -4,6 +4,7 @@ import { ResultChatbot } from '@/components/ResultChatbot'
 import { ProfitCalculator } from '@/components/ProfitCalculator'
 import { CropCalendar } from '@/components/CropCalendar'
 import { SoilRecommendations } from '@/components/SoilRecommendations'
+import { PricePrediction } from '@/components/PricePrediction'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
@@ -13,13 +14,13 @@ interface LocationState {
   formData: PredictionFormData
 }
 
-import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle, Beaker } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Calculator, Calendar, HelpCircle, Beaker, TrendingUp } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
-  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil'>('calendar')
+  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices'>('calendar')
 
   if (!state?.result) {
     return (
@@ -222,6 +223,13 @@ export function ResultScreen() {
                                 >
                                   <Beaker className="h-3.5 w-3.5" />
                                 </button>
+                                <button 
+                                  onClick={() => { setSelectedCropForCalculator(item); setActiveTab('prices'); }}
+                                  className={`p-1.5 rounded-md transition-all ${item.crop === selectedCropForCalculator?.crop && activeTab === 'prices' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                                  title="Price Prediction"
+                                >
+                                  <TrendingUp className="h-3.5 w-3.5" />
+                                </button>
                             </div>
                           </td>
                         </tr>
@@ -280,6 +288,18 @@ export function ResultScreen() {
                     Soil Health
                   </div>
                 </button>
+                <button 
+                  onClick={() => setActiveTab('prices')}
+                  className={cn(
+                    "px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all border-b-2 whitespace-nowrap",
+                    activeTab === 'prices' ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-3 w-3" />
+                    Price Forecast
+                  </div>
+                </button>
               </div>
 
               {activeTab === 'calendar' ? (
@@ -301,6 +321,11 @@ export function ResultScreen() {
                     ph: formData.ph || 6.5
                   }}
                   annualRainfall={formData.annual_rainfall || 800}
+                />
+              ) : activeTab === 'prices' ? (
+                <PricePrediction
+                  commodity={selectedCropForCalculator.crop}
+                  state={formData.state}
                 />
               ) : (
                 <SoilRecommendations
