@@ -27,8 +27,13 @@ import {
   Sparkles,
   Wallet,
   Leaf,
-  Home
+  Home,
+  Brain,
+  Beaker,
+  BarChart3,
+  RotateCcw
 } from 'lucide-react'
+import { ExpandableSection, QuickSummary } from '@/components/ExpandableSection'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
@@ -369,24 +374,46 @@ export function ResultScreen() {
                 {/* Tab Content */}
                 <div className="p-6">
                   {activeTab === 'overview' ? (
-                    <div className="space-y-6">
-                      {/* AI Explanation */}
-                      <AIExplanation 
-                        crop={selectedCropForCalculator}
-                        formData={{
-                          state: formData.state,
-                          season: formData.season,
-                          annual_rainfall: formData.annual_rainfall,
-                          temperature: formData.temperature || undefined,
-                          humidity: formData.humidity || undefined,
-                          ph: formData.ph || undefined,
-                          n_soil: formData.n_soil || undefined,
-                          p_soil: formData.p_soil || undefined,
-                          k_soil: formData.k_soil || undefined
-                        }}
+                    <div className="space-y-4">
+                      {/* Quick Summary */}
+                      <QuickSummary 
+                        items={[
+                          { label: 'AI Confidence', value: `${selectedCropForCalculator.suitability === 'traditional' ? '95%' : selectedCropForCalculator.suitability === 'common' ? '80%' : '65%'}`, icon: <Brain className="h-4 w-4" /> },
+                          { label: 'Expected Yield', value: `${selectedCropForCalculator.predicted_yield.toFixed(1)} t/ha`, icon: <Sprout className="h-4 w-4" /> },
+                          { label: 'Soil Match', value: selectedCropForCalculator.suitability === 'traditional' ? 'Excellent' : selectedCropForCalculator.suitability === 'common' ? 'Good' : 'Fair', icon: <Beaker className="h-4 w-4" /> },
+                        ]}
                       />
-                      {/* Soil Recommendations */}
-                      <div className="border-t pt-6">
+                      
+                      {/* AI Explanation - Expandable */}
+                      <ExpandableSection 
+                        title="Why This Crop is Recommended"
+                        subtitle="See what our AI analyzed for your farm"
+                        icon={<Brain className="h-5 w-5" />}
+                        defaultExpanded={true}
+                        variant="highlighted"
+                      >
+                        <AIExplanation 
+                          crop={selectedCropForCalculator}
+                          formData={{
+                            state: formData.state,
+                            season: formData.season,
+                            annual_rainfall: formData.annual_rainfall,
+                            temperature: formData.temperature || undefined,
+                            humidity: formData.humidity || undefined,
+                            ph: formData.ph || undefined,
+                            n_soil: formData.n_soil || undefined,
+                            p_soil: formData.p_soil || undefined,
+                            k_soil: formData.k_soil || undefined
+                          }}
+                        />
+                      </ExpandableSection>
+
+                      {/* Soil Recommendations - Expandable */}
+                      <ExpandableSection 
+                        title="Soil Health Recommendations"
+                        subtitle="Get your soil ready for this crop"
+                        icon={<Beaker className="h-5 w-5" />}
+                      >
                         <SoilRecommendations
                           currentSoil={{
                             n: formData.n_soil || 50,
@@ -396,27 +423,49 @@ export function ResultScreen() {
                           }}
                           targetCrop={selectedCropForCalculator.crop}
                         />
-                      </div>
+                      </ExpandableSection>
                     </div>
                   ) : activeTab === 'earnings' ? (
-                    <div className="space-y-6">
-                      {/* Profit Calculator */}
-                      <ProfitCalculator
-                        key={selectedCropForCalculator.crop}
-                        initialCropName={selectedCropForCalculator.crop}
-                        initialYield={selectedCropForCalculator.predicted_yield}
-                        initialArea={formData.area}
-                        initialMandiPrice={selectedCropForCalculator.avg_price}
-                        currentSoil={{
-                          n: formData.n_soil || 50,
-                          p: formData.p_soil || 50,
-                          k: formData.k_soil || 50,
-                          ph: formData.ph || 6.5
-                        }}
-                        annualRainfall={formData.annual_rainfall || 800}
+                    <div className="space-y-4">
+                      {/* Quick Summary */}
+                      <QuickSummary 
+                        items={[
+                          { label: 'Expected Revenue', value: `₹${(selectedCropForCalculator.expected_revenue / 1000).toFixed(0)}K`, icon: <Wallet className="h-4 w-4" /> },
+                          { label: 'Market Price', value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}/quintal`, icon: <TrendingUp className="h-4 w-4" /> },
+                          { label: 'Yield', value: `${selectedCropForCalculator.predicted_yield.toFixed(1)} t/ha`, icon: <Sprout className="h-4 w-4" /> },
+                        ]}
                       />
-                      {/* Crop Comparison */}
-                      <div className="border-t pt-6">
+
+                      {/* Profit Calculator - Expandable */}
+                      <ExpandableSection 
+                        title="Calculate Your Profit"
+                        subtitle="Add your costs to see net earnings"
+                        icon={<Wallet className="h-5 w-5" />}
+                        defaultExpanded={true}
+                        variant="highlighted"
+                      >
+                        <ProfitCalculator
+                          key={selectedCropForCalculator.crop}
+                          initialCropName={selectedCropForCalculator.crop}
+                          initialYield={selectedCropForCalculator.predicted_yield}
+                          initialArea={formData.area}
+                          initialMandiPrice={selectedCropForCalculator.avg_price}
+                          currentSoil={{
+                            n: formData.n_soil || 50,
+                            p: formData.p_soil || 50,
+                            k: formData.k_soil || 50,
+                            ph: formData.ph || 6.5
+                          }}
+                          annualRainfall={formData.annual_rainfall || 800}
+                        />
+                      </ExpandableSection>
+
+                      {/* Crop Comparison - Expandable */}
+                      <ExpandableSection 
+                        title="Compare All Recommended Crops"
+                        subtitle="Side-by-side comparison"
+                        icon={<BarChart3 className="h-5 w-5" />}
+                      >
                         <CropComparison 
                           crops={recommendations}
                           formData={{
@@ -426,27 +475,57 @@ export function ResultScreen() {
                             area: formData.area
                           }}
                         />
-                      </div>
+                      </ExpandableSection>
                     </div>
                   ) : activeTab === 'market' ? (
-                    <PricePrediction
-                      commodity={selectedCropForCalculator.crop}
-                      state={formData.state}
-                    />
-                  ) : (
-                    <div className="space-y-6">
-                      {/* Crop Calendar */}
-                      <CropCalendar 
-                        cropName={selectedCropForCalculator.crop}
-                        season={formData.season}
+                    <div className="space-y-4">
+                      {/* Quick Summary */}
+                      <QuickSummary 
+                        items={[
+                          { label: 'Current Price', value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}/quintal`, icon: <TrendingUp className="h-4 w-4" /> },
+                          { label: 'Best Market', value: formData.state, icon: <Leaf className="h-4 w-4" /> },
+                        ]}
                       />
-                      {/* Rotation Planner */}
-                      <div className="border-t pt-6">
+                      <PricePrediction
+                        commodity={selectedCropForCalculator.crop}
+                        state={formData.state}
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Quick Summary */}
+                      <QuickSummary 
+                        items={[
+                          { label: 'Season', value: formData.season, icon: <Calendar className="h-4 w-4" /> },
+                          { label: 'Growth Period', value: '3-4 months', icon: <Sprout className="h-4 w-4" /> },
+                        ]}
+                      />
+
+                      {/* Crop Calendar - Expandable */}
+                      <ExpandableSection 
+                        title="Crop Calendar"
+                        subtitle="When to sow, care for, and harvest"
+                        icon={<Calendar className="h-5 w-5" />}
+                        defaultExpanded={true}
+                        variant="highlighted"
+                      >
+                        <CropCalendar 
+                          cropName={selectedCropForCalculator.crop}
+                          season={formData.season}
+                        />
+                      </ExpandableSection>
+
+                      {/* Rotation Planner - Expandable */}
+                      <ExpandableSection 
+                        title="Crop Rotation Plan"
+                        subtitle="Plan your next season crops"
+                        icon={<RotateCcw className="h-5 w-5" />}
+                      >
                         <CropRotationPlanner 
                           currentCrop={selectedCropForCalculator.crop}
                           season={formData.season}
                         />
-                      </div>
+                      </ExpandableSection>
                     </div>
                   )}
                 </div>

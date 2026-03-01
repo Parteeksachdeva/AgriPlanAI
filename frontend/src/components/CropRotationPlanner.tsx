@@ -201,6 +201,19 @@ export function CropRotationPlanner({ currentCrop, season }: CropRotationPlanner
 
   const plan = rotationPlans[selectedPlan];
 
+  // Safety check for plan data
+  if (!plan || !plan.yearly_breakdown || !Array.isArray(plan.yearly_breakdown)) {
+    return (
+      <div className="text-center py-12">
+        <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+        <p className="text-slate-600">Rotation data incomplete</p>
+        <p className="text-sm text-slate-400 mt-2">
+          We couldn't load the complete rotation plan for {currentCrop}. Please try again later.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
