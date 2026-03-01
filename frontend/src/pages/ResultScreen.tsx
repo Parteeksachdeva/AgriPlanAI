@@ -21,16 +21,12 @@ import {
   AlertTriangle, 
   CheckCircle, 
   Calendar, 
-  Beaker, 
   TrendingUp,
   Sprout,
   ArrowLeft,
   Sparkles,
   Wallet,
   Leaf,
-  BarChart3,
-  Brain,
-  RotateCcw,
   Home
 } from 'lucide-react'
 
@@ -38,7 +34,7 @@ export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
-  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices' | 'compare' | 'ai' | 'rotation'>('calendar')
+  const [activeTab, setActiveTab] = useState<'overview' | 'earnings' | 'market' | 'planning'>('overview')
 
   if (!state?.result) {
     return (
@@ -323,30 +319,48 @@ export function ResultScreen() {
           <div className="lg:col-span-2">
             {selectedCropForCalculator && (
               <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                {/* Tab Navigation */}
+                {/* Tab Navigation - Simplified for Farmers */}
                 <div className="border-b bg-gray-50/50">
-                  <div className="flex overflow-x-auto">
+                  <div className="flex">
                     {[
-                      { id: 'ai', label: 'AI Analysis', icon: Brain },
-                      { id: 'calendar', label: 'Calendar', icon: Calendar },
-                      { id: 'profit', label: 'Profit', icon: Wallet },
-                      { id: 'prices', label: 'Prices', icon: TrendingUp },
-                      { id: 'rotation', label: 'Rotation', icon: RotateCcw },
-                      { id: 'soil', label: 'Soil', icon: Beaker },
-                      { id: 'compare', label: 'Compare', icon: BarChart3 },
+                      { 
+                        id: 'overview', 
+                        label: 'Crop Overview', 
+                        icon: Sprout,
+                        desc: 'Why this crop suits you'
+                      },
+                      { 
+                        id: 'earnings', 
+                        label: 'Your Earnings', 
+                        icon: Wallet,
+                        desc: 'Profit & costs'
+                      },
+                      { 
+                        id: 'market', 
+                        label: 'Market Prices', 
+                        icon: TrendingUp,
+                        desc: 'When & where to sell'
+                      },
+                      { 
+                        id: 'planning', 
+                        label: 'Farm Planning', 
+                        icon: Calendar,
+                        desc: 'Calendar & rotation'
+                      },
                     ].map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as typeof activeTab)}
                         className={cn(
-                          "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all border-b-2 whitespace-nowrap",
+                          "flex-1 flex flex-col items-center gap-1 px-4 py-4 text-sm font-medium transition-all border-b-2",
                           activeTab === tab.id
                             ? "border-emerald-500 text-emerald-700 bg-white"
                             : "border-transparent text-muted-foreground hover:text-foreground hover:bg-white/50"
                         )}
                       >
-                        <tab.icon className="h-4 w-4" />
-                        {tab.label}
+                        <tab.icon className="h-5 w-5 mb-1" />
+                        <span>{tab.label}</span>
+                        <span className="text-[10px] font-normal opacity-70 hidden sm:block">{tab.desc}</span>
                       </button>
                     ))}
                   </div>
@@ -354,71 +368,86 @@ export function ResultScreen() {
 
                 {/* Tab Content */}
                 <div className="p-6">
-                  {activeTab === 'ai' ? (
-                    <AIExplanation 
-                      crop={selectedCropForCalculator}
-                      formData={{
-                        state: formData.state,
-                        season: formData.season,
-                        annual_rainfall: formData.annual_rainfall,
-                        temperature: formData.temperature || undefined,
-                        humidity: formData.humidity || undefined,
-                        ph: formData.ph || undefined,
-                        n_soil: formData.n_soil || undefined,
-                        p_soil: formData.p_soil || undefined,
-                        k_soil: formData.k_soil || undefined
-                      }}
-                    />
-                  ) : activeTab === 'calendar' ? (
-                    <CropCalendar 
-                      cropName={selectedCropForCalculator.crop}
-                      season={formData.season}
-                    />
-                  ) : activeTab === 'profit' ? (
-                    <ProfitCalculator
-                      key={selectedCropForCalculator.crop}
-                      initialCropName={selectedCropForCalculator.crop}
-                      initialYield={selectedCropForCalculator.predicted_yield}
-                      initialArea={formData.area}
-                      initialMandiPrice={selectedCropForCalculator.avg_price}
-                      currentSoil={{
-                        n: formData.n_soil || 50,
-                        p: formData.p_soil || 50,
-                        k: formData.k_soil || 50,
-                        ph: formData.ph || 6.5
-                      }}
-                      annualRainfall={formData.annual_rainfall || 800}
-                    />
-                  ) : activeTab === 'prices' ? (
+                  {activeTab === 'overview' ? (
+                    <div className="space-y-6">
+                      {/* AI Explanation */}
+                      <AIExplanation 
+                        crop={selectedCropForCalculator}
+                        formData={{
+                          state: formData.state,
+                          season: formData.season,
+                          annual_rainfall: formData.annual_rainfall,
+                          temperature: formData.temperature || undefined,
+                          humidity: formData.humidity || undefined,
+                          ph: formData.ph || undefined,
+                          n_soil: formData.n_soil || undefined,
+                          p_soil: formData.p_soil || undefined,
+                          k_soil: formData.k_soil || undefined
+                        }}
+                      />
+                      {/* Soil Recommendations */}
+                      <div className="border-t pt-6">
+                        <SoilRecommendations
+                          currentSoil={{
+                            n: formData.n_soil || 50,
+                            p: formData.p_soil || 50,
+                            k: formData.k_soil || 50,
+                            ph: formData.ph || 6.5
+                          }}
+                          targetCrop={selectedCropForCalculator.crop}
+                        />
+                      </div>
+                    </div>
+                  ) : activeTab === 'earnings' ? (
+                    <div className="space-y-6">
+                      {/* Profit Calculator */}
+                      <ProfitCalculator
+                        key={selectedCropForCalculator.crop}
+                        initialCropName={selectedCropForCalculator.crop}
+                        initialYield={selectedCropForCalculator.predicted_yield}
+                        initialArea={formData.area}
+                        initialMandiPrice={selectedCropForCalculator.avg_price}
+                        currentSoil={{
+                          n: formData.n_soil || 50,
+                          p: formData.p_soil || 50,
+                          k: formData.k_soil || 50,
+                          ph: formData.ph || 6.5
+                        }}
+                        annualRainfall={formData.annual_rainfall || 800}
+                      />
+                      {/* Crop Comparison */}
+                      <div className="border-t pt-6">
+                        <CropComparison 
+                          crops={recommendations}
+                          formData={{
+                            state: formData.state,
+                            season: formData.season,
+                            annual_rainfall: formData.annual_rainfall,
+                            area: formData.area
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : activeTab === 'market' ? (
                     <PricePrediction
                       commodity={selectedCropForCalculator.crop}
                       state={formData.state}
                     />
-                  ) : activeTab === 'rotation' ? (
-                    <CropRotationPlanner 
-                      currentCrop={selectedCropForCalculator.crop}
-                      season={formData.season}
-                    />
-                  ) : activeTab === 'compare' ? (
-                    <CropComparison 
-                      crops={recommendations}
-                      formData={{
-                        state: formData.state,
-                        season: formData.season,
-                        annual_rainfall: formData.annual_rainfall,
-                        area: formData.area
-                      }}
-                    />
                   ) : (
-                    <SoilRecommendations
-                      currentSoil={{
-                        n: formData.n_soil || 50,
-                        p: formData.p_soil || 50,
-                        k: formData.k_soil || 50,
-                        ph: formData.ph || 6.5
-                      }}
-                      targetCrop={selectedCropForCalculator.crop}
-                    />
+                    <div className="space-y-6">
+                      {/* Crop Calendar */}
+                      <CropCalendar 
+                        cropName={selectedCropForCalculator.crop}
+                        season={formData.season}
+                      />
+                      {/* Rotation Planner */}
+                      <div className="border-t pt-6">
+                        <CropRotationPlanner 
+                          currentCrop={selectedCropForCalculator.crop}
+                          season={formData.season}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
