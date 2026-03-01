@@ -5,11 +5,8 @@ import type { PredictionFormData, PredictionResult } from '@/types'
 import { submitPrediction } from '@/api'
 
 const STATE_OPTIONS = [
-  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
-  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
-  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya',
-  'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim',
-  'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand',
+  'Tamil Nadu', 'Kerala', 'Gujarat', 'Himachal Pradesh', 'Uttar Pradesh',
+  'Haryana', 'Punjab', 'Madhya Pradesh', 'Rajasthan', 'Maharashtra',
   'West Bengal',
 ]
 
