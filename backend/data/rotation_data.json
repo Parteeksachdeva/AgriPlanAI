@@ -1,0 +1,215 @@
+{
+  "_source": "ICAR, FAO, and Indian agricultural research data",
+  "_last_updated": "2025-03-01",
+  "_description": "Crop rotation compatibility and agronomic data",
+  
+  "crops": {
+    "rice": {
+      "name": "Rice",
+      "season": "Kharif",
+      "water_requirement": "High",
+      "typical_yield": 3.5,
+      "market_price": 2000,
+      "follows_well": ["wheat", "mustard", "lentil", "chickpea", "moong"],
+      "precedes_well": ["moong", "lentil", "clover"]
+    },
+    "wheat": {
+      "name": "Wheat",
+      "season": "Rabi",
+      "water_requirement": "Medium",
+      "typical_yield": 5.0,
+      "market_price": 2200,
+      "follows_well": ["moong", "urd", "rice", "maize"],
+      "precedes_well": ["moong", "urd", "cowpea", "rice"]
+    },
+    "moong": {
+      "name": "Moong Bean",
+      "season": "Zaid",
+      "water_requirement": "Low",
+      "typical_yield": 0.8,
+      "market_price": 8000,
+      "follows_well": ["rice", "maize", "cotton"],
+      "precedes_well": ["wheat", "barley", "mustard"]
+    },
+    "chickpea": {
+      "name": "Chickpea",
+      "season": "Rabi",
+      "water_requirement": "Low",
+      "typical_yield": 1.2,
+      "market_price": 5500,
+      "follows_well": ["moong", "rice", "maize"],
+      "precedes_well": ["cotton", "rice", "maize"]
+    },
+    "mustard": {
+      "name": "Mustard",
+      "season": "Rabi",
+      "water_requirement": "Low",
+      "typical_yield": 1.5,
+      "market_price": 5000,
+      "follows_well": ["moong", "urd", "rice"],
+      "precedes_well": ["cotton", "maize", "sorghum"]
+    },
+    "cotton": {
+      "name": "Cotton",
+      "season": "Kharif",
+      "water_requirement": "High",
+      "typical_yield": 2.0,
+      "market_price": 6000,
+      "follows_well": ["wheat", "chickpea", "mustard"],
+      "precedes_well": ["moong", "urd", "cowpea"]
+    },
+    "maize": {
+      "name": "Maize",
+      "season": "Kharif",
+      "water_requirement": "Medium",
+      "typical_yield": 4.0,
+      "market_price": 1800,
+      "follows_well": ["wheat", "chickpea", "mustard", "moong"],
+      "precedes_well": ["moong", "cowpea", "clover"]
+    },
+    "sugarcane": {
+      "name": "Sugarcane",
+      "season": "Year-round",
+      "water_requirement": "High",
+      "typical_yield": 70.0,
+      "market_price": 350,
+      "follows_well": ["moong", "potato", "wheat"],
+      "precedes_well": ["moong", "lentil", "cowpea"]
+    },
+    "potato": {
+      "name": "Potato",
+      "season": "Rabi",
+      "water_requirement": "Medium",
+      "typical_yield": 20.0,
+      "market_price": 1500,
+      "follows_well": ["maize", "rice", "moong"],
+      "precedes_well": ["moong", "lentil", "clover"]
+    },
+    "tomato": {
+      "name": "Tomato",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 25.0,
+      "market_price": 1200,
+      "follows_well": ["moong", "wheat", "spinach"],
+      "precedes_well": ["moong", "cowpea", "clover"]
+    },
+    "onion": {
+      "name": "Onion",
+      "season": "Rabi",
+      "water_requirement": "Medium",
+      "typical_yield": 15.0,
+      "market_price": 2000,
+      "follows_well": ["moong", "maize", "cotton"],
+      "precedes_well": ["moong", "lentil", "cowpea"]
+    },
+    "groundnut": {
+      "name": "Groundnut",
+      "season": "Kharif",
+      "water_requirement": "Low",
+      "typical_yield": 1.8,
+      "market_price": 6000,
+      "follows_well": ["wheat", "gram", "safflower"],
+      "precedes_well": ["cotton", "maize", "sorghum"]
+    },
+    "banana": {
+      "name": "Banana",
+      "season": "Year-round",
+      "water_requirement": "High",
+      "typical_yield": 35.0,
+      "market_price": 1200,
+      "follows_well": ["moong", "wheat", "vegetables"],
+      "precedes_well": ["moong", "cowpea", "legumes"]
+    },
+    "pomegranate": {
+      "name": "Pomegranate",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 10.0,
+      "market_price": 8000,
+      "follows_well": ["moong", "vegetables", "fodder"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "mango": {
+      "name": "Mango",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 8.5,
+      "market_price": 5000,
+      "follows_well": ["moong", "vegetables", "fodder"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "grapes": {
+      "name": "Grapes",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 20.0,
+      "market_price": 4000,
+      "follows_well": ["moong", "vegetables"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "watermelon": {
+      "name": "Watermelon",
+      "season": "Zaid",
+      "water_requirement": "Medium",
+      "typical_yield": 25.0,
+      "market_price": 800,
+      "follows_well": ["rice", "maize", "cotton"],
+      "precedes_well": ["wheat", "gram", "mustard"]
+    },
+    "apple": {
+      "name": "Apple",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 12.0,
+      "market_price": 6000,
+      "follows_well": ["moong", "vegetables", "fodder"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "orange": {
+      "name": "Orange",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 15.0,
+      "market_price": 2500,
+      "follows_well": ["moong", "vegetables", "fodder"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "papaya": {
+      "name": "Papaya",
+      "season": "Year-round",
+      "water_requirement": "High",
+      "typical_yield": 40.0,
+      "market_price": 1500,
+      "follows_well": ["moong", "vegetables"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "coconut": {
+      "name": "Coconut",
+      "season": "Year-round",
+      "water_requirement": "High",
+      "typical_yield": 10.0,
+      "market_price": 3000,
+      "follows_well": ["moong", "turmeric", "vegetables"],
+      "precedes_well": ["legumes", "fallow"]
+    },
+    "jute": {
+      "name": "Jute",
+      "season": "Kharif",
+      "water_requirement": "High",
+      "typical_yield": 2.2,
+      "market_price": 4500,
+      "follows_well": ["potato", "wheat", "mustard"],
+      "precedes_well": ["moong", "lentil"]
+    },
+    "coffee": {
+      "name": "Coffee",
+      "season": "Year-round",
+      "water_requirement": "Medium",
+      "typical_yield": 0.8,
+      "market_price": 15000,
+      "follows_well": ["pepper", "cardamom", "fodder"],
+      "precedes_well": ["legumes", "fallow"]
+    }
+  }
+}

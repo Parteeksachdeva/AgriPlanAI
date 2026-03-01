@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import CropRecommendationModel, YieldPredictionModel, PricePredictionModel
 from price_prediction import MandiPricePredictor
+from rotation_planner import get_rotation_planner
 from contextlib import asynccontextmanager
 import os
 from rag.retrieve import get_relevant_context
@@ -312,3 +313,344 @@ def get_market_insights(commodity: str, state: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch market insights: {str(e)}")
+
+
+# ── AI Analysis Endpoint ────────────────────────────────────────────────────
+
+class AIAnalysisRequest(BaseModel):
+    crop: str
+    state: str
+    season: str
+    annual_rainfall: float
+    n_soil: float = None
+    p_soil: float = None
+    k_soil: float = None
+    temperature: float = None
+    humidity: float = None
+    ph: float = None
+
+
+class FeatureImportance(BaseModel):
+    feature: str
+    importance: float
+    impact: str  # 'positive', 'negative', 'neutral'
+
+
+class AIAnalysisResponse(BaseModel):
+    crop: str
+    confidence_score: float
+    crop_rank: int
+    total_crops_considered: int
+    feature_importance: list[FeatureImportance]
+    yield_factors: dict
+    price_trend: str
+    market_volatility: str
+    recommendation_strength: str
+
+
+@app.post("/api/ai-analysis", response_model=AIAnalysisResponse)
+def get_ai_analysis(request: AIAnalysisRequest):
+    """
+    Get real AI analysis using ML model internals:
+    - Feature importance from XGBoost
+    - Model prediction confidence
+    - Yield factor breakdown
+    - Market trend analysis
+    """
+    try:
+        # 1. Get crop recommendation probability from ML model
+        base_features = {
+            'n_soil': request.n_soil or 80,
+            'p_soil': request.p_soil or 50,
+            'k_soil': request.k_soil or 50,
+            'temperature': request.temperature or 25,
+            'humidity': request.humidity or 70,
+            'ph': request.ph or 6.5,
+            'rainfall': request.annual_rainfall
+        }
+        
+        # Get prediction probability for this specific crop
+        crop_probs = crop_recommender.predict_top_n(base_features, n=25)
+        crop_match = next((c for c in crop_probs if c['crop'] == request.crop), None)
+        raw_probability = crop_match['probability'] if crop_match else 0.0
+        
+        # Calculate rank of this crop (1 = top recommendation)
+        crop_rank = next((i+1 for i, c in enumerate(crop_probs) if c['crop'] == request.crop), 99)
+        
+        # Calculate gap to top probability (how close is this crop to #1?)
+        top_probability = crop_probs[0]['probability'] if crop_probs else 0
+        probability_gap = top_probability - raw_probability
+        
+        # 2. Extract feature importance from XGBoost model
+        feature_importance = []
+        if hasattr(crop_recommender.pipeline, 'named_steps') and 'classifier' in crop_recommender.pipeline.named_steps:
+            classifier = crop_recommender.pipeline.named_steps['classifier']
+            if hasattr(classifier, 'feature_importances_'):
+                # Get feature names from preprocessor
+                preprocessor = crop_recommender.pipeline.named_steps['preprocessor']
+                feature_names = []
+                for name, trans, cols in preprocessor.transformers_:
+                    if name == 'num':
+                        feature_names.extend(cols)
+                
+                importances = classifier.feature_importances_
+                if len(feature_names) == len(importances):
+                    for feat, imp in zip(feature_names, importances):
+                        # Determine impact based on user's value vs optimal
+                        user_val = base_features.get(feat, 0)
+                        impact = 'neutral'
+                        if feat in ['n_soil', 'p_soil', 'k_soil']:
+                            optimal = {'n_soil': 80, 'p_soil': 50, 'k_soil': 50}
+                            opt = optimal.get(feat, 50)
+                            impact = 'positive' if abs(user_val - opt) < 20 else 'negative' if user_val < opt * 0.6 else 'neutral'
+                        elif feat == 'ph':
+                            impact = 'positive' if 6.0 <= user_val <= 7.0 else 'negative' if user_val < 5.5 or user_val > 7.5 else 'neutral'
+                        elif feat == 'rainfall':
+                            impact = 'positive' if 800 <= user_val <= 1500 else 'negative' if user_val < 500 else 'neutral'
+                        
+                        feature_importance.append(FeatureImportance(
+                            feature=feat.replace('_', ' ').title(),
+                            importance=round(float(imp) * 100, 2),
+                            impact=impact
+                        ))
+        
+        # Sort by importance
+        feature_importance.sort(key=lambda x: x.importance, reverse=True)
+        
+        # 3. Calculate yield factors breakdown
+        yield_factors = {
+            'base_yield': 2.5,
+            'npk_factor': 1.0,
+            'climate_factor': 1.0,
+            'soil_factor': 1.0
+        }
+        
+        # NPK factor calculation (same as model.py)
+        n = request.n_soil or 80
+        p = request.p_soil or 50
+        k = request.k_soil or 50
+        
+        if n < 80:
+            yield_factors['npk_factor'] *= (0.7 + 0.3 * (n / 80))
+        else:
+            yield_factors['npk_factor'] *= min(1.12, 1.0 + 0.12 * ((n - 80) / 80))
+            
+        if p < 50:
+            yield_factors['npk_factor'] *= (0.75 + 0.25 * (p / 50))
+        else:
+            yield_factors['npk_factor'] *= min(1.08, 1.0 + 0.08 * ((p - 50) / 50))
+            
+        if k < 50:
+            yield_factors['npk_factor'] *= (0.80 + 0.20 * (k / 50))
+        else:
+            yield_factors['npk_factor'] *= min(1.10, 1.0 + 0.10 * ((k - 50) / 50))
+        
+        # Climate factor
+        rainfall = request.annual_rainfall
+        if rainfall < 500:
+            yield_factors['climate_factor'] = 0.85
+        elif rainfall > 1500:
+            yield_factors['climate_factor'] = 0.90
+        else:
+            yield_factors['climate_factor'] = 0.95
+        
+        # Soil pH factor
+        ph = request.ph or 6.5
+        if 6.0 <= ph <= 7.0:
+            yield_factors['soil_factor'] = 1.0
+        elif 5.5 <= ph < 6.0 or 7.0 < ph <= 7.5:
+            yield_factors['soil_factor'] = 0.90
+        else:
+            yield_factors['soil_factor'] = 0.75
+        
+        # 4. Get market trend data
+        commodity = price_predictor.get_commodity_mapping(request.crop)
+        price_trend = "STABLE"
+        market_volatility = "MEDIUM"
+        
+        if commodity:
+            stats = mandi_price_predictor.commodity_stats.get(commodity, {})
+            trend_val = stats.get('trend', 0)
+            vol_val = stats.get('volatility', 0.2)
+            
+            price_trend = 'UP' if trend_val > 0.1 else 'DOWN' if trend_val < -0.1 else 'STABLE'
+            market_volatility = 'HIGH' if vol_val > 0.3 else 'MEDIUM' if vol_val > 0.15 else 'LOW'
+        
+        # 5. Calculate overall confidence score
+        suitability = price_predictor.get_suitability(request.state, request.crop)
+        suitability_score = {'traditional': 0.95, 'common': 0.80, 'rare': 0.65}.get(suitability, 0.65)
+        
+        # Better confidence calculation based on RANK and PROXIMITY to top choice
+        # Farmers care about: Is this crop in the top recommendations? How close to #1?
+        
+        # Base confidence from rank (top 3 = good)
+        if crop_rank == 1:
+            rank_score = 95
+        elif crop_rank == 2:
+            rank_score = 88
+        elif crop_rank == 3:
+            rank_score = 80
+        elif crop_rank <= 5:
+            rank_score = 70
+        else:
+            rank_score = 55
+        
+        # Bonus for being close to top probability (within 5% = very similar suitability)
+        if probability_gap < 0.02:  # Within 2%
+            proximity_bonus = 5
+        elif probability_gap < 0.05:  # Within 5%
+            proximity_bonus = 3
+        else:
+            proximity_bonus = 0
+        
+        # Regional suitability bonus
+        suitability_bonus = {'traditional': 5, 'common': 2, 'rare': 0}.get(suitability, 0)
+        
+        confidence_score = min(98, rank_score + proximity_bonus + suitability_bonus)
+        
+        # Recommendation strength - farmer-friendly language
+        if crop_rank <= 2 and suitability == 'traditional':
+            recommendation_strength = "Highly Recommended"
+        elif crop_rank <= 3 or suitability == 'traditional':
+            recommendation_strength = "Recommended"
+        elif crop_rank <= 5:
+            recommendation_strength = "Good Alternative"
+        else:
+            recommendation_strength = "Consider with Caution"
+        
+        return AIAnalysisResponse(
+            crop=request.crop,
+            confidence_score=round(confidence_score, 1),
+            crop_rank=crop_rank,
+            total_crops_considered=len(crop_probs),
+            feature_importance=feature_importance[:5],  # Top 5 features
+            yield_factors=yield_factors,
+            price_trend=price_trend,
+            market_volatility=market_volatility,
+            recommendation_strength=recommendation_strength
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI analysis failed: {str(e)}")
+
+
+# ── Crop Rotation Planner Endpoints ─────────────────────────────────────────
+
+class RotationRequest(BaseModel):
+    current_crop: str
+    season: str
+    years: int = 3
+
+
+class SoilRecoveryRequest(BaseModel):
+    current_n: float
+    current_p: float
+    current_k: float
+    target_crop: str
+
+
+@app.post("/api/rotation-plan")
+def get_rotation_plan(request: RotationRequest):
+    """
+    Get optimal crop rotation plans for multi-season planning.
+    Includes soil health impact and 3-year profit projections.
+    """
+    try:
+        planner = get_rotation_planner()
+        rotations = planner.get_compatible_rotations(
+            request.current_crop,
+            request.season,
+            request.years
+        )
+        
+        if not rotations:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No rotation plans found for {request.current_crop}"
+            )
+        
+        return {
+            'current_crop': request.current_crop,
+            'season': request.season,
+            'rotation_options': rotations
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Rotation planning failed: {str(e)}")
+
+
+@app.post("/api/soil-recovery-plan")
+def get_soil_recovery_plan(request: SoilRecoveryRequest):
+    """
+    Get soil recovery recommendations before planting a target crop.
+    Suggests nitrogen-fixing crops to restore soil health.
+    """
+    try:
+        planner = get_rotation_planner()
+        plan = planner.get_soil_recovery_plan(
+            request.current_n,
+            request.current_p,
+            request.current_k,
+            request.target_crop
+        )
+        
+        if 'error' in plan:
+            raise HTTPException(status_code=404, detail=plan['error'])
+        
+        return plan
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Soil recovery planning failed: {str(e)}")
+
+
+@app.get("/api/seasonal-trends/{commodity}/{state}")
+def get_seasonal_trends(commodity: str, state: str):
+    """
+    Get seasonal price trends for a commodity.
+    Shows best and worst months to sell.
+    """
+    try:
+        trends = mandi_price_predictor.get_seasonal_trends(commodity, state)
+        
+        if 'error' in trends:
+            raise HTTPException(status_code=404, detail=trends['error'])
+        
+        return trends
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch seasonal trends: {str(e)}")
+
+
+@app.get("/api/nearby-mandi-prices/{commodity}/{state}")
+def get_nearby_mandi_prices(commodity: str, state: str):
+    """
+    Get prices from nearby mandis for comparison.
+    Helps farmers find the best market to sell.
+    """
+    try:
+        prices = mandi_price_predictor.get_nearby_mandi_prices(commodity, state)
+        
+        if not prices:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No mandi prices found for {commodity} in {state}"
+            )
+        
+        return {
+            'commodity': commodity,
+            'state': state,
+            'mandi_prices': prices,
+            'best_price': prices[0] if prices else None,
+            'price_difference': round(prices[0]['latest_price'] - prices[-1]['latest_price'], 2) if len(prices) > 1 else 0
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch mandi prices: {str(e)}")

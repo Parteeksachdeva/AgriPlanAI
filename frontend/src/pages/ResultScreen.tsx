@@ -7,6 +7,7 @@ import { SoilRecommendations } from '@/components/SoilRecommendations'
 import { PricePrediction } from '@/components/PricePrediction'
 import { CropComparison } from '@/components/CropComparison'
 import { AIExplanation } from '@/components/AIExplanation'
+import { CropRotationPlanner } from '@/components/CropRotationPlanner'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
@@ -28,14 +29,15 @@ import {
   Wallet,
   Leaf,
   BarChart3,
-  Brain
+  Brain,
+  RotateCcw
 } from 'lucide-react'
 
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
-  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices' | 'compare' | 'ai'>('calendar')
+  const [activeTab, setActiveTab] = useState<'calendar' | 'profit' | 'soil' | 'prices' | 'compare' | 'ai' | 'rotation'>('calendar')
 
   if (!state?.result) {
     return (
@@ -289,6 +291,7 @@ export function ResultScreen() {
                       { id: 'calendar', label: 'Calendar', icon: Calendar },
                       { id: 'profit', label: 'Profit', icon: Wallet },
                       { id: 'prices', label: 'Prices', icon: TrendingUp },
+                      { id: 'rotation', label: 'Rotation', icon: RotateCcw },
                       { id: 'soil', label: 'Soil', icon: Beaker },
                       { id: 'compare', label: 'Compare', icon: BarChart3 },
                     ].map((tab) => (
@@ -350,6 +353,11 @@ export function ResultScreen() {
                     <PricePrediction
                       commodity={selectedCropForCalculator.crop}
                       state={formData.state}
+                    />
+                  ) : activeTab === 'rotation' ? (
+                    <CropRotationPlanner 
+                      currentCrop={selectedCropForCalculator.crop}
+                      season={formData.season}
                     />
                   ) : activeTab === 'compare' ? (
                     <CropComparison 

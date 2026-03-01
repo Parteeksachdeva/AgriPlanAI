@@ -1,0 +1,167 @@
+{
+  "_source": "Based on ICAR, FAO, and Indian agricultural research data",
+  "_units": "kg per hectare per crop cycle",
+  "_notes": "Negative values = nutrient removal by crop, Positive values = nitrogen fixation by legumes",
+  
+  "rice": {
+    "nitrogen": -80,
+    "phosphorus": -25,
+    "potassium": -60,
+    "source": "ICAR Rice Research Institute - avg for 3.5t/ha yield",
+    "reference": "FAO Nutrient Management Guidelines A0443e"
+  },
+  "wheat": {
+    "nitrogen": -60,
+    "phosphorus": -20,
+    "potassium": -40,
+    "source": "ICAR Wheat Research - avg for 5t/ha yield",
+    "reference": "FAO: 128kg N, 46kg P2O5, 219kg K2O for 4.6t/ha"
+  },
+  "moong": {
+    "nitrogen": 40,
+    "phosphorus": -5,
+    "potassium": -10,
+    "source": "Legume nitrogen fixation - ICAR Pulse Research",
+    "reference": "Rhizobium symbiosis adds 40-60kg N/ha"
+  },
+  "chickpea": {
+    "nitrogen": 35,
+    "phosphorus": -8,
+    "potassium": -15,
+    "source": "Legume nitrogen fixation - ICAR Pulse Research",
+    "reference": "Rhizobium symbiosis adds 30-50kg N/ha"
+  },
+  "mustard": {
+    "nitrogen": -40,
+    "phosphorus": -12,
+    "potassium": -25,
+    "source": "ICAR Rapeseed-Mustard Research",
+    "reference": "Avg for 1.5t/ha yield"
+  },
+  "cotton": {
+    "nitrogen": -90,
+    "phosphorus": -30,
+    "potassium": -70,
+    "source": "ICAR Cotton Research Institute",
+    "reference": "High nutrient demand crop - 2t/ha lint + seed"
+  },
+  "maize": {
+    "nitrogen": -70,
+    "phosphorus": -22,
+    "potassium": -50,
+    "source": "ICAR Maize Research - avg for 4t/ha yield",
+    "reference": "C4 crop with high nutrient uptake"
+  },
+  "sugarcane": {
+    "nitrogen": -120,
+    "phosphorus": -35,
+    "potassium": -90,
+    "source": "ICAR Sugarcane Research - 70t/ha cane yield",
+    "reference": "Very high nutrient remover - ratoon included"
+  },
+  "potato": {
+    "nitrogen": -50,
+    "phosphorus": -18,
+    "potassium": -80,
+    "source": "ICAR Central Potato Research Institute",
+    "reference": "Heavy K user - 20t/ha tuber yield"
+  },
+  "tomato": {
+    "nitrogen": -60,
+    "phosphorus": -20,
+    "potassium": -50,
+    "source": "ICAR Vegetable Research - 25t/ha yield",
+    "reference": "High value vegetable crop"
+  },
+  "onion": {
+    "nitrogen": -55,
+    "phosphorus": -18,
+    "potassium": -45,
+    "source": "ICAR Vegetable Research - 15t/ha yield",
+    "reference": "Bulb crop with moderate NPK needs"
+  },
+  "groundnut": {
+    "nitrogen": 30,
+    "phosphorus": -15,
+    "potassium": -25,
+    "source": "Legume nitrogen fixation - ICAR",
+    "reference": "Rhizobium adds 25-40kg N/ha"
+  },
+  "banana": {
+    "nitrogen": -100,
+    "phosphorus": -30,
+    "potassium": -120,
+    "source": "ICAR Banana Research - 35t/ha yield",
+    "reference": "Very heavy K user - perennial crop"
+  },
+  "pomegranate": {
+    "nitrogen": -60,
+    "phosphorus": -20,
+    "potassium": -50,
+    "source": "ICAR Fruit Research - 10t/ha yield",
+    "reference": "Perennial fruit crop"
+  },
+  "mango": {
+    "nitrogen": -70,
+    "phosphorus": -25,
+    "potassium": -60,
+    "source": "ICAR Mango Research - 8.5t/ha yield",
+    "reference": "Perennial fruit - bearing stage"
+  },
+  "grapes": {
+    "nitrogen": -80,
+    "phosphorus": -25,
+    "potassium": -70,
+    "source": "ICAR Grape Research - 20t/ha yield",
+    "reference": "Perennial vine crop"
+  },
+  "watermelon": {
+    "nitrogen": -50,
+    "phosphorus": -15,
+    "potassium": -40,
+    "source": "ICAR Vegetable Research - 25t/ha yield",
+    "reference": "Summer vegetable - Zaid season"
+  },
+  "apple": {
+    "nitrogen": -60,
+    "phosphorus": -20,
+    "potassium": -50,
+    "source": "ICAR Apple Research - 12t/ha yield",
+    "reference": "Temperate perennial fruit"
+  },
+  "orange": {
+    "nitrogen": -65,
+    "phosphorus": -22,
+    "potassium": -55,
+    "source": "ICAR Citrus Research - 15t/ha yield",
+    "reference": "Citrus perennial crop"
+  },
+  "papaya": {
+    "nitrogen": -90,
+    "phosphorus": -28,
+    "potassium": -80,
+    "source": "ICAR Fruit Research - 40t/ha yield",
+    "reference": "High yielding tropical fruit"
+  },
+  "coconut": {
+    "nitrogen": -50,
+    "phosphorus": -18,
+    "potassium": -60,
+    "source": "ICAR Coconut Research - 10t/ha copra",
+    "reference": "Perennial palm - annual equivalent"
+  },
+  "jute": {
+    "nitrogen": -60,
+    "phosphorus": -20,
+    "potassium": -45,
+    "source": "ICAR Jute Research - 2.2t/ha fiber",
+    "reference": "Fibre crop - high biomass"
+  },
+  "coffee": {
+    "nitrogen": -70,
+    "phosphorus": -25,
+    "potassium": -65,
+    "source": "ICAR Coffee Research - 0.8t/ha beans",
+    "reference": "Perennial plantation crop"
+  }
+}

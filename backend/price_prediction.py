@@ -175,43 +175,116 @@ class MandiPricePredictor:
     def _generate_recommendation(self, current_price: float, predicted_price: float,
                                 confidence_interval: Dict, trend: float, 
                                 volatility: float, days_ahead: int) -> Dict:
-        """Generate sell/hold/wait recommendation."""
+        """Generate sell/hold/wait recommendation with storage analysis."""
         
         price_change_pct = ((predicted_price - current_price) / current_price) * 100
         
         # High confidence if volatility is low and we have good data
         confidence = 'HIGH' if volatility < 0.2 else 'MEDIUM' if volatility < 0.4 else 'LOW'
         
-        # Decision logic
-        if price_change_pct > 5:
+        # Storage cost calculation (typical warehouse: ₹2-5 per quintal per month)
+        storage_cost_per_day = 0.15  # ₹ per quintal per day
+        total_storage_cost = storage_cost_per_day * days_ahead
+        
+        # Net gain after storage costs
+        potential_gain = (predicted_price - current_price)
+        net_gain = potential_gain - total_storage_cost
+        
+        # Break-even days (how long to store to cover storage costs)
+        daily_price_change = potential_gain / days_ahead if days_ahead > 0 else 0
+        break_even_days = int(total_storage_cost / daily_price_change) if daily_price_change > 0 else 999
+        
+        # Decision logic with storage economics
+        if price_change_pct > 8 and net_gain > total_storage_cost * 2:
+            return {
+                'action': 'STORE_AND_SELL_LATER',
+                'reason': f'Prices expected to rise by {price_change_pct:.1f}% in {days_ahead} days. Even after storage costs of ₹{total_storage_cost:.0f}/quintal, you gain ₹{net_gain:.0f}/quintal.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': break_even_days,
+                    'recommendation': 'STORE'
+                }
+            }
+        elif price_change_pct > 5 and net_gain > total_storage_cost:
+            return {
+                'action': 'HOLD',
+                'reason': f'Prices expected to rise by {price_change_pct:.1f}% in {days_ahead} days. Worth holding if you have storage. Storage cost: ₹{total_storage_cost:.0f}/quintal.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': break_even_days,
+                    'recommendation': 'HOLD_IF_STORAGE_AVAILABLE'
+                }
+            }
+        elif price_change_pct > 5:
             return {
                 'action': 'WAIT',
-                'reason': f'Prices expected to rise by {price_change_pct:.1f}% in {days_ahead} days. Consider delaying sale.',
-                'confidence': confidence
+                'reason': f'Prices expected to rise by {price_change_pct:.1f}% but storage costs (₹{total_storage_cost:.0f}/quintal) eat most gains. Sell now unless storage is free.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': break_even_days,
+                    'recommendation': 'SELL_NOW'
+                }
             }
         elif price_change_pct < -5:
             return {
                 'action': 'SELL_NOW',
-                'reason': f'Prices expected to drop by {abs(price_change_pct):.1f}% in {days_ahead} days. Consider selling immediately.',
-                'confidence': confidence
+                'reason': f'Prices expected to drop by {abs(price_change_pct):.1f}% in {days_ahead} days. Sell immediately to avoid losses.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': 0,
+                    'recommendation': 'SELL_IMMEDIATELY'
+                }
             }
         elif price_change_pct < -2:
             return {
                 'action': 'SELL_SOON',
                 'reason': f'Slight downward trend expected ({price_change_pct:.1f}%). Consider selling within a few days.',
-                'confidence': confidence
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': 0,
+                    'recommendation': 'SELL_WITHIN_WEEK'
+                }
             }
         elif price_change_pct > 2:
             return {
                 'action': 'HOLD',
-                'reason': f'Moderate price increase expected ({price_change_pct:.1f}%). Can wait for better prices.',
-                'confidence': confidence
+                'reason': f'Moderate price increase expected ({price_change_pct:.1f}%). Can wait for better prices if you have storage.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': break_even_days,
+                    'recommendation': 'HOLD_IF_CONVENIENT'
+                }
             }
         else:
             return {
                 'action': 'NEUTRAL',
-                'reason': f'Prices expected to remain stable (±{abs(price_change_pct):.1f}%). Sell based on your immediate needs.',
-                'confidence': confidence
+                'reason': f'Prices expected to remain stable (±{abs(price_change_pct):.1f}%). Sell based on your immediate needs and storage costs.',
+                'confidence': confidence,
+                'storage_analysis': {
+                    'storage_cost': round(total_storage_cost, 2),
+                    'potential_gain': round(potential_gain, 2),
+                    'net_gain': round(net_gain, 2),
+                    'break_even_days': 0,
+                    'recommendation': 'SELL_BASED_ON_CONVENIENCE'
+                }
             }
     
     def get_price_history(self, commodity: str, state: str, 
@@ -248,6 +321,90 @@ class MandiPricePredictor:
             for _, row in data.iterrows()
         ]
     
+    def get_nearby_mandi_prices(self, commodity: str, state: str) -> List[Dict]:
+        """Get prices from nearby mandis (markets) in the same state."""
+        if self.price_data is None:
+            return []
+        
+        # Get recent data for this commodity in the state
+        recent_data = self.price_data[
+            (self.price_data['Commodity'] == commodity) & 
+            (self.price_data['State'] == state)
+        ].copy()
+        
+        if recent_data.empty:
+            return []
+        
+        # Get last 7 days of data
+        recent_data = recent_data.tail(30)
+        
+        # Group by market and get latest price
+        market_prices = []
+        for market in recent_data['Market'].unique():
+            market_data = recent_data[recent_data['Market'] == market]
+            if not market_data.empty:
+                latest = market_data.iloc[-1]
+                avg_price = market_data['Modal_Price'].mean()
+                market_prices.append({
+                    'market': market,
+                    'latest_price': float(latest['Modal_Price']),
+                    'avg_price_7d': round(avg_price, 2),
+                    'date': latest['Arrival_Date'].strftime('%Y-%m-%d'),
+                    'distance_km': None  # Would need geocoding data
+                })
+        
+        # Sort by price (highest first)
+        market_prices.sort(key=lambda x: x['latest_price'], reverse=True)
+        return market_prices
+    
+    def get_seasonal_trends(self, commodity: str, state: str) -> Dict:
+        """Analyze seasonal price patterns for the commodity."""
+        if self.price_data is None:
+            return {'error': 'No data available'}
+        
+        data = self.price_data[
+            (self.price_data['Commodity'] == commodity) & 
+            (self.price_data['State'] == state)
+        ].copy()
+        
+        if data.empty:
+            data = self.price_data[self.price_data['Commodity'] == commodity].copy()
+        
+        if data.empty:
+            return {'error': 'No data available'}
+        
+        # Add month column
+        data['Month'] = data['Arrival_Date'].dt.month
+        
+        # Calculate average price by month
+        monthly_avg = data.groupby('Month')['Modal_Price'].agg(['mean', 'min', 'max', 'count']).reset_index()
+        
+        # Find best and worst months
+        best_month = monthly_avg.loc[monthly_avg['mean'].idxmax()]
+        worst_month = monthly_avg.loc[monthly_avg['mean'].idxmin()]
+        
+        month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        
+        return {
+            'commodity': commodity,
+            'state': state,
+            'current_month_best': data['Month'].iloc[-1] == best_month['Month'],
+            'best_month': {
+                'month': month_names[int(best_month['Month']) - 1],
+                'avg_price': round(best_month['mean'], 2),
+                'price_range': [round(best_month['min'], 2), round(best_month['max'], 2)]
+            },
+            'worst_month': {
+                'month': month_names[int(worst_month['Month']) - 1],
+                'avg_price': round(worst_month['mean'], 2)
+            },
+            'seasonal_pattern': monthly_avg.to_dict('records'),
+            'price_difference_pct': round(
+                ((best_month['mean'] - worst_month['mean']) / worst_month['mean']) * 100, 1
+            )
+        }
+    
     def get_market_insights(self, commodity: str, state: str) -> Dict:
         """Get comprehensive market insights."""
         stats = self.commodity_stats.get(commodity, {})
@@ -268,6 +425,12 @@ class MandiPricePredictor:
             
         recent_prices = recent_data.tail(7)['Modal_Price']
         
+        # Get nearby mandi prices
+        nearby_prices = self.get_nearby_mandi_prices(commodity, state)
+        
+        # Get seasonal trends
+        seasonal = self.get_seasonal_trends(commodity, state)
+        
         return {
             'commodity': commodity,
             'state': state if state in stats.get('states', []) else 'All States',
@@ -280,7 +443,9 @@ class MandiPricePredictor:
             'trend': stats.get('trend', 0),
             'recent_average': round(recent_prices.mean(), 2),
             'price_stability': 'STABLE' if stats.get('volatility', 1) < 0.2 else 'VOLATILE',
-            'available_states': stats.get('states', [])
+            'available_states': stats.get('states', []),
+            'nearby_mandi_prices': nearby_prices[:5],  # Top 5 markets
+            'seasonal_trends': seasonal
         }
 
 
