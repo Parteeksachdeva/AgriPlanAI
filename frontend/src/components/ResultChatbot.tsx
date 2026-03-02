@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import type { PredictionResult, PredictionFormData } from '@/types'
 import { askChatbot } from '@/api'
 import { useLanguage } from '@/i18n'
-import { Sprout, TrendingUp, Wallet, ClipboardList, Send, X, Minimize2, Maximize2, Bot } from 'lucide-react'
+import { Sprout, TrendingUp, Wallet, ClipboardList, Send, X, Minimize2, Maximize2, Bot, Landmark, Lightbulb } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -247,6 +247,8 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     { key: 'revenue', icon: Wallet, label: t('chatbot.quick.revenue'), query: t('chatbot.quick.revenue') },
     { key: 'prices', icon: TrendingUp, label: t('chatbot.quick.prices'), query: t('chatbot.quick.prices') },
     { key: 'inputs', icon: ClipboardList, label: t('chatbot.quick.inputs'), query: t('chatbot.quick.inputs') },
+    { key: 'schemes', icon: Landmark, label: t('chatbot.quick.schemes'), query: language === 'hi' ? 'सरकारी योजनाएं और सब्सिडी' : 'government schemes and subsidies for farmers' },
+    { key: 'tips', icon: Lightbulb, label: t('chatbot.quick.tips'), query: language === 'hi' ? 'खेती के सर्वोत्तम सुझाव' : 'best farming tips and practices' },
   ]
 
   const topCrop = result.recommendations[0]?.crop

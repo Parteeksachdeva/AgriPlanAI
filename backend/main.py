@@ -256,7 +256,8 @@ def ask_question(request: AskRequest):
             question=request.question,
             context=combined_context,
             language=request.language,
-            has_pdf_context=bool(pdf_context)
+            has_pdf_context=bool(pdf_context),
+            form_data=request.form_data
         )
         return AskResponse(answer=answer, context_used=combined_context)
     except Exception as e:
