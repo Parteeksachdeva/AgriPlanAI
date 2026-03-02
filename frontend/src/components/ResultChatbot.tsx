@@ -2,7 +2,14 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import type { PredictionResult, PredictionFormData } from '@/types'
 import { askChatbot } from '@/api'
 import { useLanguage } from '@/i18n'
-import { Sprout, TrendingUp, Wallet, ClipboardList, Send, X, Minimize2, Maximize2, Bot, Landmark, Lightbulb } from 'lucide-react'
+import { 
+  Sprout, TrendingUp, Wallet, ClipboardList, Send, X, Minimize2, Maximize2, 
+  Bot, Landmark, Lightbulb, Mic, MicOff, Download, Share2, 
+  History, Sparkles, Volume2, VolumeX, Expand, Shrink
+} from 'lucide-react'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SpeechRecognitionType = any
 
 interface ChatMessage {
   id: string
@@ -10,6 +17,14 @@ interface ChatMessage {
   content: string
   timestamp: Date
   isContextUpdate?: boolean
+}
+
+interface SavedConversation {
+  id: string
+  title: string
+  messages: ChatMessage[]
+  timestamp: Date
+  topCrop: string
 }
 
 interface ResultChatbotProps {
@@ -134,6 +149,18 @@ function generateContextKey(result: PredictionResult, formData: PredictionFormDa
   return `${topCrop}-${formData.state}-${formData.season}-${formData.area}`
 }
 
+// Text-to-speech function
+function speakText(text: string, lang: 'en' | 'hi' = 'en') {
+  if ('speechSynthesis' in window) {
+    // Remove markdown formatting for speech
+    const cleanText = text.replace(/\*\*/g, '').replace(/---/g, '')
+    const utterance = new SpeechSynthesisUtterance(cleanText)
+    utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-IN'
+    utterance.rate = 0.9
+    speechSynthesis.speak(utterance)
+  }
+}
+
 export function ResultChatbot({ result, formData }: ResultChatbotProps) {
   const { t, language } = useLanguage()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -141,11 +168,62 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [currentContextKey, setCurrentContextKey] = useState<string>('')
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isListening, setIsListening] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [savedConversations, setSavedConversations] = useState<SavedConversation[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const hasInitialized = useRef(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
+  const recognitionRef = useRef<SpeechRecognitionType | null>(null)
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      recognitionRef.current = new SpeechRecognition()
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = false
+      recognitionRef.current.lang = language === 'hi' ? 'hi-IN' : 'en-IN'
+      
+      recognitionRef.current.onresult = (event: { results: { transcript: string }[][] }) => {
+        const transcript = event.results[0][0].transcript
+        setInput(transcript)
+        setIsListening(false)
+      }
+      
+      recognitionRef.current.onerror = () => {
+        setIsListening(false)
+      }
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false)
+      }
+    }
+  }, [language])
+
+  // Load saved conversations from localStorage
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const saved = localStorage.getItem('agriplan-chat-history')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          setSavedConversations(parsed.map((c: SavedConversation) => ({
+            ...c,
+            timestamp: new Date(c.timestamp)
+          })))
+        } catch (e) {
+          console.error('Failed to load chat history:', e)
+        }
+      }
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Initialize or update chat when result/formData changes
   useEffect(() => {
@@ -191,6 +269,7 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     const handleClickOutside = (event: MouseEvent) => {
       if (chatContainerRef.current && !chatContainerRef.current.contains(event.target as Node)) {
         setIsOpen(false)
+        setShowHistory(false)
       }
     }
 
@@ -199,6 +278,32 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen])
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert(language === 'hi' ? 'आपके ब्राउज़र में वॉइस इनपुट समर्थित नहीं है' : 'Voice input is not supported in your browser')
+      return
+    }
+    
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      recognitionRef.current.start()
+      setIsListening(true)
+    }
+  }
+
+  const handleSpeak = (text: string) => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+    } else {
+      setIsSpeaking(true)
+      speakText(text, language)
+      setTimeout(() => setIsSpeaking(false), 5000)
+    }
+  }
 
   const handleSendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return
@@ -228,6 +333,9 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     }
     setMessages((prev) => [...prev, assistantMsg])
     setIsLoading(false)
+    
+    // Auto-speak the response if enabled (could add a setting for this)
+    // speakText(reply, language)
   }, [result, formData, t, language, isLoading])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -239,6 +347,69 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     setIsOpen(true)
     setIsMinimized(false)
     setUnreadCount(0)
+    setShowHistory(false)
+  }
+
+  const saveConversation = () => {
+    if (messages.length <= 1) return
+    
+    const topCrop = result.recommendations[0]?.crop ?? 'General'
+    const newConversation: SavedConversation = {
+      id: Date.now().toString(),
+      title: `${topCrop} - ${new Date().toLocaleDateString()}`,
+      messages: [...messages],
+      timestamp: new Date(),
+      topCrop,
+    }
+    
+    const updated = [newConversation, ...savedConversations].slice(0, 10) // Keep last 10
+    setSavedConversations(updated)
+    localStorage.setItem('agriplan-chat-history', JSON.stringify(updated))
+    
+    alert(language === 'hi' ? 'बातचीत सहेज ली गई!' : 'Conversation saved!')
+  }
+
+  const loadConversation = (conv: SavedConversation) => {
+    setMessages(conv.messages)
+    setShowHistory(false)
+  }
+
+  const exportConversation = () => {
+    if (messages.length <= 1) return
+    
+    const text = messages.map(m => 
+      `${m.role === 'user' ? 'You' : 'Kisan Mitra'}: ${m.content}`
+    ).join('\n\n')
+    
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `chat-${result.recommendations[0]?.crop || 'general'}-${new Date().toISOString().split('T')[0]}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const shareConversation = async () => {
+    if (messages.length <= 1) return
+    
+    const text = messages.map(m => 
+      `${m.role === 'user' ? 'You' : 'Kisan Mitra'}: ${m.content}`
+    ).join('\n\n')
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'My Farming Advice from AgriPlanAI',
+          text: text.substring(0, 500) + '...',
+        })
+      } catch {
+        // User cancelled
+      }
+    } else {
+      navigator.clipboard.writeText(text)
+      alert(language === 'hi' ? 'क्लिपबोर्ड में कॉपी किया गया!' : 'Copied to clipboard!')
+    }
   }
 
   const quickActions = [
@@ -306,9 +477,15 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
   return (
     <div 
       ref={chatContainerRef}
-      className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)]"
+      className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
+        isExpanded 
+          ? 'w-[90vw] h-[90vh] max-w-[1200px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' 
+          : 'w-[420px] max-w-[calc(100vw-48px)]'
+      }`}
     >
-      <div className="bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-col max-h-[600px]">
+      <div className={`bg-white rounded-2xl shadow-2xl border overflow-hidden flex flex-col ${
+        isExpanded ? 'h-full max-h-none' : 'max-h-[700px]'
+      }`}>
         {/* Header */}
         <div className="bg-gradient-to-r from-emerald-500 to-green-600 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -325,6 +502,49 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {/* History Button */}
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors relative"
+              title={language === 'hi' ? 'इतिहास' : 'History'}
+            >
+              <History className="h-4 w-4 text-white" />
+              {savedConversations.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-amber-400 rounded-full" />
+              )}
+            </button>
+            {/* Save Button */}
+            <button
+              onClick={saveConversation}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              title={language === 'hi' ? 'सहेजें' : 'Save'}
+            >
+              <Sparkles className="h-4 w-4 text-white" />
+            </button>
+            {/* Export Button */}
+            <button
+              onClick={exportConversation}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              title={language === 'hi' ? 'डाउनलोड' : 'Download'}
+            >
+              <Download className="h-4 w-4 text-white" />
+            </button>
+            {/* Share Button */}
+            <button
+              onClick={shareConversation}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              title={language === 'hi' ? 'साझा करें' : 'Share'}
+            >
+              <Share2 className="h-4 w-4 text-white" />
+            </button>
+            {/* Expand/Shrink Button */}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              title={isExpanded ? (language === 'hi' ? 'छोटा करें' : 'Shrink') : (language === 'hi' ? 'बड़ा करें' : 'Expand')}
+            >
+              {isExpanded ? <Shrink className="h-4 w-4 text-white" /> : <Expand className="h-4 w-4 text-white" />}
+            </button>
             <button
               onClick={() => setIsMinimized(true)}
               className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
@@ -339,6 +559,33 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
             </button>
           </div>
         </div>
+
+        {/* History Panel */}
+        {showHistory && (
+          <div className="border-b bg-slate-50 max-h-40 overflow-y-auto">
+            <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase">
+              {language === 'hi' ? 'सहेजी गई बातचीतें' : 'Saved Conversations'}
+            </div>
+            {savedConversations.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-slate-400">
+                {language === 'hi' ? 'कोई इतिहास नहीं' : 'No history yet'}
+              </div>
+            ) : (
+              savedConversations.map((conv) => (
+                <button
+                  key={conv.id}
+                  onClick={() => loadConversation(conv)}
+                  className="w-full px-3 py-2 text-left hover:bg-slate-100 transition-colors border-b border-slate-100 last:border-0"
+                >
+                  <div className="text-sm font-medium text-slate-700">{conv.title}</div>
+                  <div className="text-xs text-slate-400">
+                    {new Date(conv.timestamp).toLocaleDateString()} • {conv.messages.length} messages
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        )}
 
         {/* Quick Action Buttons */}
         <div className="px-3 py-2 border-b bg-slate-50">
@@ -358,7 +605,9 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[300px] max-h-[400px]">
+        <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
+          isExpanded ? 'min-h-0' : 'min-h-[300px] max-h-[400px]'
+        }`}>
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -376,6 +625,19 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
                 <div className="whitespace-pre-wrap">
                   {msg.role === 'assistant' ? formatMessageContent(msg.content) : msg.content}
                 </div>
+                {/* TTS Button for assistant messages */}
+                {msg.role === 'assistant' && (
+                  <button
+                    onClick={() => handleSpeak(msg.content)}
+                    className="mt-1 opacity-50 hover:opacity-100 transition-opacity"
+                  >
+                    {isSpeaking ? (
+                      <VolumeX className="h-3 w-3" />
+                    ) : (
+                      <Volume2 className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -397,22 +659,43 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
         {/* Input Area */}
         <form onSubmit={handleSubmit} className="p-3 border-t bg-white">
           <div className="flex gap-2">
+            {/* Voice Input Button */}
+            <button
+              type="button"
+              onClick={toggleListening}
+              className={`rounded-xl px-3 py-2 flex items-center justify-center transition-colors ${
+                isListening 
+                  ? 'bg-red-500 text-white animate-pulse' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              title={language === 'hi' ? 'बोलें' : 'Speak'}
+            >
+              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </button>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={t('chatbot.placeholder')}
+              placeholder={isListening 
+                ? (language === 'hi' ? 'सुन रहा हूं...' : 'Listening...')
+                : t('chatbot.placeholder')
+              }
               className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-50"
-              disabled={isLoading}
+              disabled={isLoading || isListening}
             />
             <button
               type="submit"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || !input.trim() || isListening}
               className="rounded-xl bg-emerald-600 px-3 py-2 text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 flex items-center justify-center"
             >
               <Send className="h-4 w-4" />
             </button>
           </div>
+          {isListening && (
+            <p className="text-xs text-center text-slate-400 mt-1">
+              {language === 'hi' ? 'बोलना समाप्त करने के लिए फिर से माइक दबाएं' : 'Press mic again to stop listening'}
+            </p>
+          )}
         </form>
       </div>
     </div>
