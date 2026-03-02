@@ -8,7 +8,8 @@ import {
   MapPin,
   Sun,
   Droplets,
-  ArrowRight
+  ArrowRight,
+  Globe
 } from 'lucide-react'
 import { useState } from 'react'
 import { useLanguage } from '@/i18n'
@@ -16,7 +17,7 @@ import { useLanguage } from '@/i18n'
 export function WelcomeScreen() {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
-  const { t } = useLanguage()
+  const { t, language, toggleLanguage } = useLanguage()
 
   const slides = [
     {
@@ -98,6 +99,21 @@ export function WelcomeScreen() {
             </span>
           </div>
           <div className="ml-auto flex items-center gap-4">
+            {/* Language Toggle */}
+            <button 
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+              title={language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
+            >
+              <Globe className="h-4 w-4" />
+              <span className={language === 'en' ? 'text-emerald-600 font-semibold' : 'text-slate-400'}>
+                {t('language.english')}
+              </span>
+              <span className="text-slate-400">|</span>
+              <span className={language === 'hi' ? 'text-emerald-600 font-semibold' : 'text-slate-400'}>
+                {t('language.hindi')}
+              </span>
+            </button>
             <button 
               onClick={() => navigate('/form')}
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"

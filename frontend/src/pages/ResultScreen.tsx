@@ -150,7 +150,7 @@ export function ResultScreen() {
                 <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
                   <CheckCircle className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-sm font-medium text-emerald-700">AI Analysis</span>
+                <span className="text-sm font-medium text-emerald-700">{t('form.submit.loading')}</span>
               </div>
               <div className="w-12 h-0.5 bg-emerald-300" />
               <div className="flex items-center gap-2">
