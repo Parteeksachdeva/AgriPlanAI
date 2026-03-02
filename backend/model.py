@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
 from sklearn.impute import SimpleImputer
 import os
 import json
+from datetime import datetime
 from thefuzz import process
 
 # Feature sets shared across models
@@ -18,7 +19,9 @@ CROP_FEATURES = CROP_CATEGORICAL + CROP_NUMERIC   # inputs for Model 1a
 YIELD_CATEGORICAL = ['crop']                      # simplified yield features
 YIELD_FEATURES = CROP_FEATURES + ['crop']         # inputs for Model 1b
 
-PRICE_FEATURES = ['State', 'Commodity']           # inputs for Model 2
+PRICE_CAT_FEATURES = ['State', 'Commodity']        # inputs for Model 2 (categorical)
+PRICE_NUM_FEATURES = ['month']                     # inputs for Model 2 (numeric)
+PRICE_FEATURES = PRICE_CAT_FEATURES + PRICE_NUM_FEATURES
 
 # Maps Kaggle crop labels → model2 Commodity names.
 # DEPRECATED: Moving to dynamic fuzzy matching in PricePredictionModel
@@ -64,7 +67,8 @@ def _build_yield_regressor_pipeline():
 
 def _build_price_regressor_pipeline():
     preprocessor = ColumnTransformer([
-        ('cat', OneHotEncoder(handle_unknown='ignore'), PRICE_FEATURES)
+        ('cat', OneHotEncoder(handle_unknown='ignore'), PRICE_CAT_FEATURES),
+        ('num', StandardScaler(), PRICE_NUM_FEATURES)
     ])
     return Pipeline([
         ('preprocessor', preprocessor),
@@ -123,26 +127,39 @@ class YieldPredictionModel:
         self.data_path = data_path
         self.pipeline = None
         self.yield_caps: dict = {}   # per-crop 99th pct cap used to bound predictions
+        self.yield_lookup: dict = {} # (state, crop) → avg_yield_t_ha from state_crop_yields.csv
+        self.national_avg: dict = {} # crop → national average yield (fallback)
+
+    def _load_yield_lookup(self):
+        """Load state × crop yield lookup from CSV (sourced from Indian agricultural statistics)."""
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        lookup_path = os.path.join(base_dir, "data", "state_crop_yields.csv")
+        if not os.path.exists(lookup_path):
+            print("Warning: state_crop_yields.csv not found — yield lookup unavailable.")
+            return
+        df = pd.read_csv(lookup_path)
+        self.yield_lookup = {
+            (row['state'], row['crop']): row['avg_yield_t_ha']
+            for _, row in df.iterrows()
+        }
+        self.national_avg = df.groupby('crop')['avg_yield_t_ha'].mean().to_dict()
+        print(f"Yield lookup loaded — {len(self.yield_lookup)} state-crop entries.")
 
     def train(self):
         if not os.path.exists(self.data_path):
             raise FileNotFoundError(f"Model 1b training data not found: {self.data_path}")
 
-    def train(self):
-        if not os.path.exists(self.data_path):
-            raise FileNotFoundError(f"Model 1b training data not found: {self.data_path}")
+        self._load_yield_lookup()
 
         df = pd.read_csv(self.data_path)
         if 'yield' not in df.columns:
-            print("Warning: 'yield' column missing in Model 1b data. Using default yield values.")
+            print("Warning: 'yield' column missing in Model 1b data. Using state yield lookup.")
             self.pipeline = "DUMMY"
             return
 
         df.columns = df.columns.str.lower()
-        # Store per-crop 99th percentile caps before filtering
         self.yield_caps = df.groupby('crop')['yield'].quantile(0.99).to_dict()
 
-        # Remove outliers above 99th percentile per crop
         p99 = df.groupby('crop')['yield'].transform(lambda x: x.quantile(0.99))
         df = df[df['yield'] <= p99].copy()
 
@@ -153,89 +170,58 @@ class YieldPredictionModel:
         self.pipeline.fit(X, y)
         print("Model 1b trained — yield regressor.")
 
-    def predict(self, input_data: dict) -> float:
+    @staticmethod
+    def _npk_factor(n: float, p: float, k: float) -> float:
+        """Compute a yield multiplier (0.6–1.2) from soil NPK values (kg/ha)."""
+        optimal_n, optimal_p, optimal_k = 80, 50, 40
+
+        n_factor = (0.7 + 0.3 * (n / optimal_n)) if n < optimal_n \
+            else (1.0 + 0.12 * min((n - optimal_n) / optimal_n, 1.0))
+        p_factor = (0.75 + 0.25 * (p / optimal_p)) if p < optimal_p \
+            else (1.0 + 0.08 * min((p - optimal_p) / optimal_p, 1.0))
+        k_factor = (0.80 + 0.20 * (k / optimal_k)) if k < optimal_k \
+            else (1.0 + 0.10 * min((k - optimal_k) / optimal_k, 1.0))
+
+        combined = (n_factor ** 0.45) * (p_factor ** 0.30) * (k_factor ** 0.25)
+        return max(0.6, min(1.2, combined))
+
+    def predict(self, input_data: dict, state: str = None) -> float:
         if self.pipeline is None:
             raise ValueError("Model 1b is not trained.")
 
+        crop = input_data.get('crop', 'rice').lower()
+        n = input_data.get('n_soil', 80) or 80
+        p = input_data.get('p_soil', 50) or 50
+        k = input_data.get('k_soil', 40) or 40
+
         if self.pipeline == "DUMMY":
-            # Return NPK-sensitive yield predictions
-            # Base yields for each crop (t/ha)
-            base_yields = {
-                'rice': 3.5, 'maize': 2.5, 'chickpea': 1.2, 'kidneybeans': 1.1,
-                'pigeonpeas': 1.0, 'mothbeans': 0.8, 'mungbean': 0.9, 'blackgram': 0.9,
-                'lentil': 1.0, 'pomegranate': 10.0, 'banana': 35.0, 'mango': 8.5,
-                'grapes': 20.0, 'watermelon': 25.0, 'muskmelon': 2.0, 'apple': 12.0,
-                'orange': 15.0, 'papaya': 40.0, 'coconut': 10.0, 'cotton': 2.0,
-                'jute': 2.2, 'coffee': 0.8, 'wheat': 5.0
-            }
-            
-            crop = input_data.get('crop', 'rice')
-            base_yield = base_yields.get(crop, 2.0)
-            
-            # Get NPK values from input (soil test values in kg/ha)
-            n = input_data.get('n_soil', 80)
-            p = input_data.get('p_soil', 50)
-            k = input_data.get('k_soil', 40)
-            
-            # Optimal NPK ranges based on soil test values (kg/ha)
-            # Source: ICAR, State Agricultural Universities soil fertility guidelines
-            optimal_n = 80   # Low: <50, Medium: 50-120, High: >120
-            optimal_p = 50   # Low: <25, Medium: 25-60, High: >60
-            optimal_k = 40   # Low: <15, Medium: 15-40, High: >40
-            
-            # Calculate nutrient factors based on agronomic research
-            # Yield response curves show diminishing returns beyond optimal levels
-            
-            # Nitrogen factor: Most critical nutrient
-            # Research shows yield reduction of 15-40% at low N, 5-15% increase at high N
-            if n < optimal_n:
-                # Linear reduction from 0.7 to 1.0 as N increases from 0 to optimal
-                n_factor = 0.7 + 0.3 * (n / optimal_n)
+            # 1. State-specific base yield (most accurate)
+            if state and (state, crop) in self.yield_lookup:
+                base_yield = self.yield_lookup[(state, crop)]
+            # 2. National average for this crop
+            elif crop in self.national_avg:
+                base_yield = self.national_avg[crop]
+            # 3. Hard fallback if CSV missing entirely
             else:
-                # Diminishing returns above optimal: max 12% increase
-                excess_ratio = min((n - optimal_n) / optimal_n, 1.0)  # Cap at 2x optimal
-                n_factor = 1.0 + 0.12 * excess_ratio
-            
-            # Phosphorus factor: Important for root development and flowering
-            # Low P causes 10-25% yield reduction
-            if p < optimal_p:
-                p_factor = 0.75 + 0.25 * (p / optimal_p)
-            else:
-                # Less response to excess P: max 8% increase
-                excess_ratio = min((p - optimal_p) / optimal_p, 1.0)
-                p_factor = 1.0 + 0.08 * excess_ratio
-            
-            # Potassium factor: Important for fruit quality and stress tolerance
-            # Low K causes 10-20% yield reduction
-            if k < optimal_k:
-                k_factor = 0.80 + 0.20 * (k / optimal_k)
-            else:
-                # Moderate response to excess K: max 10% increase
-                excess_ratio = min((k - optimal_k) / optimal_k, 1.0)
-                k_factor = 1.0 + 0.10 * excess_ratio
-            
-            # Combined factor using multiplicative approach (more realistic)
-            # Each nutrient acts on the yield independently
-            # Weighted combination: N (45%), P (30%), K (25%)
-            combined_factor = (n_factor ** 0.45) * (p_factor ** 0.30) * (k_factor ** 0.25)
-            
-            # Ensure factor stays within realistic bounds (0.6 to 1.2)
-            combined_factor = max(0.6, min(1.2, combined_factor))
-            
-            # Apply factor to base yield
-            adjusted_yield = base_yield * combined_factor
-            
-            return round(adjusted_yield, 3)
+                base_yield = {
+                    'rice': 3.5, 'wheat': 5.0, 'maize': 2.5, 'chickpea': 1.2,
+                    'kidneybeans': 1.1, 'pigeonpeas': 1.0, 'mothbeans': 0.8,
+                    'mungbean': 0.9, 'blackgram': 0.9, 'lentil': 1.0,
+                    'pomegranate': 10.0, 'banana': 35.0, 'mango': 8.5,
+                    'grapes': 20.0, 'watermelon': 25.0, 'muskmelon': 2.0,
+                    'apple': 12.0, 'orange': 15.0, 'papaya': 40.0, 'coconut': 10.0,
+                    'cotton': 2.0, 'jute': 2.2, 'coffee': 0.8, 'tea': 1.8,
+                    'mustard': 1.3,
+                }.get(crop, 2.0)
 
+            return round(base_yield * self._npk_factor(n, p, k), 3)
+
+        # ML path (used when training data has a 'yield' column)
         df = pd.DataFrame([input_data])
-        raw = float(self.pipeline.predict(df)[0])
-
-        # Clamp: non-negative and no higher than the 99th pct seen in training
-        raw = max(0.0, raw)
-        cap = self.yield_caps.get(input_data.get('crop'))
+        raw = max(0.0, float(self.pipeline.predict(df)[0]))
+        cap = self.yield_caps.get(crop)
         if cap is not None:
             raw = min(raw, cap)
-
         return raw
 
 
@@ -278,7 +264,9 @@ class PricePredictionModel:
             raise FileNotFoundError(f"Model 2 training data not found: {self.data_path}")
 
         df = pd.read_csv(self.data_path)
-        df = df[['State', 'Commodity', 'Modal_Price']].dropna()
+        df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], dayfirst=True)
+        df['month'] = df['Arrival_Date'].dt.month
+        df = df[['State', 'Commodity', 'month', 'Modal_Price']].dropna()
 
         # Build suitability map from historical trading data
         pairs = zip(df['State'], df['Commodity'])
@@ -315,21 +303,19 @@ class PricePredictionModel:
         Labels (traditional/common/rare) are stable regional tags based on historical records.
         """
         crop_lower = crop.lower()
-        
-        tier = "rare"
 
-        # 1. Check rich metadata first
+        # 1. Check metadata for traditional states
         if crop_lower in self.crop_metadata:
             meta = self.crop_metadata[crop_lower]
             if isinstance(meta, dict) and state in meta.get("traditional_states", []):
-                tier = "traditional"
-            else:
-                # 2. Fallback to historical Mandi trading records
-                commodity = self.get_commodity_mapping(crop)
-                if commodity and (state, commodity) in self.suitability_set:
-                    tier = "common"
+                return "traditional"
 
-        return tier
+        # 2. Fallback to historical Mandi trading records for all crops
+        commodity = self.get_commodity_mapping(crop)
+        if commodity and (state, commodity) in self.suitability_set:
+            return "common"
+
+        return "rare"
 
     def check_environmental_suitability(self, crop: str, rainfall: float, ph: float = None) -> float:
         """
@@ -391,7 +377,8 @@ class PricePredictionModel:
         if commodity is None:
             return self.global_avg_price
 
-        df = pd.DataFrame([{'State': state, 'Commodity': commodity}])
+        month = datetime.now().month
+        df = pd.DataFrame([{'State': state, 'Commodity': commodity, 'month': month}])
         return float(self.pipeline.predict(df)[0])
 
 

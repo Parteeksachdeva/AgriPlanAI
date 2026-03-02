@@ -1,0 +1,551 @@
+state,crop,avg_yield_t_ha
+Andhra Pradesh,rice,3.5
+Andhra Pradesh,wheat,1.5
+Andhra Pradesh,maize,3.5
+Andhra Pradesh,chickpea,0.9
+Andhra Pradesh,pigeonpeas,0.8
+Andhra Pradesh,mothbeans,0.4
+Andhra Pradesh,mungbean,0.7
+Andhra Pradesh,blackgram,0.7
+Andhra Pradesh,lentil,0.6
+Andhra Pradesh,kidneybeans,0.7
+Andhra Pradesh,mustard,0.9
+Andhra Pradesh,cotton,2.0
+Andhra Pradesh,jute,2.0
+Andhra Pradesh,coffee,0.7
+Andhra Pradesh,tea,1.0
+Andhra Pradesh,banana,35.0
+Andhra Pradesh,mango,10.0
+Andhra Pradesh,grapes,20.0
+Andhra Pradesh,pomegranate,10.0
+Andhra Pradesh,watermelon,28.0
+Andhra Pradesh,muskmelon,12.0
+Andhra Pradesh,apple,4.0
+Andhra Pradesh,orange,9.0
+Andhra Pradesh,papaya,45.0
+Andhra Pradesh,coconut,9.0
+Assam,rice,2.0
+Assam,wheat,1.5
+Assam,maize,2.0
+Assam,chickpea,0.7
+Assam,pigeonpeas,0.6
+Assam,mothbeans,0.4
+Assam,mungbean,0.5
+Assam,blackgram,0.5
+Assam,lentil,0.6
+Assam,kidneybeans,0.7
+Assam,mustard,1.1
+Assam,cotton,0.8
+Assam,jute,1.8
+Assam,coffee,0.5
+Assam,tea,2.2
+Assam,banana,22.0
+Assam,mango,7.0
+Assam,grapes,8.0
+Assam,pomegranate,7.0
+Assam,watermelon,18.0
+Assam,muskmelon,8.0
+Assam,apple,4.0
+Assam,orange,12.0
+Assam,papaya,32.0
+Assam,coconut,7.0
+Bihar,rice,2.2
+Bihar,wheat,2.8
+Bihar,maize,3.0
+Bihar,chickpea,1.0
+Bihar,pigeonpeas,1.0
+Bihar,mothbeans,0.4
+Bihar,mungbean,0.7
+Bihar,blackgram,0.7
+Bihar,lentil,0.8
+Bihar,kidneybeans,0.8
+Bihar,mustard,1.1
+Bihar,cotton,0.8
+Bihar,jute,2.0
+Bihar,coffee,0.5
+Bihar,tea,1.0
+Bihar,banana,28.0
+Bihar,mango,8.0
+Bihar,grapes,8.0
+Bihar,pomegranate,7.0
+Bihar,watermelon,22.0
+Bihar,muskmelon,10.0
+Bihar,apple,4.0
+Bihar,orange,8.0
+Bihar,papaya,35.0
+Bihar,coconut,6.0
+Chhattisgarh,rice,1.8
+Chhattisgarh,wheat,1.5
+Chhattisgarh,maize,2.0
+Chhattisgarh,chickpea,0.8
+Chhattisgarh,pigeonpeas,0.7
+Chhattisgarh,mothbeans,0.4
+Chhattisgarh,mungbean,0.5
+Chhattisgarh,blackgram,0.5
+Chhattisgarh,lentil,0.6
+Chhattisgarh,kidneybeans,0.7
+Chhattisgarh,mustard,0.9
+Chhattisgarh,cotton,1.2
+Chhattisgarh,jute,1.2
+Chhattisgarh,coffee,0.5
+Chhattisgarh,tea,1.0
+Chhattisgarh,banana,20.0
+Chhattisgarh,mango,7.0
+Chhattisgarh,grapes,8.0
+Chhattisgarh,pomegranate,7.0
+Chhattisgarh,watermelon,20.0
+Chhattisgarh,muskmelon,8.0
+Chhattisgarh,apple,4.0
+Chhattisgarh,orange,8.0
+Chhattisgarh,papaya,32.0
+Chhattisgarh,coconut,6.0
+Gujarat,rice,2.5
+Gujarat,wheat,3.8
+Gujarat,maize,2.8
+Gujarat,chickpea,1.0
+Gujarat,pigeonpeas,0.8
+Gujarat,mothbeans,0.5
+Gujarat,mungbean,0.7
+Gujarat,blackgram,0.5
+Gujarat,lentil,0.7
+Gujarat,kidneybeans,0.7
+Gujarat,mustard,1.4
+Gujarat,cotton,2.3
+Gujarat,jute,1.2
+Gujarat,coffee,0.5
+Gujarat,tea,1.0
+Gujarat,banana,35.0
+Gujarat,mango,9.5
+Gujarat,grapes,18.0
+Gujarat,pomegranate,10.0
+Gujarat,watermelon,22.0
+Gujarat,muskmelon,10.0
+Gujarat,apple,4.0
+Gujarat,orange,8.0
+Gujarat,papaya,40.0
+Gujarat,coconut,7.0
+Haryana,rice,3.8
+Haryana,wheat,4.8
+Haryana,maize,3.5
+Haryana,chickpea,1.0
+Haryana,pigeonpeas,0.8
+Haryana,mothbeans,0.4
+Haryana,mungbean,0.7
+Haryana,blackgram,0.6
+Haryana,lentil,0.7
+Haryana,kidneybeans,0.7
+Haryana,mustard,1.8
+Haryana,cotton,2.4
+Haryana,jute,1.2
+Haryana,coffee,0.5
+Haryana,tea,1.0
+Haryana,banana,22.0
+Haryana,mango,7.0
+Haryana,grapes,10.0
+Haryana,pomegranate,8.0
+Haryana,watermelon,25.0
+Haryana,muskmelon,12.0
+Haryana,apple,5.0
+Haryana,orange,8.0
+Haryana,papaya,35.0
+Haryana,coconut,6.0
+Himachal Pradesh,rice,2.5
+Himachal Pradesh,wheat,2.5
+Himachal Pradesh,maize,2.5
+Himachal Pradesh,chickpea,0.8
+Himachal Pradesh,pigeonpeas,0.6
+Himachal Pradesh,mothbeans,0.4
+Himachal Pradesh,mungbean,0.5
+Himachal Pradesh,blackgram,0.5
+Himachal Pradesh,lentil,0.7
+Himachal Pradesh,kidneybeans,1.0
+Himachal Pradesh,mustard,1.0
+Himachal Pradesh,cotton,0.8
+Himachal Pradesh,jute,1.2
+Himachal Pradesh,coffee,0.5
+Himachal Pradesh,tea,1.2
+Himachal Pradesh,banana,18.0
+Himachal Pradesh,mango,6.5
+Himachal Pradesh,grapes,10.0
+Himachal Pradesh,pomegranate,8.0
+Himachal Pradesh,watermelon,18.0
+Himachal Pradesh,muskmelon,8.0
+Himachal Pradesh,apple,13.0
+Himachal Pradesh,orange,10.0
+Himachal Pradesh,papaya,30.0
+Himachal Pradesh,coconut,6.0
+Jammu & Kashmir,rice,2.8
+Jammu & Kashmir,wheat,2.8
+Jammu & Kashmir,maize,2.0
+Jammu & Kashmir,chickpea,0.8
+Jammu & Kashmir,pigeonpeas,0.6
+Jammu & Kashmir,mothbeans,0.4
+Jammu & Kashmir,mungbean,0.5
+Jammu & Kashmir,blackgram,0.5
+Jammu & Kashmir,lentil,0.7
+Jammu & Kashmir,kidneybeans,1.0
+Jammu & Kashmir,mustard,1.0
+Jammu & Kashmir,cotton,0.8
+Jammu & Kashmir,jute,1.2
+Jammu & Kashmir,coffee,0.5
+Jammu & Kashmir,tea,1.0
+Jammu & Kashmir,banana,18.0
+Jammu & Kashmir,mango,6.5
+Jammu & Kashmir,grapes,10.0
+Jammu & Kashmir,pomegranate,8.0
+Jammu & Kashmir,watermelon,18.0
+Jammu & Kashmir,muskmelon,8.0
+Jammu & Kashmir,apple,15.0
+Jammu & Kashmir,orange,12.0
+Jammu & Kashmir,papaya,30.0
+Jammu & Kashmir,coconut,6.0
+Karnataka,rice,2.8
+Karnataka,wheat,1.5
+Karnataka,maize,2.8
+Karnataka,chickpea,1.0
+Karnataka,pigeonpeas,0.7
+Karnataka,mothbeans,0.4
+Karnataka,mungbean,0.7
+Karnataka,blackgram,0.6
+Karnataka,lentil,0.6
+Karnataka,kidneybeans,0.9
+Karnataka,mustard,0.9
+Karnataka,cotton,1.8
+Karnataka,jute,1.2
+Karnataka,coffee,0.9
+Karnataka,tea,1.5
+Karnataka,banana,30.0
+Karnataka,mango,8.0
+Karnataka,grapes,18.0
+Karnataka,pomegranate,10.0
+Karnataka,watermelon,25.0
+Karnataka,muskmelon,10.0
+Karnataka,apple,4.0
+Karnataka,orange,12.0
+Karnataka,papaya,45.0
+Karnataka,coconut,10.0
+Kerala,rice,2.5
+Kerala,wheat,1.2
+Kerala,maize,2.2
+Kerala,chickpea,0.7
+Kerala,pigeonpeas,0.6
+Kerala,mothbeans,0.4
+Kerala,mungbean,0.5
+Kerala,blackgram,0.5
+Kerala,lentil,0.6
+Kerala,kidneybeans,0.7
+Kerala,mustard,0.9
+Kerala,cotton,0.8
+Kerala,jute,1.2
+Kerala,coffee,0.8
+Kerala,tea,1.5
+Kerala,banana,30.0
+Kerala,mango,7.5
+Kerala,grapes,8.0
+Kerala,pomegranate,7.0
+Kerala,watermelon,20.0
+Kerala,muskmelon,8.0
+Kerala,apple,4.0
+Kerala,orange,9.0
+Kerala,papaya,35.0
+Kerala,coconut,13.0
+Madhya Pradesh,rice,2.0
+Madhya Pradesh,wheat,3.2
+Madhya Pradesh,maize,3.0
+Madhya Pradesh,chickpea,1.2
+Madhya Pradesh,pigeonpeas,0.7
+Madhya Pradesh,mothbeans,0.4
+Madhya Pradesh,mungbean,0.7
+Madhya Pradesh,blackgram,0.6
+Madhya Pradesh,lentil,0.9
+Madhya Pradesh,kidneybeans,0.8
+Madhya Pradesh,mustard,1.6
+Madhya Pradesh,cotton,1.8
+Madhya Pradesh,jute,1.2
+Madhya Pradesh,coffee,0.5
+Madhya Pradesh,tea,1.0
+Madhya Pradesh,banana,30.0
+Madhya Pradesh,mango,8.5
+Madhya Pradesh,grapes,12.0
+Madhya Pradesh,pomegranate,9.0
+Madhya Pradesh,watermelon,22.0
+Madhya Pradesh,muskmelon,10.0
+Madhya Pradesh,apple,4.0
+Madhya Pradesh,orange,10.0
+Madhya Pradesh,papaya,45.0
+Madhya Pradesh,coconut,6.0
+Maharashtra,rice,2.2
+Maharashtra,wheat,1.5
+Maharashtra,maize,2.5
+Maharashtra,chickpea,0.8
+Maharashtra,pigeonpeas,0.8
+Maharashtra,mothbeans,0.5
+Maharashtra,mungbean,0.7
+Maharashtra,blackgram,0.6
+Maharashtra,lentil,0.7
+Maharashtra,kidneybeans,1.0
+Maharashtra,mustard,1.0
+Maharashtra,cotton,1.5
+Maharashtra,jute,1.2
+Maharashtra,coffee,0.5
+Maharashtra,tea,1.0
+Maharashtra,banana,32.0
+Maharashtra,mango,8.0
+Maharashtra,grapes,22.0
+Maharashtra,pomegranate,12.0
+Maharashtra,watermelon,22.0
+Maharashtra,muskmelon,10.0
+Maharashtra,apple,5.0
+Maharashtra,orange,12.0
+Maharashtra,papaya,40.0
+Maharashtra,coconut,8.0
+Mizoram,rice,2.0
+Mizoram,wheat,1.2
+Mizoram,maize,2.0
+Mizoram,chickpea,0.7
+Mizoram,pigeonpeas,0.6
+Mizoram,mothbeans,0.4
+Mizoram,mungbean,0.5
+Mizoram,blackgram,0.5
+Mizoram,lentil,0.6
+Mizoram,kidneybeans,0.7
+Mizoram,mustard,0.9
+Mizoram,cotton,0.8
+Mizoram,jute,1.2
+Mizoram,coffee,0.5
+Mizoram,tea,1.0
+Mizoram,banana,20.0
+Mizoram,mango,6.5
+Mizoram,grapes,8.0
+Mizoram,pomegranate,7.0
+Mizoram,watermelon,18.0
+Mizoram,muskmelon,8.0
+Mizoram,apple,4.0
+Mizoram,orange,10.0
+Mizoram,papaya,30.0
+Mizoram,coconut,6.0
+Nagaland,rice,1.8
+Nagaland,wheat,1.2
+Nagaland,maize,2.0
+Nagaland,chickpea,0.7
+Nagaland,pigeonpeas,0.6
+Nagaland,mothbeans,0.4
+Nagaland,mungbean,0.5
+Nagaland,blackgram,0.5
+Nagaland,lentil,0.6
+Nagaland,kidneybeans,0.7
+Nagaland,mustard,0.9
+Nagaland,cotton,0.8
+Nagaland,jute,1.2
+Nagaland,coffee,0.5
+Nagaland,tea,1.0
+Nagaland,banana,18.0
+Nagaland,mango,6.5
+Nagaland,grapes,8.0
+Nagaland,pomegranate,7.0
+Nagaland,watermelon,18.0
+Nagaland,muskmelon,8.0
+Nagaland,apple,4.0
+Nagaland,orange,12.0
+Nagaland,papaya,30.0
+Nagaland,coconut,6.0
+Odisha,rice,2.2
+Odisha,wheat,1.8
+Odisha,maize,2.2
+Odisha,chickpea,0.8
+Odisha,pigeonpeas,0.7
+Odisha,mothbeans,0.4
+Odisha,mungbean,0.5
+Odisha,blackgram,0.5
+Odisha,lentil,0.6
+Odisha,kidneybeans,0.7
+Odisha,mustard,0.9
+Odisha,cotton,1.0
+Odisha,jute,1.8
+Odisha,coffee,0.5
+Odisha,tea,1.0
+Odisha,banana,22.0
+Odisha,mango,7.0
+Odisha,grapes,8.0
+Odisha,pomegranate,7.0
+Odisha,watermelon,20.0
+Odisha,muskmelon,8.0
+Odisha,apple,4.0
+Odisha,orange,8.0
+Odisha,papaya,32.0
+Odisha,coconut,7.0
+Punjab,rice,4.0
+Punjab,wheat,5.0
+Punjab,maize,4.0
+Punjab,chickpea,1.0
+Punjab,pigeonpeas,0.8
+Punjab,mothbeans,0.4
+Punjab,mungbean,0.7
+Punjab,blackgram,0.7
+Punjab,lentil,0.7
+Punjab,kidneybeans,0.8
+Punjab,mustard,1.5
+Punjab,cotton,2.6
+Punjab,jute,1.2
+Punjab,coffee,0.5
+Punjab,tea,1.0
+Punjab,banana,22.0
+Punjab,mango,7.0
+Punjab,grapes,10.0
+Punjab,pomegranate,8.0
+Punjab,watermelon,25.0
+Punjab,muskmelon,12.0
+Punjab,apple,5.0
+Punjab,orange,14.0
+Punjab,papaya,35.0
+Punjab,coconut,6.0
+Rajasthan,rice,2.0
+Rajasthan,wheat,3.5
+Rajasthan,maize,2.5
+Rajasthan,chickpea,1.0
+Rajasthan,pigeonpeas,0.7
+Rajasthan,mothbeans,0.6
+Rajasthan,mungbean,0.8
+Rajasthan,blackgram,0.5
+Rajasthan,lentil,0.8
+Rajasthan,kidneybeans,0.7
+Rajasthan,mustard,1.5
+Rajasthan,cotton,1.9
+Rajasthan,jute,1.2
+Rajasthan,coffee,0.5
+Rajasthan,tea,1.0
+Rajasthan,banana,20.0
+Rajasthan,mango,8.0
+Rajasthan,grapes,12.0
+Rajasthan,pomegranate,9.0
+Rajasthan,watermelon,22.0
+Rajasthan,muskmelon,11.0
+Rajasthan,apple,4.0
+Rajasthan,orange,8.0
+Rajasthan,papaya,35.0
+Rajasthan,coconut,6.0
+Tamil Nadu,rice,3.5
+Tamil Nadu,wheat,1.5
+Tamil Nadu,maize,3.5
+Tamil Nadu,chickpea,0.8
+Tamil Nadu,pigeonpeas,0.6
+Tamil Nadu,mothbeans,0.4
+Tamil Nadu,mungbean,0.7
+Tamil Nadu,blackgram,0.7
+Tamil Nadu,lentil,0.6
+Tamil Nadu,kidneybeans,0.7
+Tamil Nadu,mustard,0.9
+Tamil Nadu,cotton,2.0
+Tamil Nadu,jute,1.2
+Tamil Nadu,coffee,0.8
+Tamil Nadu,tea,2.0
+Tamil Nadu,banana,38.0
+Tamil Nadu,mango,8.5
+Tamil Nadu,grapes,16.0
+Tamil Nadu,pomegranate,10.0
+Tamil Nadu,watermelon,25.0
+Tamil Nadu,muskmelon,10.0
+Tamil Nadu,apple,4.0
+Tamil Nadu,orange,9.0
+Tamil Nadu,papaya,45.0
+Tamil Nadu,coconut,11.0
+Telangana,rice,3.2
+Telangana,wheat,1.5
+Telangana,maize,3.2
+Telangana,chickpea,0.9
+Telangana,pigeonpeas,0.7
+Telangana,mothbeans,0.4
+Telangana,mungbean,0.6
+Telangana,blackgram,0.7
+Telangana,lentil,0.6
+Telangana,kidneybeans,0.7
+Telangana,mustard,0.9
+Telangana,cotton,2.0
+Telangana,jute,1.2
+Telangana,coffee,0.5
+Telangana,tea,1.0
+Telangana,banana,30.0
+Telangana,mango,9.0
+Telangana,grapes,18.0
+Telangana,pomegranate,9.0
+Telangana,watermelon,25.0
+Telangana,muskmelon,11.0
+Telangana,apple,4.0
+Telangana,orange,9.0
+Telangana,papaya,40.0
+Telangana,coconut,8.0
+Uttar Pradesh,rice,2.5
+Uttar Pradesh,wheat,3.5
+Uttar Pradesh,maize,2.5
+Uttar Pradesh,chickpea,1.2
+Uttar Pradesh,pigeonpeas,1.0
+Uttar Pradesh,mothbeans,0.4
+Uttar Pradesh,mungbean,0.8
+Uttar Pradesh,blackgram,0.8
+Uttar Pradesh,lentil,1.0
+Uttar Pradesh,kidneybeans,1.0
+Uttar Pradesh,mustard,1.4
+Uttar Pradesh,cotton,1.5
+Uttar Pradesh,jute,1.8
+Uttar Pradesh,coffee,0.5
+Uttar Pradesh,tea,1.0
+Uttar Pradesh,banana,25.0
+Uttar Pradesh,mango,8.5
+Uttar Pradesh,grapes,10.0
+Uttar Pradesh,pomegranate,8.0
+Uttar Pradesh,watermelon,25.0
+Uttar Pradesh,muskmelon,12.0
+Uttar Pradesh,apple,5.0
+Uttar Pradesh,orange,9.0
+Uttar Pradesh,papaya,38.0
+Uttar Pradesh,coconut,6.0
+Uttarakhand,rice,2.5
+Uttarakhand,wheat,2.5
+Uttarakhand,maize,2.0
+Uttarakhand,chickpea,0.8
+Uttarakhand,pigeonpeas,0.7
+Uttarakhand,mothbeans,0.4
+Uttarakhand,mungbean,0.5
+Uttarakhand,blackgram,0.5
+Uttarakhand,lentil,0.8
+Uttarakhand,kidneybeans,1.0
+Uttarakhand,mustard,1.0
+Uttarakhand,cotton,0.8
+Uttarakhand,jute,1.2
+Uttarakhand,coffee,0.5
+Uttarakhand,tea,1.2
+Uttarakhand,banana,18.0
+Uttarakhand,mango,6.5
+Uttarakhand,grapes,10.0
+Uttarakhand,pomegranate,8.0
+Uttarakhand,watermelon,18.0
+Uttarakhand,muskmelon,8.0
+Uttarakhand,apple,10.0
+Uttarakhand,orange,10.0
+Uttarakhand,papaya,30.0
+Uttarakhand,coconut,6.0
+West Bengal,rice,2.8
+West Bengal,wheat,2.5
+West Bengal,maize,3.0
+West Bengal,chickpea,0.8
+West Bengal,pigeonpeas,0.7
+West Bengal,mothbeans,0.4
+West Bengal,mungbean,0.6
+West Bengal,blackgram,0.6
+West Bengal,lentil,0.8
+West Bengal,kidneybeans,0.7
+West Bengal,mustard,1.2
+West Bengal,cotton,0.8
+West Bengal,jute,2.5
+West Bengal,coffee,0.5
+West Bengal,tea,2.0
+West Bengal,banana,25.0
+West Bengal,mango,8.0
+West Bengal,grapes,8.0
+West Bengal,pomegranate,7.0
+West Bengal,watermelon,22.0
+West Bengal,muskmelon,10.0
+West Bengal,apple,4.0
+West Bengal,orange,8.0
+West Bengal,papaya,35.0
+West Bengal,coconut,7.0

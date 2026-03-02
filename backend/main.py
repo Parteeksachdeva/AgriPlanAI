@@ -137,7 +137,7 @@ def predict(data: PredictionInput):
       2. Model 1b  → predicted yield per crop (regression or fallback)
       3. Model 2   → predicted mandi price per crop (regression, INR/quintal)
       4. Suitability → Check if crop is historically grown in the state
-      5. App layer → expected_revenue = yield × area × 10 × avg_price
+      5. App layer → expected_revenue = yield x area x avg_price
     """
     try:
         input_dict = data.model_dump()
@@ -154,7 +154,6 @@ def predict(data: PredictionInput):
             'humidity': input_dict.get('humidity'),
             'ph': input_dict.get('ph'),
             'rainfall': input_dict.get('annual_rainfall'),
-            'area': input_dict.get('area')
         }
 
         # Step 1 — crop recommendations
@@ -184,8 +183,8 @@ def predict(data: PredictionInput):
             if user_season != "Whole Year" and crop_season == "Whole Year" and suitability == "rare":
                 continue
 
-            # Step 2 — yield prediction for this crop
-            predicted_yield = yield_predictor.predict({**base_features, 'crop': crop})
+            # Step 2 — yield prediction for this crop (state-specific lookup + NPK factor)
+            predicted_yield = yield_predictor.predict({**base_features, 'crop': crop}, state=selected_state)
 
             # Step 3 — mandi price prediction for this crop in the given state
             avg_price = price_predictor.predict(
@@ -199,8 +198,9 @@ def predict(data: PredictionInput):
                 input_dict.get('ph')
             )
             
-            # If environmental score is very low, we skip or heavily penalize
-            if env_score < 0.05:
+            # Skip crops that are environmentally very unsuitable.
+            # check_environmental_suitability floor is 0.1; < 0.15 means two severe penalties.
+            if env_score < 0.15:
                 continue
 
             # Step 5 — revenue: yield(t/ha) × area(ha) × 10(quintal/t) × price(INR/quintal)
@@ -218,10 +218,9 @@ def predict(data: PredictionInput):
                 suitability=suitability,
             ))
 
-        # Balanced Ranking: Suitability weighting revenue
-        # Boost traditional crops even more (3.0x) to ensure they show up as top picks.
-        suitability_map = {"traditional": 3.0, "common": 1.5, "rare": 0.5}
-        results.sort(key=lambda x: suitability_map.get(x.suitability, 0) * x.expected_revenue, reverse=True)
+        # Balanced Ranking: nudge traditional/common crops up without drowning ML signal.
+        suitability_map = {"traditional": 2.0, "common": 1.2, "rare": 0.7}
+        results.sort(key=lambda x: suitability_map.get(x.suitability, 1.0) * x.expected_revenue, reverse=True)
         return PredictionOutput(recommendations=results[:top_n])
 
     except ValueError as e:
