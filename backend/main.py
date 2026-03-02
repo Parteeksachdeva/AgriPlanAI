@@ -445,23 +445,56 @@ def get_ai_analysis(request: AIAnalysisRequest):
         else:
             yield_factors['npk_factor'] *= min(1.10, 1.0 + 0.10 * ((k - 50) / 50))
         
-        # Climate factor
+        # Climate factor - more realistic variation based on rainfall
+        # Crop water requirements vary significantly
         rainfall = request.annual_rainfall
-        if rainfall < 500:
-            yield_factors['climate_factor'] = 0.85
-        elif rainfall > 1500:
+        crop = request.crop.lower()
+        
+        # Get crop-specific rainfall requirements from metadata
+        meta = price_predictor.crop_metadata.get(crop, {})
+        min_rf = meta.get('min_rainfall', 500)
+        max_rf = meta.get('max_rainfall', 1500)
+        
+        if rainfall < min_rf * 0.5:
+            # Severe deficit - major yield loss
+            yield_factors['climate_factor'] = 0.60
+        elif rainfall < min_rf * 0.8:
+            # Moderate deficit
+            yield_factors['climate_factor'] = 0.75
+        elif rainfall < min_rf:
+            # Slight deficit
+            yield_factors['climate_factor'] = 0.88
+        elif rainfall > max_rf * 1.5:
+            # Excess rainfall - flooding risk
+            yield_factors['climate_factor'] = 0.70
+        elif rainfall > max_rf:
+            # Above optimal
             yield_factors['climate_factor'] = 0.90
         else:
-            yield_factors['climate_factor'] = 0.95
+            # Optimal range
+            yield_factors['climate_factor'] = 1.0
         
-        # Soil pH factor
+        # Soil pH factor - crop-specific optimal ranges
         ph = request.ph or 6.5
-        if 6.0 <= ph <= 7.0:
+        
+        # Get crop-specific pH range from metadata
+        ph_min = meta.get('ph_min', 5.5)
+        ph_max = meta.get('ph_max', 7.5)
+        ph_optimal_min = max(ph_min, 6.0)
+        ph_optimal_max = min(ph_max, 7.0)
+        
+        if ph_optimal_min <= ph <= ph_optimal_max:
+            # Optimal pH range
             yield_factors['soil_factor'] = 1.0
-        elif 5.5 <= ph < 6.0 or 7.0 < ph <= 7.5:
+        elif ph_min <= ph < ph_optimal_min or ph_optimal_max < ph <= ph_max:
+            # Acceptable but not optimal
             yield_factors['soil_factor'] = 0.90
-        else:
+        elif (ph_min - 0.5) <= ph < ph_min or ph_max < ph <= (ph_max + 0.5):
+            # Marginal - yield reduction expected
             yield_factors['soil_factor'] = 0.75
+        else:
+            # Outside tolerable range - significant yield loss
+            yield_factors['soil_factor'] = 0.55
         
         # 4. Get market trend data
         commodity = price_predictor.get_commodity_mapping(request.crop)

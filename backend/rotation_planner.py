@@ -149,8 +149,19 @@ class RotationPlanner:
         yearly_profits = []
         for crop in crop_sequence:
             revenue = crop.typical_yield * 10 * crop.market_price  # ₹/ha
-            # Estimated costs (simplified)
-            costs = revenue * 0.45  # ~45% cost ratio
+            # Estimated costs based on crop type (more realistic)
+            # Cereals: 55-60%, Pulses: 50-55%, Vegetables: 60-65%, Cash crops: 50-60%
+            if crop.name in ['Rice', 'Wheat', 'Maize']:
+                cost_ratio = 0.58
+            elif crop.name in ['Moong', 'Chickpea', 'Lentil', 'Pigeonpeas']:
+                cost_ratio = 0.52
+            elif crop.name in ['Tomato', 'Potato', 'Onion']:
+                cost_ratio = 0.62
+            elif crop.name in ['Cotton', 'Sugarcane']:
+                cost_ratio = 0.55
+            else:
+                cost_ratio = 0.55  # Default for other crops
+            costs = revenue * cost_ratio
             profit = revenue - costs
             yearly_profits.append({
                 'crop': crop.name,
@@ -162,15 +173,46 @@ class RotationPlanner:
         
         total_profit = sum(y['profit'] for y in yearly_profits)
         
-        # Soil health score (0-100)
-        # Positive N balance = better soil health
-        soil_score = 50 + (total_n_balance / 3)  # Base 50, adjust by N balance
-        soil_score = max(20, min(95, soil_score))  # Clamp between 20-95
+        # Realistic Soil Health Score (0-100)
+        # Based on multiple factors: N balance, crop diversity, legume inclusion, root diversity
+        
+        # 1. Base score for managed agricultural soil
+        soil_score = 60
+        
+        # 2. Nitrogen balance impact (±20 points)
+        # Normalize: -150 to +150 kg N/ha range maps to -20 to +20 points
+        n_impact = max(-20, min(20, total_n_balance / 7.5))
+        soil_score += n_impact
+        
+        # 3. Crop diversity bonus (up to +10 points)
+        # Different crop families/seasons improve soil biology and structure
+        unique_seasons = len(set(c.season for c in crop_sequence))
+        diversity_bonus = (unique_seasons - 1) * 5  # 0, 5, or 10 points
+        soil_score += diversity_bonus
+        
+        # 4. Legume inclusion bonus (+10 points)
+        # Legumes improve soil structure, organic matter, and microbial activity
+        has_legume = any(c.nitrogen_balance > 20 for c in crop_sequence)
+        if has_legume:
+            soil_score += 10
+        
+        # 5. Water requirement diversity (+5 points)
+        # Mix of water requirements indicates better soil adaptation
+        water_types = len(set(c.water_requirement for c in crop_sequence))
+        if water_types >= 2:
+            soil_score += 5
+        
+        # Clamp final score between 25-95
+        soil_score = max(25, min(95, soil_score))
         
         # Generate benefits description
         benefits = []
         if total_n_balance > 0:
             benefits.append(f"Adds {total_n_balance:.0f} kg N/ha to soil")
+        elif total_n_balance > -50:
+            benefits.append(f"Low nitrogen depletion ({total_n_balance:.0f} kg N/ha)")
+        if has_legume:
+            benefits.append("Includes nitrogen-fixing legume crop")
         if any(c.water_requirement == 'Low' for c in crop_sequence):
             benefits.append("Includes drought-resistant crops")
         if len(set(c.season for c in crop_sequence)) >= 2:
@@ -207,11 +249,18 @@ class RotationPlanner:
         
         for crop_name, crop in self.crops.items():
             if crop.nitrogen_balance > 20:  # N-fixing crops
+                # Crop-specific cost ratios for realistic profit calculation
+                if crop.name in ['Moong', 'Chickpea', 'Lentil', 'Pigeonpeas']:
+                    cost_ratio = 0.52
+                else:
+                    cost_ratio = 0.55
+                revenue = crop.typical_yield * 10 * crop.market_price
+                profit = revenue * (1 - cost_ratio)
                 recovery_crops.append({
                     'crop': crop.name,
                     'nitrogen_added': crop.nitrogen_balance,
                     'season': crop.season,
-                    'profit': round(crop.typical_yield * 10 * crop.market_price * 0.55, 0),
+                    'profit': round(profit, 0),
                     'reason': f"Fixes {crop.nitrogen_balance:.0f} kg N/ha - prepares soil for {target.name}"
                 })
         
