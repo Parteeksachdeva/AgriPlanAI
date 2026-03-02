@@ -77,6 +77,9 @@ class PredictionOutput(BaseModel):
 
 class AskRequest(BaseModel):
     question: str
+    language: str = "en"  # 'en' or 'hi'
+    current_recommendations: list[CropResult] = []
+    form_data: dict = {}
 
 
 class AskResponse(BaseModel):
@@ -230,9 +233,32 @@ def predict(data: PredictionInput):
 @app.post("/api/ask", response_model=AskResponse)
 def ask_question(request: AskRequest):
     try:
-        context = get_relevant_context(request.question)
-        answer = generate_answer(request.question, context)
-        return AskResponse(answer=answer, context_used=context)
+        # Get context from RAG (PDF documents)
+        pdf_context = get_relevant_context(request.question)
+        
+        # Build screen context from current recommendations
+        screen_context = ""
+        if request.current_recommendations:
+            screen_context = "Current Crop Recommendations:\n"
+            for i, rec in enumerate(request.current_recommendations[:5], 1):
+                screen_context += f"{i}. {rec.crop}: {rec.predicted_yield:.2f} tonnes/hectare, ₹{rec.avg_price:.0f}/quintal, ₹{rec.expected_revenue:.0f} expected revenue ({rec.suitability})\n"
+        
+        if request.form_data:
+            screen_context += "\nFarm Details:\n"
+            for key, value in request.form_data.items():
+                if value is not None:
+                    screen_context += f"- {key}: {value}\n"
+        
+        # Combine PDF context with screen context
+        combined_context = f"{pdf_context}\n\n{screen_context}" if pdf_context else screen_context
+        
+        answer = generate_answer(
+            question=request.question,
+            context=combined_context,
+            language=request.language,
+            has_pdf_context=bool(pdf_context)
+        )
+        return AskResponse(answer=answer, context_used=combined_context)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"RAG query failed: {str(e)}")
 

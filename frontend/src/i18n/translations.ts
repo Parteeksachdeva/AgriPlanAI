@@ -137,6 +137,24 @@ export const translations = {
     'common.back': 'Back',
     'common.close': 'Close',
     'common.learnMore': 'Learn More',
+
+    // Chatbot
+    'chatbot.greeting': 'I\'m your crop recommendation assistant. Ask me about your top crop, expected revenue, predicted yield, mandi prices, or your input summary. Try: "Which crop is most profitable?", "What\'s the yield for the top crop?", or "Show me my inputs."',
+    'chatbot.thinking': 'Thinking...',
+    'chatbot.placeholder': 'Ask about your recommendations...',
+    'chatbot.quick.topCrop': 'Top Crop',
+    'chatbot.quick.yield': 'Expected Yield',
+    'chatbot.quick.revenue': 'Revenue',
+    'chatbot.quick.prices': 'Mandi Prices',
+    'chatbot.quick.inputs': 'My Inputs',
+    'chatbot.response.topCrop': 'The most profitable crop for your conditions is **{crop}** with expected revenue of **₹{revenue}**.\n\nFull ranking:\n{list}',
+    'chatbot.response.yield': 'The predicted yield for **{crop}** (top recommendation) is **{yield} tonnes per hectare**.',
+    'chatbot.response.revenue': 'The expected revenue for **{crop}** is **₹{revenue}** (based on {area} ha × {yield} t/ha × 10 quintals/t × ₹{price}/quintal).',
+    'chatbot.response.prices': 'Predicted mandi prices:\n{list}',
+    'chatbot.response.inputs': '**Your inputs:**\n{inputs}',
+    'chatbot.response.fallback': 'I can answer questions about your **top crop**, **predicted yield**, **expected revenue**, **mandi prices**, or **input summary**. What would you like to know?',
+    'chatbot.response.ragFallback': 'I can answer questions about your **top crop**, **predicted yield**, **expected revenue**, **mandi prices**, or **input summary**. For other questions, I\'ll search my knowledge base. What would you like to know?',
+    'chatbot.contextUpdated': 'I\'ve updated my knowledge with your new recommendations. Ask me anything about **{crop}** and the other suggested crops!',
   },
 
   hi: {
@@ -275,6 +293,24 @@ export const translations = {
     'common.back': 'पीछे',
     'common.close': 'बंद करें',
     'common.learnMore': 'और जानें',
+
+    // Chatbot
+    'chatbot.greeting': 'मैं आपका फसल सिफारिश सहायक हूं। अपनी शीर्ष फसल, अपेक्षित राजस्व, अनुमानित उपज, मंडी कीमतों, या अपने इनपुट सारांश के बारे में मुझसे पूछें। कोशिश करें: "सबसे लाभदायक फसल कौन सी है?", "शीर्ष फसल की उपज क्या है?", या "मेरे इनपुट दिखाएं।"',
+    'chatbot.thinking': 'सोच रहा हूं...',
+    'chatbot.placeholder': 'अपनी सिफारिशों के बारे में पूछें...',
+    'chatbot.quick.topCrop': 'शीर्ष फसल',
+    'chatbot.quick.yield': 'अपेक्षित उपज',
+    'chatbot.quick.revenue': 'राजस्व',
+    'chatbot.quick.prices': 'मंडी कीमतें',
+    'chatbot.quick.inputs': 'मेरे इनपुट',
+    'chatbot.response.topCrop': 'आपकी स्थितियों के लिए सबसे लाभदायक फसल **{crop}** है जिसका अपेक्षित राजस्व **₹{revenue}** है।\n\nपूरी रैंकिंग:\n{list}',
+    'chatbot.response.yield': '**{crop}** (शीर्ष सिफारिश) के लिए अनुमानित उपज **{yield} टन प्रति हेक्टेयर** है।',
+    'chatbot.response.revenue': '**{crop}** के लिए अपेक्षित राजस्व **₹{revenue}** है ({area} हेक्टेयर × {yield} टन/हेक्टेयर × 10 क्विंटल/टन × ₹{price}/क्विंटल के आधार पर)।',
+    'chatbot.response.prices': 'अनुमानित मंडी कीमतें:\n{list}',
+    'chatbot.response.inputs': '**आपके इनपुट:**\n{inputs}',
+    'chatbot.response.fallback': 'मैं आपकी **शीर्ष फसल**, **अनुमानित उपज**, **अपेक्षित राजस्व**, **मंडी कीमतों**, या **इनपुट सारांश** के बारे में प्रश्नों का उत्तर दे सकता हूं। आप क्या जानना चाहेंगे?',
+    'chatbot.response.ragFallback': 'मैं आपकी **शीर्ष फसल**, **अनुमानित उपज**, **अपेक्षित राजस्व**, **मंडी कीमतों**, या **इनपुट सारांश** के बारे में प्रश्नों का उत्तर दे सकता हूं। अन्य प्रश्नों के लिए, मैं अपने ज्ञान आधार को खोजूंगा। आप क्या जानना चाहेंगे?',
+    'chatbot.contextUpdated': 'मैंने अपने ज्ञान को आपकी नई सिफारिशों के साथ अपडेट कर लिया है। **{crop}** और अन्य सुझाई गई फसलों के बारे में कुछ भी पूछें!',
   },
 };
 

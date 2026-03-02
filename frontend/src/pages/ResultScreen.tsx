@@ -536,10 +536,8 @@ export function ResultScreen() {
           </div>
         </div>
 
-        {/* Chatbot Section */}
-        <div className="mt-8">
-          <ResultChatbot result={result} formData={formData} />
-        </div>
+        {/* Floating Chatbot */}
+        <ResultChatbot result={result} formData={formData} />
       </div>
     </div>
   )
