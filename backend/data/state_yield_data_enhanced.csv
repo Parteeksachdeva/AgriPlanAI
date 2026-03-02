@@ -1,0 +1,861 @@
+state,crop,yield_t_ha,data_source,year
+Tamil Nadu,rice,3.85,DES_2022_23,2023
+Tamil Nadu,wheat,3.6,estimated,2023
+Tamil Nadu,maize,4.15,DES_2022_23,2023
+Tamil Nadu,chickpea,1.2,estimated,2023
+Tamil Nadu,kidneybeans,0.96,estimated,2023
+Tamil Nadu,pigeonpeas,0.96,estimated,2023
+Tamil Nadu,mothbeans,0.48,estimated,2023
+Tamil Nadu,mungbean,0.84,estimated,2023
+Tamil Nadu,blackgram,0.72,estimated,2023
+Tamil Nadu,lentil,0.96,estimated,2023
+Tamil Nadu,pomegranate,12.0,estimated,2023
+Tamil Nadu,banana,42.0,estimated,2023
+Tamil Nadu,mango,9.6,estimated,2023
+Tamil Nadu,grapes,24.0,estimated,2023
+Tamil Nadu,watermelon,30.0,estimated,2023
+Tamil Nadu,muskmelon,14.4,estimated,2023
+Tamil Nadu,apple,14.4,estimated,2023
+Tamil Nadu,orange,12.0,estimated,2023
+Tamil Nadu,papaya,48.0,estimated,2023
+Tamil Nadu,coconut,12.5,DES_2022_23,2023
+Tamil Nadu,cotton,1.95,DES_2022_23,2023
+Tamil Nadu,jute,2.64,estimated,2023
+Tamil Nadu,coffee,0.75,DES_2022_23,2023
+Tamil Nadu,tea,1.85,DES_2022_23,2023
+Tamil Nadu,mustard,1.44,estimated,2023
+Tamil Nadu,tomato,30.0,estimated,2023
+Tamil Nadu,onion,18.0,estimated,2023
+Tamil Nadu,potato,24.0,estimated,2023
+Tamil Nadu,brinjal,24.0,estimated,2023
+Tamil Nadu,green chilli,9.6,estimated,2023
+Tamil Nadu,carrot,18.0,estimated,2023
+Tamil Nadu,cabbage,30.0,estimated,2023
+Tamil Nadu,cauliflower,24.0,estimated,2023
+Tamil Nadu,bottle gourd,18.0,estimated,2023
+Tamil Nadu,bitter gourd,14.4,estimated,2023
+Tamil Nadu,pumpkin,18.0,estimated,2023
+Tamil Nadu,bhindi,12.0,estimated,2023
+Tamil Nadu,garlic,9.6,estimated,2023
+Tamil Nadu,ginger,12.0,estimated,2023
+Tamil Nadu,coriander,3.6,estimated,2023
+Tamil Nadu,drumstick,14.4,estimated,2023
+Tamil Nadu,sweet potato,18.0,estimated,2023
+Tamil Nadu,tapioca,30.0,estimated,2023
+Kerala,rice,2.45,DES_2022_23,2023
+Kerala,wheat,2.85,estimated,2023
+Kerala,maize,2.85,estimated,2023
+Kerala,chickpea,0.95,estimated,2023
+Kerala,kidneybeans,0.76,estimated,2023
+Kerala,pigeonpeas,0.76,estimated,2023
+Kerala,mothbeans,0.38,estimated,2023
+Kerala,mungbean,0.66,estimated,2023
+Kerala,blackgram,0.57,estimated,2023
+Kerala,lentil,0.76,estimated,2023
+Kerala,pomegranate,9.5,estimated,2023
+Kerala,banana,33.25,estimated,2023
+Kerala,mango,7.6,estimated,2023
+Kerala,grapes,19.0,estimated,2023
+Kerala,watermelon,23.75,estimated,2023
+Kerala,muskmelon,11.4,estimated,2023
+Kerala,apple,11.4,estimated,2023
+Kerala,orange,9.5,estimated,2023
+Kerala,papaya,38.0,estimated,2023
+Kerala,coconut,14.5,DES_2022_23,2023
+Kerala,cotton,1.71,estimated,2023
+Kerala,jute,2.09,estimated,2023
+Kerala,coffee,0.95,DES_2022_23,2023
+Kerala,tea,2.15,DES_2022_23,2023
+Kerala,mustard,1.14,estimated,2023
+Kerala,tomato,23.75,estimated,2023
+Kerala,onion,14.25,estimated,2023
+Kerala,potato,19.0,estimated,2023
+Kerala,brinjal,19.0,estimated,2023
+Kerala,green chilli,7.6,estimated,2023
+Kerala,carrot,14.25,estimated,2023
+Kerala,cabbage,23.75,estimated,2023
+Kerala,cauliflower,19.0,estimated,2023
+Kerala,bottle gourd,14.25,estimated,2023
+Kerala,bitter gourd,11.4,estimated,2023
+Kerala,pumpkin,14.25,estimated,2023
+Kerala,bhindi,9.5,estimated,2023
+Kerala,garlic,7.6,estimated,2023
+Kerala,ginger,3.25,DES_2022_23,2023
+Kerala,coriander,2.85,estimated,2023
+Kerala,drumstick,11.4,estimated,2023
+Kerala,sweet potato,14.25,estimated,2023
+Kerala,tapioca,23.75,estimated,2023
+Gujarat,rice,2.55,DES_2022_23,2023
+Gujarat,wheat,3.85,DES_2022_23,2023
+Gujarat,maize,2.65,DES_2022_23,2023
+Gujarat,chickpea,1.15,estimated,2023
+Gujarat,kidneybeans,0.92,estimated,2023
+Gujarat,pigeonpeas,0.92,estimated,2023
+Gujarat,mothbeans,0.46,estimated,2023
+Gujarat,mungbean,0.8,estimated,2023
+Gujarat,blackgram,0.69,estimated,2023
+Gujarat,lentil,0.92,estimated,2023
+Gujarat,pomegranate,11.5,estimated,2023
+Gujarat,banana,40.25,estimated,2023
+Gujarat,mango,9.2,estimated,2023
+Gujarat,grapes,23.0,estimated,2023
+Gujarat,watermelon,28.75,estimated,2023
+Gujarat,muskmelon,13.8,estimated,2023
+Gujarat,apple,13.8,estimated,2023
+Gujarat,orange,11.5,estimated,2023
+Gujarat,papaya,46.0,estimated,2023
+Gujarat,coconut,11.5,estimated,2023
+Gujarat,cotton,2.45,DES_2022_23,2023
+Gujarat,jute,2.53,estimated,2023
+Gujarat,coffee,0.92,estimated,2023
+Gujarat,tea,1.72,estimated,2023
+Gujarat,mustard,1.38,estimated,2023
+Gujarat,tomato,28.75,estimated,2023
+Gujarat,onion,17.25,estimated,2023
+Gujarat,potato,23.0,estimated,2023
+Gujarat,brinjal,23.0,estimated,2023
+Gujarat,green chilli,9.2,estimated,2023
+Gujarat,carrot,17.25,estimated,2023
+Gujarat,cabbage,28.75,estimated,2023
+Gujarat,cauliflower,23.0,estimated,2023
+Gujarat,bottle gourd,17.25,estimated,2023
+Gujarat,bitter gourd,13.8,estimated,2023
+Gujarat,pumpkin,17.25,estimated,2023
+Gujarat,bhindi,11.5,estimated,2023
+Gujarat,garlic,9.2,estimated,2023
+Gujarat,ginger,11.5,estimated,2023
+Gujarat,coriander,3.45,estimated,2023
+Gujarat,drumstick,13.8,estimated,2023
+Gujarat,sweet potato,17.25,estimated,2023
+Gujarat,tapioca,28.75,estimated,2023
+Himachal Pradesh,rice,2.15,DES_2022_23,2023
+Himachal Pradesh,wheat,2.45,DES_2022_23,2023
+Himachal Pradesh,maize,2.85,DES_2022_23,2023
+Himachal Pradesh,chickpea,0.9,estimated,2023
+Himachal Pradesh,kidneybeans,0.72,estimated,2023
+Himachal Pradesh,pigeonpeas,0.72,estimated,2023
+Himachal Pradesh,mothbeans,0.36,estimated,2023
+Himachal Pradesh,mungbean,0.63,estimated,2023
+Himachal Pradesh,blackgram,0.54,estimated,2023
+Himachal Pradesh,lentil,0.72,estimated,2023
+Himachal Pradesh,pomegranate,9.0,estimated,2023
+Himachal Pradesh,banana,31.5,estimated,2023
+Himachal Pradesh,mango,7.2,estimated,2023
+Himachal Pradesh,grapes,18.0,estimated,2023
+Himachal Pradesh,watermelon,22.5,estimated,2023
+Himachal Pradesh,muskmelon,10.8,estimated,2023
+Himachal Pradesh,apple,8.5,DES_2022_23,2023
+Himachal Pradesh,orange,9.0,estimated,2023
+Himachal Pradesh,papaya,36.0,estimated,2023
+Himachal Pradesh,coconut,9.0,estimated,2023
+Himachal Pradesh,cotton,1.62,estimated,2023
+Himachal Pradesh,jute,1.98,estimated,2023
+Himachal Pradesh,coffee,0.72,estimated,2023
+Himachal Pradesh,tea,1.35,estimated,2023
+Himachal Pradesh,mustard,1.08,estimated,2023
+Himachal Pradesh,tomato,22.5,estimated,2023
+Himachal Pradesh,onion,13.5,estimated,2023
+Himachal Pradesh,potato,24.5,DES_2022_23,2023
+Himachal Pradesh,brinjal,18.0,estimated,2023
+Himachal Pradesh,green chilli,7.2,estimated,2023
+Himachal Pradesh,carrot,13.5,estimated,2023
+Himachal Pradesh,cabbage,22.5,estimated,2023
+Himachal Pradesh,cauliflower,18.0,estimated,2023
+Himachal Pradesh,bottle gourd,13.5,estimated,2023
+Himachal Pradesh,bitter gourd,10.8,estimated,2023
+Himachal Pradesh,pumpkin,13.5,estimated,2023
+Himachal Pradesh,bhindi,9.0,estimated,2023
+Himachal Pradesh,garlic,7.2,estimated,2023
+Himachal Pradesh,ginger,4.25,DES_2022_23,2023
+Himachal Pradesh,coriander,2.7,estimated,2023
+Himachal Pradesh,drumstick,10.8,estimated,2023
+Himachal Pradesh,sweet potato,13.5,estimated,2023
+Himachal Pradesh,tapioca,22.5,estimated,2023
+Uttar Pradesh,rice,2.65,DES_2022_23,2023
+Uttar Pradesh,wheat,3.45,DES_2022_23,2023
+Uttar Pradesh,maize,2.85,DES_2022_23,2023
+Uttar Pradesh,chickpea,1.25,DES_2022_23,2023
+Uttar Pradesh,kidneybeans,0.92,estimated,2023
+Uttar Pradesh,pigeonpeas,0.92,estimated,2023
+Uttar Pradesh,mothbeans,0.46,estimated,2023
+Uttar Pradesh,mungbean,0.8,estimated,2023
+Uttar Pradesh,blackgram,0.69,estimated,2023
+Uttar Pradesh,lentil,1.05,DES_2022_23,2023
+Uttar Pradesh,pomegranate,11.5,estimated,2023
+Uttar Pradesh,banana,40.25,estimated,2023
+Uttar Pradesh,mango,9.2,estimated,2023
+Uttar Pradesh,grapes,23.0,estimated,2023
+Uttar Pradesh,watermelon,28.75,estimated,2023
+Uttar Pradesh,muskmelon,13.8,estimated,2023
+Uttar Pradesh,apple,13.8,estimated,2023
+Uttar Pradesh,orange,11.5,estimated,2023
+Uttar Pradesh,papaya,46.0,estimated,2023
+Uttar Pradesh,coconut,11.5,estimated,2023
+Uttar Pradesh,cotton,2.07,estimated,2023
+Uttar Pradesh,jute,2.53,estimated,2023
+Uttar Pradesh,coffee,0.92,estimated,2023
+Uttar Pradesh,tea,1.72,estimated,2023
+Uttar Pradesh,mustard,1.45,DES_2022_23,2023
+Uttar Pradesh,tomato,28.75,estimated,2023
+Uttar Pradesh,onion,17.25,estimated,2023
+Uttar Pradesh,potato,24.5,DES_2022_23,2023
+Uttar Pradesh,brinjal,23.0,estimated,2023
+Uttar Pradesh,green chilli,9.2,estimated,2023
+Uttar Pradesh,carrot,17.25,estimated,2023
+Uttar Pradesh,cabbage,28.75,estimated,2023
+Uttar Pradesh,cauliflower,23.0,estimated,2023
+Uttar Pradesh,bottle gourd,17.25,estimated,2023
+Uttar Pradesh,bitter gourd,13.8,estimated,2023
+Uttar Pradesh,pumpkin,17.25,estimated,2023
+Uttar Pradesh,bhindi,11.5,estimated,2023
+Uttar Pradesh,garlic,9.2,estimated,2023
+Uttar Pradesh,ginger,11.5,estimated,2023
+Uttar Pradesh,coriander,3.45,estimated,2023
+Uttar Pradesh,drumstick,13.8,estimated,2023
+Uttar Pradesh,sweet potato,17.25,estimated,2023
+Uttar Pradesh,tapioca,28.75,estimated,2023
+Haryana,rice,3.95,DES_2022_23,2023
+Haryana,wheat,4.85,DES_2022_23,2023
+Haryana,maize,3.85,DES_2022_23,2023
+Haryana,chickpea,1.35,estimated,2023
+Haryana,kidneybeans,1.08,estimated,2023
+Haryana,pigeonpeas,1.08,estimated,2023
+Haryana,mothbeans,0.54,estimated,2023
+Haryana,mungbean,0.94,estimated,2023
+Haryana,blackgram,0.81,estimated,2023
+Haryana,lentil,1.08,estimated,2023
+Haryana,pomegranate,13.5,estimated,2023
+Haryana,banana,47.25,estimated,2023
+Haryana,mango,10.8,estimated,2023
+Haryana,grapes,27.0,estimated,2023
+Haryana,watermelon,33.75,estimated,2023
+Haryana,muskmelon,16.2,estimated,2023
+Haryana,apple,16.2,estimated,2023
+Haryana,orange,13.5,estimated,2023
+Haryana,papaya,54.0,estimated,2023
+Haryana,coconut,13.5,estimated,2023
+Haryana,cotton,2.25,DES_2022_23,2023
+Haryana,jute,2.97,estimated,2023
+Haryana,coffee,1.08,estimated,2023
+Haryana,tea,2.03,estimated,2023
+Haryana,mustard,1.95,DES_2022_23,2023
+Haryana,tomato,33.75,estimated,2023
+Haryana,onion,20.25,estimated,2023
+Haryana,potato,27.0,estimated,2023
+Haryana,brinjal,27.0,estimated,2023
+Haryana,green chilli,10.8,estimated,2023
+Haryana,carrot,20.25,estimated,2023
+Haryana,cabbage,33.75,estimated,2023
+Haryana,cauliflower,27.0,estimated,2023
+Haryana,bottle gourd,20.25,estimated,2023
+Haryana,bitter gourd,16.2,estimated,2023
+Haryana,pumpkin,20.25,estimated,2023
+Haryana,bhindi,13.5,estimated,2023
+Haryana,garlic,10.8,estimated,2023
+Haryana,ginger,13.5,estimated,2023
+Haryana,coriander,4.05,estimated,2023
+Haryana,drumstick,16.2,estimated,2023
+Haryana,sweet potato,20.25,estimated,2023
+Haryana,tapioca,33.75,estimated,2023
+Punjab,rice,4.12,DES_2022_23,2023
+Punjab,wheat,5.01,DES_2022_23,2023
+Punjab,maize,4.25,DES_2022_23,2023
+Punjab,chickpea,1.4,estimated,2023
+Punjab,kidneybeans,1.12,estimated,2023
+Punjab,pigeonpeas,1.12,estimated,2023
+Punjab,mothbeans,0.56,estimated,2023
+Punjab,mungbean,0.98,estimated,2023
+Punjab,blackgram,0.84,estimated,2023
+Punjab,lentil,1.12,estimated,2023
+Punjab,pomegranate,14.0,estimated,2023
+Punjab,banana,49.0,estimated,2023
+Punjab,mango,11.2,estimated,2023
+Punjab,grapes,28.0,estimated,2023
+Punjab,watermelon,35.0,estimated,2023
+Punjab,muskmelon,16.8,estimated,2023
+Punjab,apple,16.8,estimated,2023
+Punjab,orange,14.0,estimated,2023
+Punjab,papaya,56.0,estimated,2023
+Punjab,coconut,14.0,estimated,2023
+Punjab,cotton,2.35,DES_2022_23,2023
+Punjab,jute,3.08,estimated,2023
+Punjab,coffee,1.12,estimated,2023
+Punjab,tea,2.1,estimated,2023
+Punjab,mustard,1.85,DES_2022_23,2023
+Punjab,tomato,35.0,estimated,2023
+Punjab,onion,21.0,estimated,2023
+Punjab,potato,28.5,DES_2022_23,2023
+Punjab,brinjal,28.0,estimated,2023
+Punjab,green chilli,11.2,estimated,2023
+Punjab,carrot,21.0,estimated,2023
+Punjab,cabbage,35.0,estimated,2023
+Punjab,cauliflower,28.0,estimated,2023
+Punjab,bottle gourd,21.0,estimated,2023
+Punjab,bitter gourd,16.8,estimated,2023
+Punjab,pumpkin,21.0,estimated,2023
+Punjab,bhindi,14.0,estimated,2023
+Punjab,garlic,11.2,estimated,2023
+Punjab,ginger,14.0,estimated,2023
+Punjab,coriander,4.2,estimated,2023
+Punjab,drumstick,16.8,estimated,2023
+Punjab,sweet potato,21.0,estimated,2023
+Punjab,tapioca,35.0,estimated,2023
+Madhya Pradesh,rice,2.5,estimated,2023
+Madhya Pradesh,wheat,3.25,DES_2022_23,2023
+Madhya Pradesh,maize,3.15,DES_2022_23,2023
+Madhya Pradesh,chickpea,1.35,DES_2022_23,2023
+Madhya Pradesh,kidneybeans,0.8,estimated,2023
+Madhya Pradesh,pigeonpeas,0.95,DES_2022_23,2023
+Madhya Pradesh,mothbeans,0.4,estimated,2023
+Madhya Pradesh,mungbean,0.65,DES_2022_23,2023
+Madhya Pradesh,blackgram,0.75,DES_2022_23,2023
+Madhya Pradesh,lentil,0.95,DES_2022_23,2023
+Madhya Pradesh,pomegranate,10.0,estimated,2023
+Madhya Pradesh,banana,35.0,estimated,2023
+Madhya Pradesh,mango,8.0,estimated,2023
+Madhya Pradesh,grapes,20.0,estimated,2023
+Madhya Pradesh,watermelon,25.0,estimated,2023
+Madhya Pradesh,muskmelon,12.0,estimated,2023
+Madhya Pradesh,apple,12.0,estimated,2023
+Madhya Pradesh,orange,10.0,estimated,2023
+Madhya Pradesh,papaya,40.0,estimated,2023
+Madhya Pradesh,coconut,10.0,estimated,2023
+Madhya Pradesh,cotton,1.85,DES_2022_23,2023
+Madhya Pradesh,jute,2.2,estimated,2023
+Madhya Pradesh,coffee,0.8,estimated,2023
+Madhya Pradesh,tea,1.5,estimated,2023
+Madhya Pradesh,mustard,1.25,DES_2022_23,2023
+Madhya Pradesh,tomato,25.0,estimated,2023
+Madhya Pradesh,onion,15.0,estimated,2023
+Madhya Pradesh,potato,20.0,estimated,2023
+Madhya Pradesh,brinjal,20.0,estimated,2023
+Madhya Pradesh,green chilli,8.0,estimated,2023
+Madhya Pradesh,carrot,15.0,estimated,2023
+Madhya Pradesh,cabbage,25.0,estimated,2023
+Madhya Pradesh,cauliflower,20.0,estimated,2023
+Madhya Pradesh,bottle gourd,15.0,estimated,2023
+Madhya Pradesh,bitter gourd,12.0,estimated,2023
+Madhya Pradesh,pumpkin,15.0,estimated,2023
+Madhya Pradesh,bhindi,10.0,estimated,2023
+Madhya Pradesh,garlic,8.0,estimated,2023
+Madhya Pradesh,ginger,10.0,estimated,2023
+Madhya Pradesh,coriander,3.0,estimated,2023
+Madhya Pradesh,drumstick,12.0,estimated,2023
+Madhya Pradesh,sweet potato,15.0,estimated,2023
+Madhya Pradesh,tapioca,25.0,estimated,2023
+Rajasthan,rice,2.25,estimated,2023
+Rajasthan,wheat,3.55,DES_2022_23,2023
+Rajasthan,maize,2.15,DES_2022_23,2023
+Rajasthan,chickpea,1.05,DES_2022_23,2023
+Rajasthan,kidneybeans,0.72,estimated,2023
+Rajasthan,pigeonpeas,0.72,estimated,2023
+Rajasthan,mothbeans,0.36,estimated,2023
+Rajasthan,mungbean,0.55,DES_2022_23,2023
+Rajasthan,blackgram,0.54,estimated,2023
+Rajasthan,lentil,0.72,estimated,2023
+Rajasthan,pomegranate,9.0,estimated,2023
+Rajasthan,banana,31.5,estimated,2023
+Rajasthan,mango,7.2,estimated,2023
+Rajasthan,grapes,18.0,estimated,2023
+Rajasthan,watermelon,22.5,estimated,2023
+Rajasthan,muskmelon,10.8,estimated,2023
+Rajasthan,apple,10.8,estimated,2023
+Rajasthan,orange,9.0,estimated,2023
+Rajasthan,papaya,36.0,estimated,2023
+Rajasthan,coconut,9.0,estimated,2023
+Rajasthan,cotton,1.95,DES_2022_23,2023
+Rajasthan,jute,1.98,estimated,2023
+Rajasthan,coffee,0.72,estimated,2023
+Rajasthan,tea,1.35,estimated,2023
+Rajasthan,mustard,1.55,DES_2022_23,2023
+Rajasthan,tomato,22.5,estimated,2023
+Rajasthan,onion,13.5,estimated,2023
+Rajasthan,potato,18.0,estimated,2023
+Rajasthan,brinjal,18.0,estimated,2023
+Rajasthan,green chilli,7.2,estimated,2023
+Rajasthan,carrot,13.5,estimated,2023
+Rajasthan,cabbage,22.5,estimated,2023
+Rajasthan,cauliflower,18.0,estimated,2023
+Rajasthan,bottle gourd,13.5,estimated,2023
+Rajasthan,bitter gourd,10.8,estimated,2023
+Rajasthan,pumpkin,13.5,estimated,2023
+Rajasthan,bhindi,9.0,estimated,2023
+Rajasthan,garlic,7.2,estimated,2023
+Rajasthan,ginger,9.0,estimated,2023
+Rajasthan,coriander,2.7,estimated,2023
+Rajasthan,drumstick,10.8,estimated,2023
+Rajasthan,sweet potato,13.5,estimated,2023
+Rajasthan,tapioca,22.5,estimated,2023
+Maharashtra,rice,2.15,DES_2022_23,2023
+Maharashtra,wheat,3.15,estimated,2023
+Maharashtra,maize,2.35,DES_2022_23,2023
+Maharashtra,chickpea,0.95,DES_2022_23,2023
+Maharashtra,kidneybeans,0.84,estimated,2023
+Maharashtra,pigeonpeas,0.85,DES_2022_23,2023
+Maharashtra,mothbeans,0.42,estimated,2023
+Maharashtra,mungbean,0.73,estimated,2023
+Maharashtra,blackgram,0.63,estimated,2023
+Maharashtra,lentil,0.84,estimated,2023
+Maharashtra,pomegranate,10.5,estimated,2023
+Maharashtra,banana,36.75,estimated,2023
+Maharashtra,mango,8.4,estimated,2023
+Maharashtra,grapes,21.0,estimated,2023
+Maharashtra,watermelon,26.25,estimated,2023
+Maharashtra,muskmelon,12.6,estimated,2023
+Maharashtra,apple,12.6,estimated,2023
+Maharashtra,orange,10.5,estimated,2023
+Maharashtra,papaya,42.0,estimated,2023
+Maharashtra,coconut,10.5,estimated,2023
+Maharashtra,cotton,1.65,DES_2022_23,2023
+Maharashtra,jute,2.31,estimated,2023
+Maharashtra,coffee,0.84,estimated,2023
+Maharashtra,tea,1.58,estimated,2023
+Maharashtra,mustard,1.26,estimated,2023
+Maharashtra,tomato,26.25,estimated,2023
+Maharashtra,onion,15.75,estimated,2023
+Maharashtra,potato,21.0,estimated,2023
+Maharashtra,brinjal,21.0,estimated,2023
+Maharashtra,green chilli,8.4,estimated,2023
+Maharashtra,carrot,15.75,estimated,2023
+Maharashtra,cabbage,26.25,estimated,2023
+Maharashtra,cauliflower,21.0,estimated,2023
+Maharashtra,bottle gourd,15.75,estimated,2023
+Maharashtra,bitter gourd,12.6,estimated,2023
+Maharashtra,pumpkin,15.75,estimated,2023
+Maharashtra,bhindi,10.5,estimated,2023
+Maharashtra,garlic,8.4,estimated,2023
+Maharashtra,ginger,10.5,estimated,2023
+Maharashtra,coriander,3.15,estimated,2023
+Maharashtra,drumstick,12.6,estimated,2023
+Maharashtra,sweet potato,15.75,estimated,2023
+Maharashtra,tapioca,26.25,estimated,2023
+West Bengal,rice,2.95,DES_2022_23,2023
+West Bengal,wheat,2.85,DES_2022_23,2023
+West Bengal,maize,3.15,DES_2022_23,2023
+West Bengal,chickpea,0.85,DES_2022_23,2023
+West Bengal,kidneybeans,0.88,estimated,2023
+West Bengal,pigeonpeas,0.88,estimated,2023
+West Bengal,mothbeans,0.44,estimated,2023
+West Bengal,mungbean,0.65,DES_2022_23,2023
+West Bengal,blackgram,0.66,estimated,2023
+West Bengal,lentil,0.95,DES_2022_23,2023
+West Bengal,pomegranate,11.0,estimated,2023
+West Bengal,banana,38.5,estimated,2023
+West Bengal,mango,8.8,estimated,2023
+West Bengal,grapes,22.0,estimated,2023
+West Bengal,watermelon,27.5,estimated,2023
+West Bengal,muskmelon,13.2,estimated,2023
+West Bengal,apple,13.2,estimated,2023
+West Bengal,orange,11.0,estimated,2023
+West Bengal,papaya,44.0,estimated,2023
+West Bengal,coconut,11.0,estimated,2023
+West Bengal,cotton,1.98,estimated,2023
+West Bengal,jute,2.65,DES_2022_23,2023
+West Bengal,coffee,0.88,estimated,2023
+West Bengal,tea,1.65,estimated,2023
+West Bengal,mustard,1.25,DES_2022_23,2023
+West Bengal,tomato,27.5,estimated,2023
+West Bengal,onion,16.5,estimated,2023
+West Bengal,potato,26.5,DES_2022_23,2023
+West Bengal,brinjal,22.0,estimated,2023
+West Bengal,green chilli,8.8,estimated,2023
+West Bengal,carrot,16.5,estimated,2023
+West Bengal,cabbage,27.5,estimated,2023
+West Bengal,cauliflower,22.0,estimated,2023
+West Bengal,bottle gourd,16.5,estimated,2023
+West Bengal,bitter gourd,13.2,estimated,2023
+West Bengal,pumpkin,16.5,estimated,2023
+West Bengal,bhindi,11.0,estimated,2023
+West Bengal,garlic,8.8,estimated,2023
+West Bengal,ginger,11.0,estimated,2023
+West Bengal,coriander,3.3,estimated,2023
+West Bengal,drumstick,13.2,estimated,2023
+West Bengal,sweet potato,16.5,estimated,2023
+West Bengal,tapioca,27.5,estimated,2023
+Bihar,rice,2.45,DES_2022_23,2023
+Bihar,wheat,3.15,DES_2022_23,2023
+Bihar,maize,3.55,DES_2022_23,2023
+Bihar,chickpea,1.15,DES_2022_23,2023
+Bihar,kidneybeans,0.84,estimated,2023
+Bihar,pigeonpeas,0.84,estimated,2023
+Bihar,mothbeans,0.42,estimated,2023
+Bihar,mungbean,0.73,estimated,2023
+Bihar,blackgram,0.63,estimated,2023
+Bihar,lentil,0.95,DES_2022_23,2023
+Bihar,pomegranate,10.5,estimated,2023
+Bihar,banana,36.75,estimated,2023
+Bihar,mango,8.4,estimated,2023
+Bihar,grapes,21.0,estimated,2023
+Bihar,watermelon,26.25,estimated,2023
+Bihar,muskmelon,12.6,estimated,2023
+Bihar,apple,12.6,estimated,2023
+Bihar,orange,10.5,estimated,2023
+Bihar,papaya,42.0,estimated,2023
+Bihar,coconut,10.5,estimated,2023
+Bihar,cotton,1.89,estimated,2023
+Bihar,jute,2.31,estimated,2023
+Bihar,coffee,0.84,estimated,2023
+Bihar,tea,1.58,estimated,2023
+Bihar,mustard,1.05,DES_2022_23,2023
+Bihar,tomato,26.25,estimated,2023
+Bihar,onion,15.75,estimated,2023
+Bihar,potato,22.5,DES_2022_23,2023
+Bihar,brinjal,21.0,estimated,2023
+Bihar,green chilli,8.4,estimated,2023
+Bihar,carrot,15.75,estimated,2023
+Bihar,cabbage,26.25,estimated,2023
+Bihar,cauliflower,21.0,estimated,2023
+Bihar,bottle gourd,15.75,estimated,2023
+Bihar,bitter gourd,12.6,estimated,2023
+Bihar,pumpkin,15.75,estimated,2023
+Bihar,bhindi,10.5,estimated,2023
+Bihar,garlic,8.4,estimated,2023
+Bihar,ginger,10.5,estimated,2023
+Bihar,coriander,3.15,estimated,2023
+Bihar,drumstick,12.6,estimated,2023
+Bihar,sweet potato,15.75,estimated,2023
+Bihar,tapioca,26.25,estimated,2023
+Odisha,rice,2.35,DES_2022_23,2023
+Odisha,wheat,2.85,estimated,2023
+Odisha,maize,2.65,DES_2022_23,2023
+Odisha,chickpea,0.95,estimated,2023
+Odisha,kidneybeans,0.76,estimated,2023
+Odisha,pigeonpeas,0.76,estimated,2023
+Odisha,mothbeans,0.38,estimated,2023
+Odisha,mungbean,0.66,estimated,2023
+Odisha,blackgram,0.57,estimated,2023
+Odisha,lentil,0.76,estimated,2023
+Odisha,pomegranate,9.5,estimated,2023
+Odisha,banana,33.25,estimated,2023
+Odisha,mango,7.6,estimated,2023
+Odisha,grapes,19.0,estimated,2023
+Odisha,watermelon,23.75,estimated,2023
+Odisha,muskmelon,11.4,estimated,2023
+Odisha,apple,11.4,estimated,2023
+Odisha,orange,9.5,estimated,2023
+Odisha,papaya,38.0,estimated,2023
+Odisha,coconut,9.5,estimated,2023
+Odisha,cotton,1.25,DES_2022_23,2023
+Odisha,jute,2.09,estimated,2023
+Odisha,coffee,0.76,estimated,2023
+Odisha,tea,1.42,estimated,2023
+Odisha,mustard,0.75,DES_2022_23,2023
+Odisha,tomato,23.75,estimated,2023
+Odisha,onion,14.25,estimated,2023
+Odisha,potato,19.0,estimated,2023
+Odisha,brinjal,19.0,estimated,2023
+Odisha,green chilli,7.6,estimated,2023
+Odisha,carrot,14.25,estimated,2023
+Odisha,cabbage,23.75,estimated,2023
+Odisha,cauliflower,19.0,estimated,2023
+Odisha,bottle gourd,14.25,estimated,2023
+Odisha,bitter gourd,11.4,estimated,2023
+Odisha,pumpkin,14.25,estimated,2023
+Odisha,bhindi,9.5,estimated,2023
+Odisha,garlic,7.6,estimated,2023
+Odisha,ginger,9.5,estimated,2023
+Odisha,coriander,2.85,estimated,2023
+Odisha,drumstick,11.4,estimated,2023
+Odisha,sweet potato,14.25,estimated,2023
+Odisha,tapioca,23.75,estimated,2023
+Assam,rice,2.15,DES_2022_23,2023
+Assam,wheat,2.7,estimated,2023
+Assam,maize,2.15,DES_2022_23,2023
+Assam,chickpea,0.65,DES_2022_23,2023
+Assam,kidneybeans,0.72,estimated,2023
+Assam,pigeonpeas,0.72,estimated,2023
+Assam,mothbeans,0.36,estimated,2023
+Assam,mungbean,0.63,estimated,2023
+Assam,blackgram,0.54,estimated,2023
+Assam,lentil,0.75,DES_2022_23,2023
+Assam,pomegranate,9.0,estimated,2023
+Assam,banana,31.5,estimated,2023
+Assam,mango,7.2,estimated,2023
+Assam,grapes,18.0,estimated,2023
+Assam,watermelon,22.5,estimated,2023
+Assam,muskmelon,10.8,estimated,2023
+Assam,apple,10.8,estimated,2023
+Assam,orange,9.0,estimated,2023
+Assam,papaya,36.0,estimated,2023
+Assam,coconut,9.0,estimated,2023
+Assam,cotton,1.62,estimated,2023
+Assam,jute,2.15,DES_2022_23,2023
+Assam,coffee,0.72,estimated,2023
+Assam,tea,2.25,DES_2022_23,2023
+Assam,mustard,0.95,DES_2022_23,2023
+Assam,tomato,22.5,estimated,2023
+Assam,onion,13.5,estimated,2023
+Assam,potato,18.0,estimated,2023
+Assam,brinjal,18.0,estimated,2023
+Assam,green chilli,7.2,estimated,2023
+Assam,carrot,13.5,estimated,2023
+Assam,cabbage,22.5,estimated,2023
+Assam,cauliflower,18.0,estimated,2023
+Assam,bottle gourd,13.5,estimated,2023
+Assam,bitter gourd,10.8,estimated,2023
+Assam,pumpkin,13.5,estimated,2023
+Assam,bhindi,9.0,estimated,2023
+Assam,garlic,7.2,estimated,2023
+Assam,ginger,9.0,estimated,2023
+Assam,coriander,2.7,estimated,2023
+Assam,drumstick,10.8,estimated,2023
+Assam,sweet potato,13.5,estimated,2023
+Assam,tapioca,22.5,estimated,2023
+Karnataka,rice,2.85,DES_2022_23,2023
+Karnataka,wheat,3.15,estimated,2023
+Karnataka,maize,3.25,DES_2022_23,2023
+Karnataka,chickpea,1.05,estimated,2023
+Karnataka,kidneybeans,0.84,estimated,2023
+Karnataka,pigeonpeas,0.75,DES_2022_23,2023
+Karnataka,mothbeans,0.42,estimated,2023
+Karnataka,mungbean,0.55,DES_2022_23,2023
+Karnataka,blackgram,0.65,DES_2022_23,2023
+Karnataka,lentil,0.84,estimated,2023
+Karnataka,pomegranate,10.5,estimated,2023
+Karnataka,banana,36.75,estimated,2023
+Karnataka,mango,8.4,estimated,2023
+Karnataka,grapes,21.0,estimated,2023
+Karnataka,watermelon,26.25,estimated,2023
+Karnataka,muskmelon,12.6,estimated,2023
+Karnataka,apple,12.6,estimated,2023
+Karnataka,orange,10.5,estimated,2023
+Karnataka,papaya,42.0,estimated,2023
+Karnataka,coconut,10.5,estimated,2023
+Karnataka,cotton,1.45,DES_2022_23,2023
+Karnataka,jute,2.31,estimated,2023
+Karnataka,coffee,0.85,DES_2022_23,2023
+Karnataka,tea,1.25,DES_2022_23,2023
+Karnataka,mustard,1.26,estimated,2023
+Karnataka,tomato,26.25,estimated,2023
+Karnataka,onion,15.75,estimated,2023
+Karnataka,potato,21.0,estimated,2023
+Karnataka,brinjal,21.0,estimated,2023
+Karnataka,green chilli,8.4,estimated,2023
+Karnataka,carrot,15.75,estimated,2023
+Karnataka,cabbage,26.25,estimated,2023
+Karnataka,cauliflower,21.0,estimated,2023
+Karnataka,bottle gourd,15.75,estimated,2023
+Karnataka,bitter gourd,12.6,estimated,2023
+Karnataka,pumpkin,15.75,estimated,2023
+Karnataka,bhindi,10.5,estimated,2023
+Karnataka,garlic,8.4,estimated,2023
+Karnataka,ginger,10.5,estimated,2023
+Karnataka,coriander,3.15,estimated,2023
+Karnataka,drumstick,12.6,estimated,2023
+Karnataka,sweet potato,15.75,estimated,2023
+Karnataka,tapioca,26.25,estimated,2023
+Andhra Pradesh,rice,3.25,DES_2022_23,2023
+Andhra Pradesh,wheat,3.45,estimated,2023
+Andhra Pradesh,maize,5.25,DES_2022_23,2023
+Andhra Pradesh,chickpea,1.15,estimated,2023
+Andhra Pradesh,kidneybeans,0.92,estimated,2023
+Andhra Pradesh,pigeonpeas,0.92,estimated,2023
+Andhra Pradesh,mothbeans,0.46,estimated,2023
+Andhra Pradesh,mungbean,0.8,estimated,2023
+Andhra Pradesh,blackgram,0.69,estimated,2023
+Andhra Pradesh,lentil,0.92,estimated,2023
+Andhra Pradesh,pomegranate,11.5,estimated,2023
+Andhra Pradesh,banana,40.25,estimated,2023
+Andhra Pradesh,mango,9.2,estimated,2023
+Andhra Pradesh,grapes,23.0,estimated,2023
+Andhra Pradesh,watermelon,28.75,estimated,2023
+Andhra Pradesh,muskmelon,13.8,estimated,2023
+Andhra Pradesh,apple,13.8,estimated,2023
+Andhra Pradesh,orange,11.5,estimated,2023
+Andhra Pradesh,papaya,46.0,estimated,2023
+Andhra Pradesh,coconut,11.5,estimated,2023
+Andhra Pradesh,cotton,2.15,DES_2022_23,2023
+Andhra Pradesh,jute,2.53,estimated,2023
+Andhra Pradesh,coffee,0.92,estimated,2023
+Andhra Pradesh,tea,1.72,estimated,2023
+Andhra Pradesh,mustard,1.38,estimated,2023
+Andhra Pradesh,tomato,28.75,estimated,2023
+Andhra Pradesh,onion,17.25,estimated,2023
+Andhra Pradesh,potato,23.0,estimated,2023
+Andhra Pradesh,brinjal,23.0,estimated,2023
+Andhra Pradesh,green chilli,2.15,DES_2022_23,2023
+Andhra Pradesh,carrot,17.25,estimated,2023
+Andhra Pradesh,cabbage,28.75,estimated,2023
+Andhra Pradesh,cauliflower,23.0,estimated,2023
+Andhra Pradesh,bottle gourd,17.25,estimated,2023
+Andhra Pradesh,bitter gourd,13.8,estimated,2023
+Andhra Pradesh,pumpkin,17.25,estimated,2023
+Andhra Pradesh,bhindi,11.5,estimated,2023
+Andhra Pradesh,garlic,9.2,estimated,2023
+Andhra Pradesh,ginger,11.5,estimated,2023
+Andhra Pradesh,coriander,3.45,estimated,2023
+Andhra Pradesh,drumstick,13.8,estimated,2023
+Andhra Pradesh,sweet potato,17.25,estimated,2023
+Andhra Pradesh,tapioca,28.75,estimated,2023
+Telangana,rice,3.45,DES_2022_23,2023
+Telangana,wheat,3.6,estimated,2023
+Telangana,maize,4.85,DES_2022_23,2023
+Telangana,chickpea,1.2,estimated,2023
+Telangana,kidneybeans,0.96,estimated,2023
+Telangana,pigeonpeas,0.95,DES_2022_23,2023
+Telangana,mothbeans,0.48,estimated,2023
+Telangana,mungbean,0.75,DES_2022_23,2023
+Telangana,blackgram,0.85,DES_2022_23,2023
+Telangana,lentil,0.96,estimated,2023
+Telangana,pomegranate,12.0,estimated,2023
+Telangana,banana,42.0,estimated,2023
+Telangana,mango,9.6,estimated,2023
+Telangana,grapes,24.0,estimated,2023
+Telangana,watermelon,30.0,estimated,2023
+Telangana,muskmelon,14.4,estimated,2023
+Telangana,apple,14.4,estimated,2023
+Telangana,orange,12.0,estimated,2023
+Telangana,papaya,48.0,estimated,2023
+Telangana,coconut,12.0,estimated,2023
+Telangana,cotton,2.25,DES_2022_23,2023
+Telangana,jute,2.64,estimated,2023
+Telangana,coffee,0.96,estimated,2023
+Telangana,tea,1.8,estimated,2023
+Telangana,mustard,1.44,estimated,2023
+Telangana,tomato,30.0,estimated,2023
+Telangana,onion,18.0,estimated,2023
+Telangana,potato,24.0,estimated,2023
+Telangana,brinjal,24.0,estimated,2023
+Telangana,green chilli,2.35,DES_2022_23,2023
+Telangana,carrot,18.0,estimated,2023
+Telangana,cabbage,30.0,estimated,2023
+Telangana,cauliflower,24.0,estimated,2023
+Telangana,bottle gourd,18.0,estimated,2023
+Telangana,bitter gourd,14.4,estimated,2023
+Telangana,pumpkin,18.0,estimated,2023
+Telangana,bhindi,12.0,estimated,2023
+Telangana,garlic,9.6,estimated,2023
+Telangana,ginger,12.0,estimated,2023
+Telangana,coriander,3.6,estimated,2023
+Telangana,drumstick,14.4,estimated,2023
+Telangana,sweet potato,18.0,estimated,2023
+Telangana,tapioca,30.0,estimated,2023
+Chhattisgarh,rice,1.95,DES_2022_23,2023
+Chhattisgarh,wheat,2.55,estimated,2023
+Chhattisgarh,maize,2.15,DES_2022_23,2023
+Chhattisgarh,chickpea,0.85,estimated,2023
+Chhattisgarh,kidneybeans,0.68,estimated,2023
+Chhattisgarh,pigeonpeas,0.85,DES_2022_23,2023
+Chhattisgarh,mothbeans,0.34,estimated,2023
+Chhattisgarh,mungbean,0.55,DES_2022_23,2023
+Chhattisgarh,blackgram,0.65,DES_2022_23,2023
+Chhattisgarh,lentil,0.68,estimated,2023
+Chhattisgarh,pomegranate,8.5,estimated,2023
+Chhattisgarh,banana,29.75,estimated,2023
+Chhattisgarh,mango,6.8,estimated,2023
+Chhattisgarh,grapes,17.0,estimated,2023
+Chhattisgarh,watermelon,21.25,estimated,2023
+Chhattisgarh,muskmelon,10.2,estimated,2023
+Chhattisgarh,apple,10.2,estimated,2023
+Chhattisgarh,orange,8.5,estimated,2023
+Chhattisgarh,papaya,34.0,estimated,2023
+Chhattisgarh,coconut,8.5,estimated,2023
+Chhattisgarh,cotton,1.15,DES_2022_23,2023
+Chhattisgarh,jute,1.87,estimated,2023
+Chhattisgarh,coffee,0.68,estimated,2023
+Chhattisgarh,tea,1.27,estimated,2023
+Chhattisgarh,mustard,0.85,DES_2022_23,2023
+Chhattisgarh,tomato,21.25,estimated,2023
+Chhattisgarh,onion,12.75,estimated,2023
+Chhattisgarh,potato,17.0,estimated,2023
+Chhattisgarh,brinjal,17.0,estimated,2023
+Chhattisgarh,green chilli,6.8,estimated,2023
+Chhattisgarh,carrot,12.75,estimated,2023
+Chhattisgarh,cabbage,21.25,estimated,2023
+Chhattisgarh,cauliflower,17.0,estimated,2023
+Chhattisgarh,bottle gourd,12.75,estimated,2023
+Chhattisgarh,bitter gourd,10.2,estimated,2023
+Chhattisgarh,pumpkin,12.75,estimated,2023
+Chhattisgarh,bhindi,8.5,estimated,2023
+Chhattisgarh,garlic,6.8,estimated,2023
+Chhattisgarh,ginger,8.5,estimated,2023
+Chhattisgarh,coriander,2.55,estimated,2023
+Chhattisgarh,drumstick,10.2,estimated,2023
+Chhattisgarh,sweet potato,12.75,estimated,2023
+Chhattisgarh,tapioca,21.25,estimated,2023
+Jharkhand,rice,2.25,DES_2022_23,2023
+Jharkhand,wheat,2.7,estimated,2023
+Jharkhand,maize,2.85,DES_2022_23,2023
+Jharkhand,chickpea,0.75,DES_2022_23,2023
+Jharkhand,kidneybeans,0.72,estimated,2023
+Jharkhand,pigeonpeas,0.95,DES_2022_23,2023
+Jharkhand,mothbeans,0.36,estimated,2023
+Jharkhand,mungbean,0.63,estimated,2023
+Jharkhand,blackgram,0.54,estimated,2023
+Jharkhand,lentil,0.72,estimated,2023
+Jharkhand,pomegranate,9.0,estimated,2023
+Jharkhand,banana,31.5,estimated,2023
+Jharkhand,mango,7.2,estimated,2023
+Jharkhand,grapes,18.0,estimated,2023
+Jharkhand,watermelon,22.5,estimated,2023
+Jharkhand,muskmelon,10.8,estimated,2023
+Jharkhand,apple,10.8,estimated,2023
+Jharkhand,orange,9.0,estimated,2023
+Jharkhand,papaya,36.0,estimated,2023
+Jharkhand,coconut,9.0,estimated,2023
+Jharkhand,cotton,1.62,estimated,2023
+Jharkhand,jute,1.98,estimated,2023
+Jharkhand,coffee,0.72,estimated,2023
+Jharkhand,tea,1.35,estimated,2023
+Jharkhand,mustard,0.85,DES_2022_23,2023
+Jharkhand,tomato,22.5,estimated,2023
+Jharkhand,onion,13.5,estimated,2023
+Jharkhand,potato,18.5,DES_2022_23,2023
+Jharkhand,brinjal,18.0,estimated,2023
+Jharkhand,green chilli,7.2,estimated,2023
+Jharkhand,carrot,13.5,estimated,2023
+Jharkhand,cabbage,22.5,estimated,2023
+Jharkhand,cauliflower,18.0,estimated,2023
+Jharkhand,bottle gourd,13.5,estimated,2023
+Jharkhand,bitter gourd,10.8,estimated,2023
+Jharkhand,pumpkin,13.5,estimated,2023
+Jharkhand,bhindi,9.0,estimated,2023
+Jharkhand,garlic,7.2,estimated,2023
+Jharkhand,ginger,9.0,estimated,2023
+Jharkhand,coriander,2.7,estimated,2023
+Jharkhand,drumstick,10.8,estimated,2023
+Jharkhand,sweet potato,13.5,estimated,2023
+Jharkhand,tapioca,22.5,estimated,2023
+Uttarakhand,rice,2.55,DES_2022_23,2023
+Uttarakhand,wheat,2.85,DES_2022_23,2023
+Uttarakhand,maize,2.85,estimated,2023
+Uttarakhand,chickpea,0.95,estimated,2023
+Uttarakhand,kidneybeans,1.25,DES_2022_23,2023
+Uttarakhand,pigeonpeas,0.76,estimated,2023
+Uttarakhand,mothbeans,0.38,estimated,2023
+Uttarakhand,mungbean,0.66,estimated,2023
+Uttarakhand,blackgram,0.57,estimated,2023
+Uttarakhand,lentil,0.76,estimated,2023
+Uttarakhand,pomegranate,9.5,estimated,2023
+Uttarakhand,banana,33.25,estimated,2023
+Uttarakhand,mango,7.6,estimated,2023
+Uttarakhand,grapes,19.0,estimated,2023
+Uttarakhand,watermelon,23.75,estimated,2023
+Uttarakhand,muskmelon,11.4,estimated,2023
+Uttarakhand,apple,11.4,estimated,2023
+Uttarakhand,orange,9.5,estimated,2023
+Uttarakhand,papaya,38.0,estimated,2023
+Uttarakhand,coconut,9.5,estimated,2023
+Uttarakhand,cotton,1.71,estimated,2023
+Uttarakhand,jute,2.09,estimated,2023
+Uttarakhand,coffee,0.76,estimated,2023
+Uttarakhand,tea,1.42,estimated,2023
+Uttarakhand,mustard,1.14,estimated,2023
+Uttarakhand,tomato,23.75,estimated,2023
+Uttarakhand,onion,14.25,estimated,2023
+Uttarakhand,potato,20.5,DES_2022_23,2023
+Uttarakhand,brinjal,19.0,estimated,2023
+Uttarakhand,green chilli,7.6,estimated,2023
+Uttarakhand,carrot,14.25,estimated,2023
+Uttarakhand,cabbage,23.75,estimated,2023
+Uttarakhand,cauliflower,19.0,estimated,2023
+Uttarakhand,bottle gourd,14.25,estimated,2023
+Uttarakhand,bitter gourd,11.4,estimated,2023
+Uttarakhand,pumpkin,14.25,estimated,2023
+Uttarakhand,bhindi,9.5,estimated,2023
+Uttarakhand,garlic,7.6,estimated,2023
+Uttarakhand,ginger,9.5,estimated,2023
+Uttarakhand,coriander,2.85,estimated,2023
+Uttarakhand,drumstick,11.4,estimated,2023
+Uttarakhand,sweet potato,14.25,estimated,2023
+Uttarakhand,tapioca,23.75,estimated,2023

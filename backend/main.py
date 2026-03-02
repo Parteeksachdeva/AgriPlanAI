@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from model import CropRecommendationModel, YieldPredictionModel, PricePredictionModel
+from model_enhanced import StateAwareYieldModel, EnhancedPricePredictionModel, get_state_aware_yield_model, get_enhanced_price_model
 from price_prediction import MandiPricePredictor
 from rotation_planner import get_rotation_planner
+from weather_service import get_weather_service
 from contextlib import asynccontextmanager
 import os
 from rag.retrieve import get_relevant_context
@@ -11,25 +13,46 @@ from rag.generate import generate_answer
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL1_DATA = os.path.join(BASE_DIR, "data", "model1_training.csv")
+MODEL1_ENHANCED_DATA = os.path.join(BASE_DIR, "data", "model1_training_enhanced.csv")
 MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training_extended.csv")
 
+# Original models (fallback)
 crop_recommender = CropRecommendationModel(MODEL1_DATA)
 yield_predictor = YieldPredictionModel(MODEL1_DATA)
 price_predictor = PricePredictionModel(MODEL2_DATA)
 mandi_price_predictor = MandiPricePredictor(MODEL2_DATA)
 
+# Enhanced models (primary)
+enhanced_yield_model = None
+enhanced_price_model = None
+weather_service = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global enhanced_yield_model, enhanced_price_model, weather_service
     print("Starting up — training models...")
     try:
+        # Train original models
         crop_recommender.train()
         yield_predictor.train()
         price_predictor.train()
         mandi_price_predictor.load_data()
+        
+        # Initialize enhanced models
+        print("Initializing enhanced models...")
+        enhanced_yield_model = get_state_aware_yield_model()
+        enhanced_price_model = get_enhanced_price_model()
+        
+        # Initialize weather service
+        print("Initializing weather service...")
+        weather_service = get_weather_service()
+        
         print("All models ready.")
     except Exception as e:
         print(f"Error during model training: {e}")
+        import traceback
+        traceback.print_exc()
     yield
     print("Shutting down.")
 
@@ -183,13 +206,26 @@ def predict(data: PredictionInput):
             if user_season != "Whole Year" and crop_season == "Whole Year" and suitability == "rare":
                 continue
 
-            # Step 2 — yield prediction for this crop (state-specific lookup + NPK factor)
-            predicted_yield = yield_predictor.predict({**base_features, 'crop': crop}, state=selected_state)
+            # Step 2 — yield prediction using enhanced state-aware model
+            if enhanced_yield_model:
+                yield_result = enhanced_yield_model.predict(
+                    {**base_features, 'crop': crop, 'state': selected_state},
+                    return_confidence=True
+                )
+                predicted_yield = yield_result['yield_t_ha']
+            else:
+                predicted_yield = yield_predictor.predict({**base_features, 'crop': crop}, state=selected_state)
 
-            # Step 3 — mandi price prediction for this crop in the given state
-            avg_price = price_predictor.predict(
-                state=selected_state, crop=crop
-            )
+            # Step 3 — mandi price prediction using enhanced price model
+            if enhanced_price_model:
+                price_result = enhanced_price_model.predict_price(
+                    commodity=crop,
+                    state=selected_state,
+                    include_factors=True
+                )
+                avg_price = price_result['predicted_price']
+            else:
+                avg_price = price_predictor.predict(state=selected_state, crop=crop)
 
             # Step 4.0 — Environmental Safety Check (Rainfall, pH, etc.)
             env_score = price_predictor.check_environmental_suitability(
@@ -274,13 +310,41 @@ def read_root():
 def get_price_prediction(request: PricePredictionRequest):
     """
     Predict future mandi prices and provide sell recommendations.
+    Uses enhanced price model with state-specific data when available.
     """
     try:
-        prediction = mandi_price_predictor.predict_price(
-            commodity=request.commodity,
-            state=request.state,
-            days_ahead=request.days_ahead
-        )
+        # Try enhanced model first
+        if enhanced_price_model:
+            result = enhanced_price_model.predict_price(
+                commodity=request.commodity,
+                state=request.state,
+                days_ahead=request.days_ahead,
+                include_factors=True
+            )
+            
+            # Map to response format
+            prediction = {
+                'commodity': result['commodity'],
+                'state': result['state'],
+                'current_price': result['predicted_price'],  # Use predicted as current for now
+                'predicted_price': result['predicted_price'],
+                'price_change_pct': 0.0,
+                'confidence_interval': result['confidence_interval'],
+                'prediction_date': datetime.now().strftime('%Y-%m-%d'),
+                'days_ahead': request.days_ahead,
+                'recommendation': 'HOLD',
+                'recommendation_reason': f"Price confidence is {result['confidence']}",
+                'confidence_score': result['confidence'].upper(),
+                'price_trend': 'STABLE',
+                'volatility_level': 'MEDIUM'
+            }
+        else:
+            # Fallback to original model
+            prediction = mandi_price_predictor.predict_price(
+                commodity=request.commodity,
+                state=request.state,
+                days_ahead=request.days_ahead
+            )
         
         if prediction.get('current_price') is None:
             raise HTTPException(
@@ -443,33 +507,57 @@ def get_ai_analysis(request: AIAnalysisRequest):
         # Sort by importance
         feature_importance.sort(key=lambda x: x.importance, reverse=True)
         
-        # 3. Calculate yield factors breakdown
+        # 3. Calculate yield factors breakdown using enhanced model
         yield_factors = {
             'base_yield': 2.5,
             'npk_factor': 1.0,
             'climate_factor': 1.0,
-            'soil_factor': 1.0
+            'soil_factor': 1.0,
+            'data_source': 'fallback',
+            'confidence': 'low'
         }
         
-        # NPK factor calculation (same as model.py)
-        n = request.n_soil or 80
-        p = request.p_soil or 50
-        k = request.k_soil or 50
-        
-        if n < 80:
-            yield_factors['npk_factor'] *= (0.7 + 0.3 * (n / 80))
-        else:
-            yield_factors['npk_factor'] *= min(1.12, 1.0 + 0.12 * ((n - 80) / 80))
+        # Use enhanced yield model if available
+        if enhanced_yield_model:
+            yield_input = {
+                'state': request.state,
+                'crop': request.crop,
+                'n_soil': request.n_soil or 80,
+                'p_soil': request.p_soil or 50,
+                'k_soil': request.k_soil or 50,
+                'temperature': request.temperature or 25,
+                'humidity': request.humidity or 70,
+                'ph': request.ph or 6.5,
+                'rainfall': request.annual_rainfall
+            }
+            yield_result = enhanced_yield_model.predict(yield_input, return_confidence=True)
             
-        if p < 50:
-            yield_factors['npk_factor'] *= (0.75 + 0.25 * (p / 50))
+            yield_factors['base_yield'] = yield_result['factors']['base_yield']
+            yield_factors['npk_factor'] = yield_result['factors']['npk_factor']
+            yield_factors['climate_factor'] = yield_result['factors']['climate_factor']
+            yield_factors['data_source'] = yield_result['data_source']
+            yield_factors['confidence'] = yield_result['confidence']
+            yield_factors['predicted_yield'] = yield_result['yield_t_ha']
         else:
-            yield_factors['npk_factor'] *= min(1.08, 1.0 + 0.08 * ((p - 50) / 50))
+            # NPK factor calculation (same as model.py) - fallback
+            n = request.n_soil or 80
+            p = request.p_soil or 50
+            k = request.k_soil or 50
             
-        if k < 50:
-            yield_factors['npk_factor'] *= (0.80 + 0.20 * (k / 50))
-        else:
-            yield_factors['npk_factor'] *= min(1.10, 1.0 + 0.10 * ((k - 50) / 50))
+            if n < 80:
+                yield_factors['npk_factor'] *= (0.7 + 0.3 * (n / 80))
+            else:
+                yield_factors['npk_factor'] *= min(1.12, 1.0 + 0.12 * ((n - 80) / 80))
+                
+            if p < 50:
+                yield_factors['npk_factor'] *= (0.75 + 0.25 * (p / 50))
+            else:
+                yield_factors['npk_factor'] *= min(1.08, 1.0 + 0.08 * ((p - 50) / 50))
+                
+            if k < 50:
+                yield_factors['npk_factor'] *= (0.80 + 0.20 * (k / 50))
+            else:
+                yield_factors['npk_factor'] *= min(1.10, 1.0 + 0.10 * ((k - 50) / 50))
         
         # Climate factor - more realistic variation based on rainfall
         # Crop water requirements vary significantly
@@ -713,3 +801,125 @@ def get_nearby_mandi_prices(commodity: str, state: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch mandi prices: {str(e)}")
+
+
+# ── Enhanced Model Data Quality Endpoint ─────────────────────────────────────
+
+@app.get("/api/model-data-quality")
+def get_model_data_quality():
+    """
+    Get information about the data quality and coverage of enhanced models.
+    Shows which states and crops have high-confidence predictions.
+    """
+    try:
+        quality_info = {
+            'yield_model': {
+                'status': 'enhanced' if enhanced_yield_model else 'fallback',
+                'state_crop_combinations': len(enhanced_yield_model.state_yield_lookup) if enhanced_yield_model else 0,
+                'crops_with_national_avg': len(enhanced_yield_model.crop_national_avg) if enhanced_yield_model else 0,
+                'model_trained': enhanced_yield_model.is_trained if enhanced_yield_model else False
+            },
+            'price_model': {
+                'status': 'enhanced' if enhanced_price_model else 'fallback',
+                'state_commodity_combinations': len(enhanced_price_model.state_price_lookup) if enhanced_price_model else 0,
+                'commodities_with_avg': len(enhanced_price_model.commodity_avg) if enhanced_price_model else 0
+            },
+            'supported_states': [
+                'Tamil Nadu', 'Kerala', 'Gujarat', 'Himachal Pradesh', 'Uttar Pradesh',
+                'Haryana', 'Punjab', 'Madhya Pradesh', 'Rajasthan', 'Maharashtra',
+                'West Bengal', 'Bihar', 'Odisha', 'Assam', 'Karnataka', 'Andhra Pradesh',
+                'Telangana', 'Chhattisgarh', 'Jharkhand', 'Uttarakhand'
+            ],
+            'data_sources': [
+                'DES (Directorate of Economics & Statistics) - Yield Data 2022-23',
+                'Agmarknet - Mandi Price Data 2024',
+                'ICAR - Crop Metadata and Nutrient Requirements'
+            ]
+        }
+        
+        return quality_info
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch data quality info: {str(e)}")
+
+
+# ── Weather Integration Endpoints ────────────────────────────────────────────
+
+@app.get("/api/weather/current/{state}")
+def get_current_weather(state: str):
+    """
+    Get current weather conditions for a state.
+    Returns temperature, humidity, and rainfall data.
+    """
+    try:
+        if not weather_service:
+            raise HTTPException(status_code=503, detail="Weather service not available")
+        
+        weather = weather_service.get_current_weather(state)
+        return weather
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch weather: {str(e)}")
+
+
+@app.get("/api/weather/forecast/{state}")
+def get_weather_forecast(state: str, days: int = 7):
+    """
+    Get weather forecast for a state.
+    Helps farmers plan irrigation and other activities.
+    """
+    try:
+        if not weather_service:
+            raise HTTPException(status_code=503, detail="Weather service not available")
+        
+        forecast = weather_service.get_weather_forecast(state, days)
+        return {
+            'state': state,
+            'forecast': forecast,
+            'days': days
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch forecast: {str(e)}")
+
+
+@app.get("/api/weather/yield-adjustment/{state}/{crop}")
+def get_weather_yield_adjustment(state: str, crop: str):
+    """
+    Get yield adjustment factors based on current weather conditions.
+    Shows how current weather impacts crop yield potential.
+    """
+    try:
+        if not weather_service:
+            raise HTTPException(status_code=503, detail="Weather service not available")
+        
+        adjustment = weather_service.calculate_yield_adjustment(state, crop)
+        return adjustment
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to calculate adjustment: {str(e)}")
+
+
+@app.get("/api/weather/seasonal-outlook/{state}")
+def get_seasonal_weather_outlook(state: str, season: str = 'kharif'):
+    """
+    Get seasonal weather outlook for a state.
+    Helps farmers choose crops based on expected weather patterns.
+    """
+    try:
+        if not weather_service:
+            raise HTTPException(status_code=503, detail="Weather service not available")
+        
+        outlook = weather_service.get_seasonal_weather_outlook(state, season)
+        return outlook
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch outlook: {str(e)}")
