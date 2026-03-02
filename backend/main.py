@@ -8,6 +8,7 @@ from rotation_planner import get_rotation_planner
 from weather_service import get_weather_service
 from contextlib import asynccontextmanager
 import os
+import joblib
 from rag.retrieve import get_relevant_context
 from rag.generate import generate_answer
 
@@ -15,6 +16,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL1_DATA = os.path.join(BASE_DIR, "data", "model1_training.csv")
 MODEL1_ENHANCED_DATA = os.path.join(BASE_DIR, "data", "model1_training_enhanced.csv")
 MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training_extended.csv")
+YIELDS_DATA = os.path.join(BASE_DIR, "data", "state_crop_yields.csv")
+CACHE_DIR = os.path.join(BASE_DIR, "model_cache")
 
 # Original models (fallback)
 crop_recommender = CropRecommendationModel(MODEL1_DATA)
@@ -26,6 +29,26 @@ mandi_price_predictor = MandiPricePredictor(MODEL2_DATA)
 enhanced_yield_model = None
 enhanced_price_model = None
 weather_service = None
+
+
+def _cache_valid(cache_path: str, *data_paths: str) -> bool:
+    """Returns True if the cache file is newer than all given data files."""
+    if not os.path.exists(cache_path):
+        return False
+    cache_mtime = os.path.getmtime(cache_path)
+    return all(cache_mtime > os.path.getmtime(p) for p in data_paths if os.path.exists(p))
+
+
+def _load_or_train(model, cache_file: str, train_fn, *data_paths: str):
+    """Load model state from cache if valid, otherwise train and save."""
+    cache_path = os.path.join(CACHE_DIR, cache_file)
+    if _cache_valid(cache_path, *data_paths):
+        print(f"Loading {cache_file} from cache...")
+        model.__dict__.update(joblib.load(cache_path).__dict__)
+    else:
+        train_fn()
+        joblib.dump(model, cache_path)
+        print(f"Trained and cached {cache_file}.")
 
 
 @asynccontextmanager

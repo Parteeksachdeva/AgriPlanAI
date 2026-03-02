@@ -1,3 +1,6 @@
+# ML model cache (regenerated automatically on startup)
+backend/model_cache/
+
 # Dependencies
 node_modules
 .pnpm-store

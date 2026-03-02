@@ -59,12 +59,11 @@ Your goal is to help Indian farmers with practical, easy-to-understand advice.
         
         internet_context = format_search_results_for_llm(search_results)
     
-    # Build combined context
+    # Build combined context — context already contains pdf_context + screen_context
+    # combined upstream in main.py; do NOT add it twice.
     combined_context = ""
-    if has_pdf_context and context and context.strip():
-        combined_context += f"PDF Documents Context:\n{context}\n\n"
     if context and context.strip():
-        combined_context += f"Current Farm Data:\n{context}\n\n"
+        combined_context += f"{context}\n\n"
     if internet_context:
         combined_context += f"{internet_context}\n\n"
     
