@@ -1,8 +1,10 @@
-import { Sprout, Menu, X } from 'lucide-react'
+import { Sprout, Menu, X, Globe } from 'lucide-react'
 import { useState } from 'react'
+import { useLanguage } from '@/i18n'
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { language, toggleLanguage, t } = useLanguage()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -20,23 +22,29 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 ml-8">
           <a href="/form" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">
-            New Analysis
+            {t('nav.newAnalysis')}
           </a>
           <a href="/" className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">
-            How It Works
+            {t('nav.howItWorks')}
           </a>
         </nav>
 
         {/* Right Side Actions */}
         <div className="ml-auto flex items-center gap-3">
-          {/* Language Toggle - Placeholder for future Hindi support */}
+          {/* Language Toggle */}
           <button 
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
-            title="Hindi support coming soon!"
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+            title={language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
           >
-            <span>English</span>
+            <Globe className="h-4 w-4" />
+            <span className={language === 'en' ? 'text-emerald-600 font-semibold' : 'text-slate-400'}>
+              {t('language.english')}
+            </span>
             <span className="text-slate-400">|</span>
-            <span className="text-slate-400">हिंदी</span>
+            <span className={language === 'hi' ? 'text-emerald-600 font-semibold' : 'text-slate-400'}>
+              {t('language.hindi')}
+            </span>
           </button>
 
           {/* Mobile Menu Button */}
@@ -58,14 +66,14 @@ export function Header() {
               className="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              New Analysis
+              {t('nav.newAnalysis')}
             </a>
             <a 
               href="/" 
               className="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              How It Works
+              {t('nav.howItWorks')}
             </a>
           </div>
         </div>

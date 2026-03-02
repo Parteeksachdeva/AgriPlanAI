@@ -11,74 +11,76 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { useState } from 'react'
-
-const FEATURES = [
-  {
-    icon: Sprout,
-    title: 'Crop Recommendations',
-    description: 'Get AI-powered suggestions for the best crops based on your soil and climate',
-    color: 'bg-emerald-100 text-emerald-600',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Mandi Price Prediction',
-    description: 'Know future prices before you sell. Get the best rates at nearby markets',
-    color: 'bg-blue-100 text-blue-600',
-  },
-  {
-    icon: Calendar,
-    title: 'Crop Calendar',
-    description: 'Never miss important dates. Know exactly when to sow and harvest',
-    color: 'bg-amber-100 text-amber-600',
-  },
-  {
-    icon: MessageCircle,
-    title: 'Ask Questions',
-    description: 'Chat with our AI assistant about farming tips, schemes, and best practices',
-    color: 'bg-purple-100 text-purple-600',
-  },
-]
-
-const HOW_IT_WORKS = [
-  {
-    step: 1,
-    icon: MapPin,
-    title: 'Enter Your Farm Details',
-    description: 'Tell us your state, soil type, and farm size',
-  },
-  {
-    step: 2,
-    icon: Sun,
-    title: 'Get AI Analysis',
-    description: 'Our AI analyzes your conditions and market trends',
-  },
-  {
-    step: 3,
-    icon: Droplets,
-    title: 'Start Farming Smart',
-    description: 'Follow recommendations for better yields and profits',
-  },
-]
+import { useLanguage } from '@/i18n'
 
 export function WelcomeScreen() {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
+  const { t } = useLanguage()
 
   const slides = [
     {
-      title: 'Welcome to AgriPlanAI',
-      subtitle: 'Your Smart Farming Companion',
-      description: 'Make better decisions with AI-powered crop recommendations, price predictions, and farming advice.',
+      title: t('welcome.title1'),
+      subtitle: t('welcome.subtitle1'),
+      description: t('welcome.desc1'),
     },
     {
-      title: 'Maximize Your Profits',
-      subtitle: 'Know Before You Sell',
-      description: 'Get accurate mandi price predictions and find the best markets to sell your produce.',
+      title: t('welcome.title2'),
+      subtitle: t('welcome.subtitle2'),
+      description: t('welcome.desc2'),
     },
     {
-      title: 'Farm Smarter, Not Harder',
-      subtitle: 'AI-Powered Insights',
-      description: 'Get personalized recommendations based on your soil, climate, and local conditions.',
+      title: t('welcome.title3'),
+      subtitle: t('welcome.subtitle3'),
+      description: t('welcome.desc3'),
+    },
+  ]
+
+  const features = [
+    {
+      icon: Sprout,
+      title: t('welcome.feature1.title'),
+      description: t('welcome.feature1.desc'),
+      color: 'bg-emerald-100 text-emerald-600',
+    },
+    {
+      icon: TrendingUp,
+      title: t('welcome.feature2.title'),
+      description: t('welcome.feature2.desc'),
+      color: 'bg-blue-100 text-blue-600',
+    },
+    {
+      icon: Calendar,
+      title: t('welcome.feature3.title'),
+      description: t('welcome.feature3.desc'),
+      color: 'bg-amber-100 text-amber-600',
+    },
+    {
+      icon: MessageCircle,
+      title: t('welcome.feature4.title'),
+      description: t('welcome.feature4.desc'),
+      color: 'bg-purple-100 text-purple-600',
+    },
+  ]
+
+  const howItWorks = [
+    {
+      step: 1,
+      icon: MapPin,
+      title: t('welcome.step1.title'),
+      description: t('welcome.step1.desc'),
+    },
+    {
+      step: 2,
+      icon: Sun,
+      title: t('welcome.step2.title'),
+      description: t('welcome.step2.desc'),
+    },
+    {
+      step: 3,
+      icon: Droplets,
+      title: t('welcome.step3.title'),
+      description: t('welcome.step3.desc'),
     },
   ]
 
@@ -100,7 +102,7 @@ export function WelcomeScreen() {
               onClick={() => navigate('/form')}
               className="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors"
             >
-              Skip Tour
+              {t('welcome.skipTour')}
             </button>
           </div>
         </div>
@@ -111,7 +113,7 @@ export function WelcomeScreen() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full mb-6">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-sm font-medium text-emerald-700">Trusted by 10,000+ Farmers</span>
+            <span className="text-sm font-medium text-emerald-700">{t('welcome.trustedBy')}</span>
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
@@ -144,7 +146,7 @@ export function WelcomeScreen() {
             onClick={() => navigate('/form')}
             className="group bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:from-emerald-700 hover:to-green-700 transition-all flex items-center gap-3"
           >
-            Start Your Farm Analysis
+            {t('welcome.startAnalysis')}
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -152,10 +154,10 @@ export function WelcomeScreen() {
         {/* Features Grid */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-center text-slate-900 mb-8">
-            Everything You Need to Farm Smarter
+            {t('welcome.featuresTitle')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((feature) => (
+            {features.map((feature) => (
               <div
                 key={feature.title}
                 className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg transition-shadow group"
@@ -173,12 +175,12 @@ export function WelcomeScreen() {
         {/* How It Works */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 md:p-12 text-white mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-            How It Works
+            {t('welcome.howItWorks')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {HOW_IT_WORKS.map((item, idx) => (
+            {howItWorks.map((item, idx) => (
               <div key={item.step} className="text-center relative">
-                {idx < HOW_IT_WORKS.length - 1 && (
+                {idx < howItWorks.length - 1 && (
                   <div className="hidden md:block absolute top-8 left-[60%] w-full">
                     <ChevronRight className="h-6 w-6 text-slate-600" />
                   </div>
@@ -200,16 +202,15 @@ export function WelcomeScreen() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="text-6xl text-emerald-200 font-serif mb-4">"</div>
           <p className="text-xl text-slate-700 mb-6">
-            AgriPlanAI helped me increase my profits by 40%. The price predictions are incredibly accurate, 
-            and I always know which crop will give me the best returns.
+            {t('welcome.testimonial')}
           </p>
           <div className="flex items-center justify-center gap-3">
             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
               <span className="text-emerald-700 font-bold">RS</span>
             </div>
             <div className="text-left">
-              <p className="font-semibold text-slate-900">Rajesh Singh</p>
-              <p className="text-sm text-slate-500">Wheat Farmer, Punjab</p>
+              <p className="font-semibold text-slate-900">{t('welcome.testimonial.name')}</p>
+              <p className="text-sm text-slate-500">{t('welcome.testimonial.role')}</p>
             </div>
           </div>
         </div>
@@ -217,23 +218,23 @@ export function WelcomeScreen() {
         {/* Bottom CTA */}
         <div className="text-center bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl p-8 md:p-12 text-white">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to Transform Your Farming?
+            {t('welcome.cta.title')}
           </h2>
           <p className="text-emerald-100 mb-8 max-w-xl mx-auto">
-            Join thousands of farmers who are already using AI to make better decisions and increase their profits.
+            {t('welcome.cta.desc')}
           </p>
           <button
             onClick={() => navigate('/form')}
             className="bg-white text-emerald-700 font-semibold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:bg-emerald-50 transition-all flex items-center gap-3 mx-auto"
           >
-            Get Started Free
+            {t('welcome.cta.button')}
             <ArrowRight className="h-5 w-5" />
           </button>
         </div>
 
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t text-center text-slate-500 text-sm">
-          <p>Made with ❤️ for Indian Farmers</p>
+          <p>{t('welcome.footer')}</p>
         </footer>
       </div>
     </div>

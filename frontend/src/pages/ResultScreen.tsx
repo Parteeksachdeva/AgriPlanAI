@@ -10,6 +10,7 @@ import { AIExplanation } from '@/components/AIExplanation'
 import { CropRotationPlanner } from '@/components/CropRotationPlanner'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/i18n'
 import { CROP_RISK_META, DEFAULT_RISK_META, CROP_MIN_RAINFALL, type RiskLevel } from '@/lib/crop_risk_data'
 
 interface LocationState {
@@ -38,6 +39,7 @@ import { ExpandableSection, QuickSummary } from '@/components/ExpandableSection'
 export function ResultScreen() {
   const { state } = useLocation() as { state: LocationState | null }
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [selectedCropForCalculator, setSelectedCropForCalculator] = useState<CropResult | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'earnings' | 'market' | 'planning'>('overview')
 
@@ -48,13 +50,13 @@ export function ResultScreen() {
           <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
             <AlertTriangle className="h-8 w-8 text-amber-600" />
           </div>
-          <p className="text-muted-foreground">No prediction data available</p>
+          <p className="text-muted-foreground">{t('common.error')}</p>
           <button
             type="button"
             onClick={() => navigate('/')}
             className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
           >
-            Start New Analysis
+            {t('result.newAnalysis')}
           </button>
         </div>
       </div>
@@ -141,7 +143,7 @@ export function ResultScreen() {
                 <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
                   <CheckCircle className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-sm font-medium text-emerald-700">Enter Details</span>
+                <span className="text-sm font-medium text-emerald-700">{t('form.title')}</span>
               </div>
               <div className="w-12 h-0.5 bg-emerald-300" />
               <div className="flex items-center gap-2">
@@ -155,7 +157,7 @@ export function ResultScreen() {
                 <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center ring-4 ring-emerald-100">
                   <span className="text-sm font-bold text-white">3</span>
                 </div>
-                <span className="text-sm font-bold text-emerald-800">Get Results</span>
+                <span className="text-sm font-bold text-emerald-800">{t('result.title')}</span>
               </div>
             </div>
           </div>
@@ -171,11 +173,11 @@ export function ResultScreen() {
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Form
+              {t('common.back')}
             </button>
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-amber-500" />
-              <span className="font-semibold text-foreground">Your AI Crop Analysis</span>
+              <span className="font-semibold text-foreground">{t('result.title')}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -183,7 +185,7 @@ export function ResultScreen() {
                 className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Home className="h-4 w-4" />
-                Home
+                {t('common.close')}
               </button>
             </div>
           </div>
@@ -202,14 +204,14 @@ export function ResultScreen() {
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium backdrop-blur-sm">
-                    Top Recommendation
+                    {t('result.bestCrop')}
                   </span>
                   <span className={cn(
                     "px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm flex items-center gap-1.5",
                     getSuitabilityColor(top.suitability).replace('bg-', 'bg-white/').replace('text-', 'text-').replace('border-', '')
                   )}>
                     {getSuitabilityIcon(top.suitability)}
-                    {top.suitability === 'traditional' ? 'Traditional Crop' : top.suitability === 'common' ? 'Common Crop' : 'New Crop'}
+                    {top.suitability === 'traditional' ? t('result.suitability.traditional') : top.suitability === 'common' ? t('result.suitability.common') : t('result.suitability.rare')}
                   </span>
                 </div>
                 
@@ -217,17 +219,17 @@ export function ResultScreen() {
                   <div>
                     <h1 className="text-4xl md:text-5xl font-bold capitalize mb-2">{top.crop}</h1>
                     <p className="text-green-100 text-lg">
-                      Best match for {formData.state} • {formData.season} season
+                      {formData.state} • {formData.season}
                     </p>
                   </div>
                   
                   <div className="flex gap-4">
                     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 min-w-[140px]">
-                      <p className="text-green-200 text-sm mb-1">Expected Yield</p>
+                      <p className="text-green-200 text-sm mb-1">{t('result.yield')}</p>
                       <p className="text-2xl font-bold">{top.predicted_yield.toFixed(1)} <span className="text-lg font-normal">t/ha</span></p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 min-w-[140px]">
-                      <p className="text-green-200 text-sm mb-1">Revenue</p>
+                      <p className="text-green-200 text-sm mb-1">{t('result.revenue')}</p>
                       <p className="text-2xl font-bold">₹{(top.expected_revenue / 1000).toFixed(0)}K</p>
                     </div>
                   </div>
@@ -243,7 +245,7 @@ export function ResultScreen() {
             <div className="bg-white rounded-2xl shadow-sm border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                 <Sprout className="h-5 w-5 text-emerald-500" />
-                All Recommendations
+                {t('result.recommended')}
               </h2>
               
               <div className="space-y-3">
@@ -273,7 +275,7 @@ export function ResultScreen() {
                               "px-2 py-0.5 rounded-full text-[10px] font-medium border",
                               getRiskColor(level)
                             )}>
-                              {level} risk
+                              {level === 'low' ? t('result.suitability.traditional') : level === 'medium' ? t('result.suitability.common') : t('result.suitability.rare')}
                             </span>
                             <span className={cn(
                               "px-2 py-0.5 rounded-full text-[10px] font-medium border",
@@ -298,22 +300,22 @@ export function ResultScreen() {
 
             {/* Farm Summary Card */}
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white">
-              <h3 className="text-sm font-medium text-slate-300 mb-4 uppercase tracking-wider">Your Farm</h3>
+              <h3 className="text-sm font-medium text-slate-300 mb-4 uppercase tracking-wider">{t('form.section.farm')}</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Location</span>
+                  <span className="text-slate-400">{t('form.label.state')}</span>
                   <span className="font-medium">{formData.state}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Season</span>
+                  <span className="text-slate-400">{t('form.label.season')}</span>
                   <span className="font-medium">{formData.season}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Area</span>
+                  <span className="text-slate-400">{t('form.label.area')}</span>
                   <span className="font-medium">{formData.area} ha</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Rainfall</span>
+                  <span className="text-slate-400">{t('form.label.rainfall')}</span>
                   <span className="font-medium">{formData.annual_rainfall} mm</span>
                 </div>
               </div>
@@ -330,25 +332,25 @@ export function ResultScreen() {
                     {[
                       { 
                         id: 'overview', 
-                        label: 'Crop Overview', 
+                        label: t('result.yield'), 
                         icon: Sprout,
                         desc: 'Why this crop suits you'
                       },
                       { 
                         id: 'earnings', 
-                        label: 'Your Earnings', 
+                        label: t('result.revenue'), 
                         icon: Wallet,
                         desc: 'Profit & costs'
                       },
                       { 
                         id: 'market', 
-                        label: 'Market Prices', 
+                        label: t('result.price'), 
                         icon: TrendingUp,
                         desc: 'When & where to sell'
                       },
                       { 
                         id: 'planning', 
-                        label: 'Farm Planning', 
+                        label: t('result.rotation.title'), 
                         icon: Calendar,
                         desc: 'Calendar & rotation'
                       },
@@ -386,7 +388,7 @@ export function ResultScreen() {
                       
                       {/* AI Explanation - Expandable */}
                       <ExpandableSection 
-                        title="Why This Crop is Recommended"
+                        title={t('result.bestCrop')}
                         subtitle="See what our AI analyzed for your farm"
                         icon={<Brain className="h-5 w-5" />}
                         defaultExpanded={true}
@@ -410,7 +412,7 @@ export function ResultScreen() {
 
                       {/* Soil Recommendations - Expandable */}
                       <ExpandableSection 
-                        title="Soil Health Recommendations"
+                        title={t('form.section.soil')}
                         subtitle="Get your soil ready for this crop"
                         icon={<Beaker className="h-5 w-5" />}
                       >
@@ -438,7 +440,7 @@ export function ResultScreen() {
 
                       {/* Profit Calculator - Expandable */}
                       <ExpandableSection 
-                        title="Calculate Your Profit"
+                        title={t('result.revenue')}
                         subtitle="Add your costs to see net earnings"
                         icon={<Wallet className="h-5 w-5" />}
                         defaultExpanded={true}
@@ -462,7 +464,7 @@ export function ResultScreen() {
 
                       {/* Crop Comparison - Expandable */}
                       <ExpandableSection 
-                        title="Compare All Recommended Crops"
+                        title={t('result.recommended')}
                         subtitle="Side-by-side comparison"
                         icon={<BarChart3 className="h-5 w-5" />}
                       >
@@ -503,7 +505,7 @@ export function ResultScreen() {
 
                       {/* Crop Calendar - Expandable */}
                       <ExpandableSection 
-                        title="Crop Calendar"
+                        title={t('welcome.feature3.title')}
                         subtitle="When to sow, care for, and harvest"
                         icon={<Calendar className="h-5 w-5" />}
                         defaultExpanded={true}
@@ -517,7 +519,7 @@ export function ResultScreen() {
 
                       {/* Rotation Planner - Expandable */}
                       <ExpandableSection 
-                        title="Crop Rotation Plan"
+                        title={t('result.rotation.title')}
                         subtitle="Plan your next season crops"
                         icon={<RotateCcw className="h-5 w-5" />}
                       >
