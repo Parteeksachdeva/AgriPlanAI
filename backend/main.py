@@ -387,9 +387,19 @@ def get_price_prediction(request: PricePredictionRequest):
 def get_price_history(commodity: str, state: str, days: int = 30):
     """
     Get historical price data for a commodity in a state.
+    Supports both legacy (capitalized) and modern (lowercase) commodity names.
     """
     try:
+        # Normalize commodity name to support both formats
+        # Enhanced model uses lowercase, legacy model uses capitalized
+        commodity_normalized = commodity.lower()
+        
         history = mandi_price_predictor.get_price_history(commodity, state, days)
+        
+        if not history:
+            # Try with normalized name if original fails
+            if commodity != commodity_normalized:
+                history = mandi_price_predictor.get_price_history(commodity_normalized, state, days)
         
         if not history:
             raise HTTPException(
@@ -782,9 +792,18 @@ def get_seasonal_trends(commodity: str, state: str):
     """
     Get seasonal price trends for a commodity.
     Shows best and worst months to sell.
+    Supports both legacy (capitalized) and modern (lowercase) commodity names.
     """
     try:
+        # Normalize commodity name to support both formats
+        commodity_normalized = commodity.lower()
+        
         trends = mandi_price_predictor.get_seasonal_trends(commodity, state)
+        
+        if 'error' in trends:
+            # Try with normalized name if original fails
+            if commodity != commodity_normalized:
+                trends = mandi_price_predictor.get_seasonal_trends(commodity_normalized, state)
         
         if 'error' in trends:
             raise HTTPException(status_code=404, detail=trends['error'])
@@ -802,9 +821,18 @@ def get_nearby_mandi_prices(commodity: str, state: str):
     """
     Get prices from nearby mandis for comparison.
     Helps farmers find the best market to sell.
+    Supports both legacy (capitalized) and modern (lowercase) commodity names.
     """
     try:
+        # Normalize commodity name to support both formats
+        commodity_normalized = commodity.lower()
+        
         prices = mandi_price_predictor.get_nearby_mandi_prices(commodity, state)
+        
+        if not prices:
+            # Try with normalized name if original fails
+            if commodity != commodity_normalized:
+                prices = mandi_price_predictor.get_nearby_mandi_prices(commodity_normalized, state)
         
         if not prices:
             raise HTTPException(
