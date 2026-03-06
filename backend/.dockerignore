@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+chroma_db/
+model_cache/
+docs/
+scripts/
+*.md
+node_modules/
+.git/

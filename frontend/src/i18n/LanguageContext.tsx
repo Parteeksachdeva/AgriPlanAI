@@ -1,4 +1,4 @@
-import React, { useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { translations, type Language, type TranslationKey } from './translations';
 import { LanguageContext } from './language-context';
 

@@ -1,0 +1,258 @@
+These services can be used with the associated credit:
+
+AWS Amplify
+AWS App Runner
+AWS App Studio
+AWS AppFabric
+AWS AppSync
+AWS Application Migration Service
+AWS Audit Manager
+AWS B2B Data Interchange
+AWS Backup
+AWS Billing Conductor
+AWS Budgets
+AWS Business Support+
+AWS Certificate Manager
+AWS Certificate Manager
+AWS Clean Rooms
+AWS Cloud Map
+AWS Cloud WAN
+AWS CloudFormation
+AWS CloudHSM
+AWS CloudTrail
+AWS CodeArtifact
+AWS CodeCommit
+AWS CodeDeploy
+AWS CodePipeline
+AWS Compute Optimizer
+AWS Config
+AWS Cost Explorer
+AWS Data Exchange
+AWS Data Pipeline
+AWS Data Transfer
+AWS DataSync
+AWS Database Migration Service
+AWS DeepRacer
+AWS Device Farm
+AWS Direct Connect
+AWS Directory Service
+AWS Elastic Disaster Recovery
+AWS Elemental Inference
+AWS Elemental MediaConnect
+AWS Elemental MediaConvert
+AWS Elemental MediaLive
+AWS Elemental MediaPackage
+AWS Elemental MediaStore
+AWS Elemental MediaTailor
+AWS End User Messaging
+AWS End User Messaging Third Party Fees
+AWS Entity Resolution
+AWS Fault Injection Simulator
+AWS Firewall Manager
+AWS Global Accelerator
+AWS Glue
+AWS Glue Elastic Views
+AWS Greengrass
+AWS Ground Station
+AWS HealthImaging
+AWS Identity and Access Management Access Analyzer
+AWS Import/Export
+AWS Import/Export Snowball
+AWS IoT
+AWS IoT 1 Click
+AWS IoT Analytics
+AWS IoT Device Defender
+AWS IoT Device Management
+AWS IoT Events
+AWS IoT FleetWise
+AWS IoT SiteWise
+AWS IoT Things Graph
+AWS IoT TwinMaker
+AWS Key Management Service
+AWS Lake Formation
+AWS Lambda
+AWS Mainframe Modernization
+AWS Managed Services
+AWS Migration Hub Refactor Spaces
+AWS Modular Data Center
+AWS Network Firewall
+AWS OpsWorks
+AWS Outposts
+AWS Parallel Computing Service
+AWS Payment Cryptography
+AWS Pricing Calculator
+AWS Private 5G
+AWS RTB Fabric
+AWS Resilience Hub
+AWS RoboMaker
+AWS Route 53 Application Recovery Controller
+AWS Secrets Manager
+AWS Security Hub
+AWS Security Incident Response
+AWS Service Catalog
+AWS Shield
+AWS SimSpace Weaver
+AWS Snowball Extra Days
+AWS Step Functions
+AWS Storage Gateway
+AWS Storage Gateway Deep Archive
+AWS Supply Chain
+AWS Support (Business)
+AWS Support (Developer)
+AWS Systems Manager
+AWS Systems Manager for SAP
+AWS Telco Network Builder
+AWS Transfer Family
+AWS Transform
+AWS WAF
+AWS Wickr
+AWS X-Ray
+AWS re:Post Private
+AWSDevOpsAgent
+Alexa Top Sites
+Alexa Web Information Service
+Alexa for Business
+Amazon API Gateway
+Amazon AppFlow
+Amazon Athena
+Amazon Augmented AI
+Amazon Bedrock
+Amazon Bedrock AgentCore
+Amazon Bedrock Service
+Amazon Braket
+Amazon Chime
+Amazon Chime Business Calling a service sold by AMCS LLC
+Amazon Chime Call Me
+Amazon Chime Call Me a service sold by AMCS LLC
+Amazon Chime Dial In a service sold by AMCS LLC
+Amazon Chime Dialin
+Amazon Chime Features
+Amazon Chime Services
+Amazon Chime Voice Connector a service sold by AMCS LLC
+Amazon Cloud Directory
+Amazon CloudFront
+Amazon CloudSearch
+Amazon CodeWhisperer
+Amazon Cognito
+Amazon Cognito Sync
+Amazon Comprehend
+Amazon Connect
+Amazon Connect Customer Profiles
+Amazon Connect Voice ID
+Amazon DataZone
+Amazon Deadline Cloud
+Amazon Detective
+Amazon DevOps Guru
+Amazon DocumentDB (with MongoDB compatibility)
+Amazon DynamoDB
+Amazon EC2 Container Registry (ECR)
+Amazon EC2 Optimize CPU License Included Third Party Fees
+Amazon EKS Anywhere
+Amazon ElastiCache
+Amazon Elastic Compute Cloud
+Amazon Elastic Container Registry Public
+Amazon Elastic Container Service
+Amazon Elastic Container Service for Kubernetes
+Amazon Elastic File System
+Amazon Elastic Inference
+Amazon Elastic MapReduce
+Amazon Elastic Transcoder
+Amazon FSx
+Amazon FinSpace
+Amazon Forecast
+Amazon Fraud Detector
+Amazon GameLift
+Amazon GameLift Streams
+Amazon Glacier
+Amazon GuardDuty
+Amazon HealthLake
+Amazon Honeycode
+Amazon IVS Chat
+Amazon Inspector
+Amazon Inspector
+Amazon Interactive Video Service
+Amazon Kendra
+Amazon Keyspaces (for Apache Cassandra)
+Amazon Kinesis
+Amazon Kinesis Analytics
+Amazon Kinesis Firehose
+Amazon Kinesis Video Streams
+Amazon Lex
+Amazon Lightsail
+Amazon Location Service
+Amazon Lookout for Equipment
+Amazon Lookout for Metrics
+Amazon Lookout for Vision
+Amazon MQ
+Amazon Machine Learning
+Amazon Macie
+Amazon Managed Blockchain
+Amazon Managed Grafana
+Amazon Managed Service for Prometheus
+Amazon Managed Streaming for Apache Kafka
+Amazon Managed Workflows for Apache Airflow
+Amazon MemoryDB
+Amazon Mobile Analytics
+Amazon Monitron
+Amazon Neptune
+Amazon Nimble Studio
+Amazon Omics
+Amazon OpenSearch Service
+Amazon Personalize
+Amazon Polly
+Amazon Q
+Amazon Quantum Ledger Database
+Amazon QuickSight
+Amazon RDS Optimize CPU License Included Third Party Fees
+Amazon Redshift
+Amazon Rekognition
+Amazon Relational Database Service
+Amazon Route 53
+Amazon S3 Glacier Deep Archive
+Amazon SageMaker
+Amazon Security Lake
+Amazon Simple Email Service
+Amazon Simple Notification Service
+Amazon Simple Queue Service
+Amazon Simple Storage Service
+Amazon Simple Workflow Service
+Amazon SimpleDB
+Amazon Sumerian
+Amazon Textract
+Amazon Timestream
+Amazon Transcribe
+Amazon Translate
+Amazon Verified Permissions
+Amazon Virtual Private Cloud
+Amazon WorkDocs
+Amazon WorkLink
+Amazon WorkSpaces
+Amazon WorkSpaces Application Manager
+Amazon WorkSpaces Applications
+Amazon WorkSpaces Instances
+Amazon WorkSpaces Thin Client
+Amazon WorkSpaces Web
+AmazonBedrockFoundationModels
+AmazonCloudWatch
+AmazonConnectCases
+AmazonWorkMail
+Aurora DSQL
+CloudFront Flat-Rate Plans
+CloudWatch Events
+CodeBuild
+CodeCatalyst
+CodeGuru
+Comprehend Medical
+Contact Center Telecommunications (service sold by AMCS, LLC)
+Contact Center Telecommunications Korea
+Contact Center Telecommunications South Africa
+Contact Lens for Amazon Connect
+DynamoDB Accelerator (DAX)
+Elastic Load Balancing
+Elastic VMware Service
+Health Agent
+Kiro
+NovaAct
+Oracle Database@AWS
+Q in Connect
+VMware Cloud on AWS
