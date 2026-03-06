@@ -25,7 +25,12 @@ def get_relevant_context(question: str) -> str:
     if not os.path.exists(CHROMA_PATH) or not os.listdir(CHROMA_PATH):
         return ""
 
-    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=_get_embeddings())
-    retriever = db.as_retriever(search_kwargs={"k": 3})
-    docs = retriever.invoke(question)
-    return "\n\n---\n\n".join([doc.page_content for doc in docs])
+    try:
+        db = Chroma(persist_directory=CHROMA_PATH, embedding_function=_get_embeddings())
+        retriever = db.as_retriever(search_kwargs={"k": 3})
+        docs = retriever.invoke(question)
+        return "\n\n---\n\n".join([doc.page_content for doc in docs])
+    except Exception:
+        # ChromaDB version incompatibility or Bedrock error — degrade gracefully.
+        # The chatbot will answer from LLM knowledge without PDF context.
+        return ""
