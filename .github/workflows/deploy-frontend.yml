@@ -34,7 +34,8 @@ jobs:
       - name: Build
         run: pnpm --dir frontend build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          # Fall back to live App Runner URL if secret is not set
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://rppd9c8vep.us-east-1.awsapprunner.com' }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
