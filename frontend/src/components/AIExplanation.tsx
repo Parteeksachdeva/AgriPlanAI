@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE } from '@/api';
 import type { CropResult } from '@/types';
 import { cn } from '@/lib/utils';
 import { 
@@ -60,7 +61,7 @@ export function AIExplanation({ crop, formData }: AIExplanationProps) {
   const fetchAIAnalysis = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/ai-analysis', {
+      const response = await fetch(`${API_BASE}/api/ai-analysis`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
