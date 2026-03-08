@@ -12,7 +12,13 @@ AgriPlanAI is an intelligent agricultural platform that helps Indian farmers mak
 
 ---
 
-## 🚀 Quick Start
+## � Demo & Presentation
+
+**[Project Demo Video / Presentation](https://drive.google.com/file/d/161ohryY3yM3D1_tRONsFf2c6h0_P3SeA/view?usp=sharing)**
+
+---
+
+## �🚀 Quick Start
 
 ```bash
 # Clone the repository
@@ -196,7 +202,7 @@ AgriPlanAI/
 
 - **Input**: State, crop/commodity, seasonal features
 - **Output**: Predicted mandi price (INR/quintal)
-- **Data**: Scraped and real-time historical mandi prices from [Agmarknet](https://agmarknet.gov.in/)
+- **Data**: Scrapped and real-time historical mandi prices from [Agmarknet](https://agmarknet.gov.in/)
 
 ---
 
@@ -229,7 +235,7 @@ To ensure accurate and actionable insights, AgriPlanAI utilizes data from truste
 
 ---
 
-## � Environment Configuration
+## 📝 Environment Configuration
 
 ### Backend (.env)
 
@@ -279,7 +285,7 @@ python -c "from rag.ingest import ingest_documents; ingest_documents()"
 
 ---
 
-## �🚢 Deployment
+## 🚢 Deployment
 
 ### Docker (Recommended)
 
