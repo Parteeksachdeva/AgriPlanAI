@@ -285,17 +285,6 @@ python -c "from rag.ingest import ingest_documents; ingest_documents()"
 
 ---
 
-## 🚢 Deployment
-
-### Docker (Recommended)
-
-```bash
-# Build and run with Docker Compose
-docker-compose up --build
-```
-
----
-
 ## 🤝 Contributing
 
 We welcome contributions! Please follow these steps:
