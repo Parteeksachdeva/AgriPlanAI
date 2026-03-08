@@ -214,22 +214,6 @@ export function WelcomeScreen() {
           </div>
         </div>
 
-        {/* Testimonial */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="text-6xl text-emerald-200 font-serif mb-4">"</div>
-          <p className="text-xl text-slate-700 mb-6">
-            {t('welcome.testimonial')}
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-              <span className="text-emerald-700 font-bold">RS</span>
-            </div>
-            <div className="text-left">
-              <p className="font-semibold text-slate-900">{t('welcome.testimonial.name')}</p>
-              <p className="text-sm text-slate-500">{t('welcome.testimonial.role')}</p>
-            </div>
-          </div>
-        </div>
 
         {/* Bottom CTA */}
         <div className="text-center bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl p-8 md:p-12 text-white">

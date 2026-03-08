@@ -267,7 +267,7 @@ export function ProfitCalculator({
             <h4 className="font-semibold text-blue-900">Soil Investment Opportunity</h4>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="bg-white rounded-xl p-4">
               <p className="text-xs text-slate-500 mb-1">Investment Needed</p>
               <p className="text-xl font-bold text-slate-700">₹{(soilAmendmentCost * area / 1000).toFixed(1)}K</p>
@@ -275,12 +275,6 @@ export function ProfitCalculator({
             <div className="bg-white rounded-xl p-4">
               <p className="text-xs text-slate-500 mb-1">Additional Profit</p>
               <p className="text-xl font-bold text-emerald-600">+{formatIndianNumber(improvedProfit - netProfit)}</p>
-            </div>
-            <div className="bg-white rounded-xl p-4">
-              <p className="text-xs text-slate-500 mb-1">ROI</p>
-              <p className="text-xl font-bold text-blue-600">
-                {(((improvedProfit - netProfit) / (soilAmendmentCost * area)) * 100).toFixed(0)}%
-              </p>
             </div>
           </div>
         </div>
