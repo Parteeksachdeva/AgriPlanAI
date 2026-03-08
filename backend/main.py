@@ -8,6 +8,7 @@ from rotation_planner import get_rotation_planner
 from weather_service import get_weather_service
 from contextlib import asynccontextmanager
 import os
+from datetime import datetime
 import joblib
 from rag.retrieve import get_relevant_context
 from rag.generate import generate_answer
@@ -16,6 +17,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL1_DATA = os.path.join(BASE_DIR, "data", "model1_training.csv")
 MODEL1_ENHANCED_DATA = os.path.join(BASE_DIR, "data", "model1_training_enhanced.csv")
 MODEL2_DATA = os.path.join(BASE_DIR, "data", "model2_training_extended.csv")
+MANDI_ENHANCED_DATA = os.path.join(BASE_DIR, "data", "mandi_prices_enhanced.csv")
 YIELDS_DATA = os.path.join(BASE_DIR, "data", "state_crop_yields.csv")
 CACHE_DIR = os.path.join(BASE_DIR, "model_cache")
 
@@ -23,7 +25,10 @@ CACHE_DIR = os.path.join(BASE_DIR, "model_cache")
 crop_recommender = CropRecommendationModel(MODEL1_DATA)
 yield_predictor = YieldPredictionModel(MODEL1_DATA)
 price_predictor = PricePredictionModel(MODEL2_DATA)
-mandi_price_predictor = MandiPricePredictor(MODEL2_DATA)
+# Use enhanced CSV so mandi predictor has all crops (lowercase), including banana
+mandi_price_predictor = MandiPricePredictor(
+    MANDI_ENHANCED_DATA if os.path.exists(MANDI_ENHANCED_DATA) else MODEL2_DATA
+)
 
 # Enhanced models (primary)
 enhanced_yield_model = None
@@ -658,35 +663,35 @@ def get_ai_analysis(request: AIAnalysisRequest):
         
         # 5. Calculate overall confidence score
         suitability = price_predictor.get_suitability(request.state, request.crop)
-        suitability_score = {'traditional': 0.95, 'common': 0.80, 'rare': 0.65}.get(suitability, 0.65)
         
-        # Better confidence calculation based on RANK and PROXIMITY to top choice
-        # Farmers care about: Is this crop in the top recommendations? How close to #1?
-        
-        # Base confidence from rank (top 3 = good)
+        # Base confidence from ML rank - slightly softer penalties for lower ML ranks
         if crop_rank == 1:
-            rank_score = 95
-        elif crop_rank == 2:
-            rank_score = 88
-        elif crop_rank == 3:
-            rank_score = 80
+            rank_score = 92
+        elif crop_rank <= 3:
+            rank_score = 85
         elif crop_rank <= 5:
-            rank_score = 70
+            rank_score = 78
+        elif crop_rank <= 10:
+            rank_score = 72
         else:
-            rank_score = 55
+            rank_score = 65
         
-        # Bonus for being close to top probability (within 5% = very similar suitability)
-        if probability_gap < 0.02:  # Within 2%
-            proximity_bonus = 5
-        elif probability_gap < 0.05:  # Within 5%
-            proximity_bonus = 3
-        else:
-            proximity_bonus = 0
+        # Environmental impact from yield factors
+        # If yield factors are low, confidence should drop significantly
+        yf = yield_factors
+        env_multiplier = (yf.get('npk_factor', 1.0) * yf.get('climate_factor', 1.0) * yf.get('soil_factor', 1.0))
         
-        # Regional suitability bonus
-        suitability_bonus = {'traditional': 5, 'common': 2, 'rare': 0}.get(suitability, 0)
+        # Map suitability to bonus
+        suitability_bonus = {'traditional': 8, 'common': 4, 'rare': 0}.get(suitability, 0)
         
-        confidence_score = min(98, rank_score + proximity_bonus + suitability_bonus)
+        # Combine metrics
+        # (Base Rank Score * Env Multiplier) + Suitability Bonus
+        confidence_base = rank_score * env_multiplier
+        confidence_score = min(98, confidence_base + suitability_bonus)
+        
+        # Ensure #1 recommendations don't look "moderate" unless environment is bad
+        if crop_rank <= 2 and env_multiplier > 0.9:
+            confidence_score = max(85, confidence_score)
         
         # Recommendation strength - farmer-friendly language
         if crop_rank <= 2 and suitability == 'traditional':

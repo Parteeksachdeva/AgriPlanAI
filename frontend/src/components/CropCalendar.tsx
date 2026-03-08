@@ -1,7 +1,7 @@
 import { CROP_CALENDARS } from '../lib/crop_calendar_data';
 import type { ActivityType } from '../lib/crop_calendar_data';
 import { cn } from '../lib/utils';
-import { CalendarDays, Info, Sprout } from 'lucide-react';
+import { Info, Sprout } from 'lucide-react';
 
 interface CropCalendarProps {
   cropName: string;
@@ -54,22 +54,49 @@ const ACTIVITY_CONFIG: Record<ActivityType, { color: string; bg: string; label: 
 
 export function CropCalendar({ cropName, season }: CropCalendarProps) {
   const cropKey = cropName.toLowerCase();
-  const timeline = CROP_CALENDARS[cropKey]?.[season] || CROP_CALENDARS[cropKey]?.['Whole Year'];
-  const currentMonth = new Date().getMonth();
+  let timeline = CROP_CALENDARS[cropKey]?.[season] || CROP_CALENDARS[cropKey]?.['Whole Year'];
 
+  // Fallback for missing crops based on season
   if (!timeline) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CalendarDays className="h-8 w-8 text-slate-400" />
-        </div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">Calendar Coming Soon</h3>
-        <p className="text-muted-foreground text-sm">
-          Detailed calendar for {cropName} will be available shortly.
-        </p>
-      </div>
-    );
+    if (season === 'Kharif') {
+      timeline = {
+        activities: [
+          { type: 'land_prep', startMonth: 4, endMonth: 5 },
+          { type: 'sowing', startMonth: 5, endMonth: 6 },
+          { type: 'irrigation', startMonth: 6, endMonth: 8 },
+          { type: 'fertilizer', startMonth: 6, endMonth: 7 },
+          { type: 'pesticide', startMonth: 7, endMonth: 8 },
+          { type: 'harvest', startMonth: 9, endMonth: 10 },
+        ]
+      };
+    } else if (season === 'Rabi') {
+      timeline = {
+        activities: [
+          { type: 'land_prep', startMonth: 9, endMonth: 10 },
+          { type: 'sowing', startMonth: 10, endMonth: 11 },
+          { type: 'irrigation', startMonth: 0, endMonth: 2 },
+          { type: 'fertilizer', startMonth: 11, endMonth: 1 },
+          { type: 'pesticide', startMonth: 1, endMonth: 2 },
+          { type: 'harvest', startMonth: 2, endMonth: 3 },
+        ]
+      };
+    } else {
+      // General Whole Year or Summer fallback
+      timeline = {
+        activities: [
+          { type: 'land_prep', startMonth: 1, endMonth: 2 },
+          { type: 'sowing', startMonth: 2, endMonth: 3 },
+          { type: 'irrigation', startMonth: 3, endMonth: 5 },
+          { type: 'fertilizer', startMonth: 3, endMonth: 4 },
+          { type: 'pesticide', startMonth: 4, endMonth: 5 },
+          { type: 'harvest', startMonth: 5, endMonth: 6 },
+        ]
+      };
+    }
   }
+
+  const isFallback = !CROP_CALENDARS[cropKey];
+  const currentMonth = new Date().getMonth();
 
   // Get active months for each activity
   const getActivityMonths = (startMonth: number, endMonth: number) => {
@@ -96,6 +123,9 @@ export function CropCalendar({ cropName, season }: CropCalendarProps) {
             <p className="text-xs text-muted-foreground">{season} season schedule</p>
           </div>
         </div>
+        <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600">
+          {isFallback ? 'Estimate' : 'Exact Data'}
+        </span>
         <span className="px-3 py-1 bg-slate-100 rounded-full text-xs font-medium text-slate-600">
           {MONTHS[currentMonth]} (Current)
         </span>
