@@ -8,13 +8,14 @@ import {
   AlertCircle,
   CheckCircle2,
   Info,
-  BarChart3,
+  Brain,
   Activity,
   Scale
 } from 'lucide-react';
 
 interface AIExplanationProps {
   crop: CropResult;
+  displayRank?: number;
   formData: {
     state: string;
     season: string;
@@ -49,7 +50,7 @@ interface AIAnalysisData {
   recommendation_strength: string;
 }
 
-export function AIExplanation({ crop, formData }: AIExplanationProps) {
+export function AIExplanation({ crop, displayRank, formData }: AIExplanationProps) {
   const [analysis, setAnalysis] = useState<AIAnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,62 +131,54 @@ export function AIExplanation({ crop, formData }: AIExplanationProps) {
                             analysis.yield_factors.climate_factor * 
                             analysis.yield_factors.soil_factor;
 
+  const currentRank = displayRank || analysis.crop_rank;
+
   return (
     <div className="space-y-6">
-      {/* Header with Real ML Badge */}
+      {/* Summary - Now at the top for quick insight */}
+      <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-5 text-white shadow-lg">
+        <div className="flex items-start gap-3">
+          <Sparkles className="h-6 w-6 text-amber-300 mt-0.5" />
+          <div>
+            <h4 className="font-bold text-lg mb-1">Our AI's Advice</h4>
+            <p className="text-sm text-violet-100 leading-relaxed font-medium">
+              We've analyzed your farm details against thousands of successful harvests. 
+              <span className="text-white font-bold capitalize"> {crop.crop}</span> is ranked{' '}
+              <span className="text-amber-300 font-bold">#{currentRank}</span> for your conditions.{' '}
+              {currentRank <= 2 ? 'This is an excellent choice with very high success probability!' : 'This is a solid choice that can work well on your farm.'}
+              {analysis.yield_factors.npk_factor < 1.0 && ' We suggest adding some nutrients to your soil for better results. '}
+              Market shows {analysis.price_trend === 'UP' ? 'rising' : 'stable'} prices nearby.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Header with High-Tech Badge - Simplified */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-br from-violet-100 to-purple-100 rounded-lg">
-            <Sparkles className="h-5 w-5 text-violet-600" />
+            <Brain className="h-5 w-5 text-violet-600" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground">ML-Powered Analysis</h3>
-            <p className="text-xs text-muted-foreground">XGBoost model insights</p>
+            <h3 className="font-bold text-foreground font-inter">Smart Recommendation</h3>
+            <p className="text-xs text-muted-foreground">Based on local farming data</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-violet-50 rounded-full border border-violet-200">
-          <Activity className="h-4 w-4 text-violet-600" />
-          <span className="text-xs font-medium text-violet-700">Model Confidence</span>
-          <span className="text-sm font-bold text-violet-800">{analysis.confidence_score}%</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          <span className="text-xs font-semibold text-emerald-700">Recommended Success Rate</span>
+          <span className="text-sm font-bold text-emerald-800">{analysis.confidence_score}%</span>
         </div>
       </div>
 
-      {/* Crop Ranking */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-5 text-white">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-slate-300">AI Recommendation Rank</span>
-          <div className="text-right">
-            <span className="text-3xl font-bold">#{analysis.crop_rank}</span>
-            <span className="text-sm text-slate-400 ml-1">of {analysis.total_crops_considered}</span>
-          </div>
-        </div>
-        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all"
-            style={{ width: `${Math.max(5, 100 - (analysis.crop_rank - 1) * 10)}%` }}
-          />
-        </div>
-        <div className="mt-3 text-xs text-slate-400">
-          {analysis.crop_rank === 1 ? (
-            <p>✓ This is the #1 recommended crop for your conditions</p>
-          ) : analysis.crop_rank <= 3 ? (
-            <p>✓ Top 3 recommendation - excellent choice for your farm</p>
-          ) : analysis.crop_rank <= 5 ? (
-            <p>→ Good alternative crop that can work well</p>
-          ) : (
-            <p>→ Consider other higher-ranked crops first</p>
-          )}
-        </div>
-      </div>
-
-      {/* Feature Importance from ML Model */}
-      <div className="bg-white rounded-2xl border p-5">
+      {/* Feature Importance - Simplified to "Why we chose this" */}
+      <div className="bg-white rounded-2xl border p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="h-5 w-5 text-violet-600" />
-          <h4 className="font-semibold text-slate-800">ML Feature Importance</h4>
+          <Activity className="h-5 w-5 text-violet-600" />
+          <h4 className="font-bold text-slate-800">Why we chose this for you</h4>
         </div>
         <p className="text-xs text-slate-500 mb-4">
-          Top factors the XGBoost model uses to predict crop suitability
+          These are the main reasons why this crop grew well in similar farms:
         </p>
         
         <div className="space-y-3">
@@ -196,10 +189,10 @@ export function AIExplanation({ crop, formData }: AIExplanationProps) {
               </div>
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-slate-700">{feature.feature}</span>
+                  <span className="text-sm font-bold text-slate-700">{feature.feature === 'annual_rainfall' ? 'Rainfall Matching' : feature.feature === 'humidity' ? 'Climate Match' : feature.feature === 'ph' ? 'Soil pH Level' : feature.feature}</span>
                   <span className="text-xs font-bold text-slate-600">{feature.importance}%</span>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div 
                     className={cn(
                       "h-full rounded-full",
@@ -307,23 +300,6 @@ export function AIExplanation({ crop, formData }: AIExplanationProps) {
               analysis.recommendation_strength === 'Moderate' ? 'text-amber-600' : 'text-rose-600'
             )}>
               {analysis.recommendation_strength}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Summary */}
-      <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-5 text-white">
-        <div className="flex items-start gap-3">
-          <Sparkles className="h-5 w-5 text-amber-300 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-sm mb-1">ML Model Summary</h4>
-            <p className="text-sm text-violet-100 leading-relaxed">
-              <span className="text-white font-bold capitalize">{crop.crop}</span> is ranked{' '}
-              #{analysis.crop_rank} out of {analysis.total_crops_considered} crops analyzed for your conditions.{' '}
-              {analysis.crop_rank <= 3 ? 'This is a top recommendation with strong suitability.' : 'This crop can work but consider higher-ranked options.'}
-              {analysis.yield_factors.npk_factor < 1.0 && ' Consider soil amendments to improve NPK levels. '}
-              Market shows {analysis.price_trend.toLowerCase()} prices with {analysis.market_volatility.toLowerCase()} volatility.
             </p>
           </div>
         </div>
