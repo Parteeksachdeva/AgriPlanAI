@@ -404,10 +404,30 @@ class MandiPricePredictor:
         # Calculate average price by month
         monthly_avg = data.groupby('Month')['Modal_Price'].agg(['mean', 'min', 'max', 'count']).reset_index()
         
+        if len(monthly_avg) < 2:
+            return {
+                'commodity': commodity,
+                'state': state,
+                'error': 'Insufficient seasonal data (only 1 month of history)',
+                'seasonal_pattern': [
+                    {k: (int(v) if k == 'Month' else float(v)) for k, v in row.items()}
+                    for row in monthly_avg.to_dict('records')
+                ]
+            }
+
         # Find best and worst months
         best_month = monthly_avg.loc[monthly_avg['mean'].idxmax()]
         worst_month = monthly_avg.loc[monthly_avg['mean'].idxmin()]
         
+        # If they are still the same (e.g. all months have identical mean prices)
+        if best_month['Month'] == worst_month['Month']:
+            # Try to find the second best/worst if available, or just return as is with a flag
+            if len(monthly_avg) > 1:
+                # Sort by mean and pick extremes
+                sorted_months = monthly_avg.sort_values('mean')
+                worst_month = sorted_months.iloc[0]
+                best_month = sorted_months.iloc[-1]
+
         month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         
@@ -430,7 +450,8 @@ class MandiPricePredictor:
             ],
             'price_difference_pct': round(
                 float((best_month['mean'] - worst_month['mean']) / worst_month['mean']) * 100, 1
-            ) if float(worst_month['mean']) != 0 else 0.0
+            ) if float(worst_month['mean']) != 0 else 0.0,
+            'is_identical': bool(best_month['Month'] == worst_month['Month'])
         }
     
     def get_market_insights(self, commodity: str, state: str) -> Dict:

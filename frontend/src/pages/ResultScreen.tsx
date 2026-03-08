@@ -705,7 +705,11 @@ export function ResultScreen() {
         </div>
 
         {/* Floating Chatbot */}
-        <ResultChatbot result={result} formData={formData} />
+        <ResultChatbot 
+          result={result} 
+          formData={formData} 
+          onNavigate={(tab) => setActiveTab(tab)}
+        />
       </div>
     </div>
   );

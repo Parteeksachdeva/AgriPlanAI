@@ -30,6 +30,7 @@ interface SavedConversation {
 interface ResultChatbotProps {
   result: PredictionResult
   formData: PredictionFormData
+  onNavigate?: (tab: 'overview' | 'earnings' | 'market' | 'planning') => void
 }
 
 // Helper to format template strings with replacements
@@ -43,7 +44,8 @@ function buildResponse(
   query: string,
   result: PredictionResult,
   formData: ResultChatbotProps['formData'],
-  t: TranslateFn
+  t: TranslateFn,
+  onNavigate?: ResultChatbotProps['onNavigate']
 ): { response: string; usedRAG: boolean } {
   const q = query.toLowerCase().trim()
   const { recommendations } = result
@@ -124,6 +126,34 @@ function buildResponse(
     return { response, usedRAG: false }
   }
 
+  // Navigation / Tabs
+  if (onNavigate) {
+    if (/(go to|show|open|navigate to)? ?(overview|summary|result) ?(tab|page|section)?|ओवरव्यू|सारांश/.test(q)) {
+      onNavigate('overview')
+      return { response: t('chatbot.nav.overview') || "Switching to the Overview tab for you.", usedRAG: false }
+    }
+    if (/(go to|show|open|navigate to)? ?(earnings|profit|revenue|income|calculator) ?(tab|page|section)?|कमाई|मुनाफा|लाभ/.test(q)) {
+      onNavigate('earnings')
+      return { response: t('chatbot.nav.earnings') || "I've opened the Earnings tab where you can calculate your profits.", usedRAG: false }
+    }
+    if (/(go to|show|open|navigate to)? ?(market|price|mandi|trend|prediction) ?(tab|page|section)?|बाजार|मंडी|कीमत/.test(q)) {
+      onNavigate('market')
+      return { response: t('chatbot.nav.market') || "Taking you to the Market tab to see price predictions.", usedRAG: false }
+    }
+    if (/(go to|show|open|navigate to)? ?(planning|calendar|rotation|schedule) ?(tab|page|section)?|योजना|कैलेंडर|नियोजन/.test(q)) {
+      onNavigate('planning')
+      return { response: t('chatbot.nav.planning') || "Opening the Planning tab for your crop calendar and rotation.", usedRAG: false }
+    }
+  }
+
+  // Next steps guidance
+  if (/(what|how) (to|should i) (do|proceed) next|advice|suggestions|मार्गदर्शन|आगे क्या/.test(q)) {
+    return { 
+      response: t('chatbot.guidance') || "I recommend checking the **Earnings** tab to calculate your potential profit, or the **Planning** tab to see the best sowing schedule for your crop.", 
+      usedRAG: false 
+    }
+  }
+
   // Default — fall through to RAG
   return { response: t('chatbot.response.ragFallback'), usedRAG: true }
 }
@@ -161,7 +191,7 @@ function speakText(text: string, lang: 'en' | 'hi' = 'en') {
   }
 }
 
-export function ResultChatbot({ result, formData }: ResultChatbotProps) {
+export function ResultChatbot({ result, formData, onNavigate }: ResultChatbotProps) {
   const { t, language } = useLanguage()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -318,7 +348,10 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     setInput('')
     setIsLoading(true)
 
-    const { response, usedRAG } = buildResponse(text, result, formData, t as TranslateFn)
+    const { response, usedRAG } = buildResponse(text, result, formData, t as TranslateFn, (tab) => {
+      onNavigate?.(tab)
+      setIsMinimized(true)
+    })
     let reply = response
 
     if (usedRAG) {
@@ -336,7 +369,7 @@ export function ResultChatbot({ result, formData }: ResultChatbotProps) {
     
     // Auto-speak the response if enabled (could add a setting for this)
     // speakText(reply, language)
-  }, [result, formData, t, language, isLoading])
+  }, [result, formData, t, language, isLoading, onNavigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

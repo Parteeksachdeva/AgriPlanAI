@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_BASE } from "@/api";
 import { formatIndianNumber } from "../lib/utils";
 import {
@@ -116,6 +116,8 @@ interface SeasonalTrend {
   };
   price_difference_pct: number;
   current_month_best: boolean;
+  error?: string;
+  is_identical?: boolean;
 }
 
 interface MandiPrice {
@@ -142,14 +144,7 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
   const mandiCommodity =
     CROP_TO_MANDI_COMMODITY[commodity.toLowerCase()] || commodity;
 
-  useEffect(() => {
-    fetchPrediction();
-    fetchHistory();
-    fetchSeasonalTrend();
-    fetchMandiPrices();
-  }, [commodity, state, daysAhead]);
-
-  const fetchPrediction = async () => {
+  const fetchPrediction = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE}/api/price-prediction`, {
@@ -175,9 +170,9 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [mandiCommodity, state, daysAhead]);
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       const response = await fetch(
         `${API_BASE}/api/price-history/${encodeURIComponent(mandiCommodity)}/${encodeURIComponent(state)}?days=30`,
@@ -192,9 +187,9 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
     } catch (err) {
       console.error("Failed to load price history:", err);
     }
-  };
+  }, [mandiCommodity, state]);
 
-  const fetchSeasonalTrend = async () => {
+  const fetchSeasonalTrend = useCallback(async () => {
     try {
       const response = await fetch(
         `${API_BASE}/api/seasonal-trends/${encodeURIComponent(mandiCommodity)}/${encodeURIComponent(state)}`,
@@ -208,9 +203,9 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
     } catch (err) {
       console.error("Failed to load seasonal trends:", err);
     }
-  };
+  }, [mandiCommodity, state]);
 
-  const fetchMandiPrices = async () => {
+  const fetchMandiPrices = useCallback(async () => {
     try {
       const response = await fetch(
         `${API_BASE}/api/nearby-mandi-prices/${encodeURIComponent(mandiCommodity)}/${encodeURIComponent(state)}`,
@@ -226,7 +221,14 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
       console.error("Failed to load mandi prices:", err);
       setMandiPrices([]);
     }
-  };
+  }, [mandiCommodity, state]);
+
+  useEffect(() => {
+    fetchPrediction();
+    fetchHistory();
+    fetchSeasonalTrend();
+    fetchMandiPrices();
+  }, [fetchPrediction, fetchHistory, fetchSeasonalTrend, fetchMandiPrices]);
 
   const getRecommendationStyle = (recommendation: string) => {
     switch (recommendation) {
@@ -631,53 +633,80 @@ export function PricePrediction({ commodity, state }: PricePredictionProps) {
               </h4>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-white rounded-xl p-4 text-center border-2 border-emerald-200">
-                <p className="text-xs text-slate-500 mb-1">Best Month</p>
-                <p className="text-2xl font-bold text-emerald-600">
-                  {seasonalTrend.best_month.month}
+            {seasonalTrend.error || seasonalTrend.is_identical ? (
+              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 text-center border border-amber-100">
+                <AlertCircle className="h-8 w-8 text-amber-500 mx-auto mb-3" />
+                <p className="text-sm text-amber-800 font-medium">
+                  {seasonalTrend.error || "Limited seasonal price variation detected"}
                 </p>
-                <p className="text-sm text-slate-600">
-                  ₹{formatIndianNumber(seasonalTrend.best_month.avg_price)}/q
-                </p>
-              </div>
-              <div className="bg-white rounded-xl p-4 text-center">
-                <p className="text-xs text-slate-500 mb-1">Worst Month</p>
-                <p className="text-xl font-bold text-rose-600">
-                  {seasonalTrend.worst_month.month}
-                </p>
-                <p className="text-sm text-slate-600">
-                  ₹{formatIndianNumber(seasonalTrend.worst_month.avg_price)}/q
+                <p className="text-xs text-amber-600 mt-2">
+                  Prices for {commodity} in {state} have remained stable over the recorded period.
                 </p>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="bg-white rounded-xl p-4 text-center border-2 border-emerald-200 shadow-sm">
+                    <p className="text-xs text-slate-500 mb-1">Best Month</p>
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {seasonalTrend.best_month.month}
+                    </p>
+                    <p className="text-sm text-slate-600 font-medium">
+                      ₹{formatIndianNumber(seasonalTrend.best_month.avg_price)}/q
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center border shadow-sm">
+                    <p className="text-xs text-slate-500 mb-1">Worst Month</p>
+                    <p className="text-xl font-bold text-rose-600">
+                      {seasonalTrend.worst_month.month}
+                    </p>
+                    <p className="text-sm text-slate-600 font-medium">
+                      ₹{formatIndianNumber(seasonalTrend.worst_month.avg_price)}/q
+                    </p>
+                  </div>
+                </div>
 
-            <div className="bg-amber-100 rounded-lg p-3">
-              <p className="text-sm text-amber-800">
-                <span className="font-semibold">Price Difference:</span>{" "}
-                {seasonalTrend.price_difference_pct}% higher in{" "}
-                {seasonalTrend.best_month.month} vs{" "}
-                {seasonalTrend.worst_month.month}
-              </p>
-            </div>
+                <div className="bg-amber-100 rounded-lg p-3">
+                  <p className="text-sm text-amber-800 leading-relaxed">
+                    <span className="font-semibold">Market Insight:</span>{" "}
+                    Prices are typically{" "}
+                    {seasonalTrend.price_difference_pct}% higher in{" "}
+                    {seasonalTrend.best_month.month} compared to{" "}
+                    {seasonalTrend.worst_month.month}.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="bg-white rounded-2xl border p-5">
-            <h4 className="font-semibold text-foreground mb-4">
-              Seasonal Strategy
-            </h4>
-            <div className="space-y-3 text-sm text-slate-600">
-              <p>
-                • Store your harvest if you can sell in{" "}
-                {seasonalTrend.best_month.month}
-              </p>
-              <p>
-                • Avoid selling in {seasonalTrend.worst_month.month} when prices
-                are lowest
-              </p>
-              <p>• Plan planting dates to harvest before peak price months</p>
+          {!seasonalTrend.error && !seasonalTrend.is_identical && (
+            <div className="bg-white rounded-2xl border p-5 shadow-sm">
+              <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-blue-500" />
+                Selling Strategy
+              </h4>
+              <div className="space-y-4 text-sm text-slate-600">
+                <div className="flex gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                  <p>
+                    Consider storing your harvest until{" "}
+                    <span className="font-semibold text-slate-900">{seasonalTrend.best_month.month}</span> to maximize your profits.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-1.5 shrink-0" />
+                  <p>
+                    Historically, prices are at their lowest in{" "}
+                    <span className="font-semibold text-slate-900">{seasonalTrend.worst_month.month}</span>. Avoid distress selling during this period.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                  <p>Check if you have local warehouse facilities to assist with storage until peak price months.</p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

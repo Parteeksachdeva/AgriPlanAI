@@ -246,6 +246,11 @@ export const translations = {
     'chatbot.response.fallback': 'I can answer questions about your **top crop**, **predicted yield**, **expected revenue**, **mandi prices**, or **input summary**. What would you like to know?',
     'chatbot.response.ragFallback': 'I can answer questions about your **top crop**, **predicted yield**, **expected revenue**, **mandi prices**, or **input summary**. For other questions, I\'ll search my knowledge base. What would you like to know?',
     'chatbot.contextUpdated': 'I\'ve updated my knowledge with your new recommendations. Ask me anything about **{crop}** and the other suggested crops!',
+    'chatbot.nav.overview': 'Switching to the Overview tab for you.',
+    'chatbot.nav.earnings': 'I\'ve opened the Earnings tab where you can calculate your profits.',
+    'chatbot.nav.market': 'Taking you to the Market tab to see price predictions.',
+    'chatbot.nav.planning': 'Opening the Planning tab for your crop calendar and rotation.',
+    'chatbot.guidance': 'I recommend checking the **Earnings** tab to calculate your potential profit, or the **Planning** tab to see the best sowing schedule for your crop. You can also ask me to "show market prices".',
   },
 
   hi: {
@@ -493,6 +498,11 @@ export const translations = {
     'chatbot.response.fallback': 'मैं आपकी **शीर्ष फसल**, **अनुमानित उपज**, **अपेक्षित राजस्व**, **मंडी कीमतों**, या **इनपुट सारांश** के बारे में प्रश्नों का उत्तर दे सकता हूं। आप क्या जानना चाहेंगे?',
     'chatbot.response.ragFallback': 'मैं आपकी **शीर्ष फसल**, **अनुमानित उपज**, **अपेक्षित राजस्व**, **मंडी कीमतों**, या **इनपुट सारांश** के बारे में प्रश्नों का उत्तर दे सकता हूं। अन्य प्रश्नों के लिए, मैं अपने ज्ञान आधार को खोजूंगा। आप क्या जानना चाहेंगे?',
     'chatbot.contextUpdated': 'मैंने अपने ज्ञान को आपकी नई सिफारिशों के साथ अपडेट कर लिया है। **{crop}** और अन्य सुझाई गई फसलों के बारे में कुछ भी पूछें!',
+    'chatbot.nav.overview': 'आपके लिए ओवरव्यू टैब पर जा रहा हूं।',
+    'chatbot.nav.earnings': 'मैंने लाभ अनुमान टैब खोल दिया है जहाँ आप अपने मुनाफ़े की गणना कर सकते हैं।',
+    'chatbot.nav.market': 'आपको मूल्य भविष्यवाणियों को देखने के लिए बाजार टैब पर ले जा रहा हूं।',
+    'chatbot.nav.planning': 'आपके फसल कैलेंडर और रोटेशन के लिए नियोजन टैब खोल रहा हूं।',
+    'chatbot.guidance': 'मैं आपके संभावित लाभ की गणना करने के लिए **लाभ अनुमान** टैब, या अपनी फसल के लिए सर्वोत्तम बुवाई कार्यक्रम देखने के लिए **खेती कैलेंडर** टैब की जांच करने की सलाह देता हूं। आप मुझसे "बाजार की कीमतें दिखाएं" भी कह सकते हैं।',
   },
 };
 
