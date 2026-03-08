@@ -308,85 +308,205 @@ class EnhancedPricePredictionModel:
         self.pipeline = None
         self.state_price_lookup: Dict[Tuple[str, str], float] = {}
         self.commodity_avg: Dict[str, float] = {}
-        self.seasonal_factors: Dict[str, Dict[int, float]] = {}
+        self.is_trained = False
         
     def _load_price_data(self):
-        """Load enhanced price data."""
+        """Load enhanced price data and recent real data."""
         base_dir = os.path.dirname(os.path.abspath(__file__))
         
         enhanced_path = os.path.join(base_dir, "data", "mandi_prices_enhanced.csv")
         if os.path.exists(enhanced_path):
             df = pd.read_csv(enhanced_path)
+            # Use most recent prices for lookup
+            latest_prices = df.sort_values('date').groupby(['state', 'commodity']).last().reset_index()
             self.state_price_lookup = {
                 (row['state'], row['commodity']): row['modal_price']
-                for _, row in df.iterrows()
+                for _, row in latest_prices.iterrows()
             }
-            self.commodity_avg = df.groupby('commodity')['modal_price'].mean().to_dict()
-            print(f"Loaded enhanced price data: {len(self.state_price_lookup)} state-commodity combinations")
+            self.commodity_avg = latest_prices.groupby('commodity')['modal_price'].mean().to_dict()
+            print(f"Loaded enhanced price lookups: {len(self.state_price_lookup)} combinations")
+
+    def _build_pipeline(self):
+        """Build XGBoost pipeline for price prediction."""
+        categorical_transformer = Pipeline([
+            ('imputer', SimpleImputer(strategy='constant', fill_value='Unknown')),
+            ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
+        ])
+        
+        preprocessor = ColumnTransformer([
+            ('cat', categorical_transformer, ['State', 'Commodity']),
+            ('num', StandardScaler(), ['month', 'day'])
+        ])
+        
+        return Pipeline([
+            ('preprocessor', preprocessor),
+            ('regressor', XGBRegressor(
+                n_estimators=150,
+                max_depth=6,
+                learning_rate=0.1,
+                random_state=42,
+                n_jobs=-1
+            ))
+        ])
+
+    def train(self, data_path: str = None):
+        """Train price prediction model."""
+        if data_path:
+            self.data_path = data_path
+            
+        if not self.data_path or not os.path.exists(self.data_path):
+            print("Warning: No large price training data found. Using lookup mode.")
+            self._load_price_data()
+            return
+
+        print(f"Training price model on {self.data_path}")
+        df = pd.read_csv(self.data_path)
+        
+        # Preprocess dates
+        df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], dayfirst=True)
+        df['month'] = df['Arrival_Date'].dt.month
+        df['day'] = df['Arrival_Date'].dt.day
+        
+        # Features and target
+        X = df[['State', 'Commodity', 'month', 'day']]
+        y = df['Modal_Price']
+        
+        # Split and train
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        self.pipeline = self._build_pipeline()
+        self.pipeline.fit(X_train, y_train)
+        
+        # Evaluate
+        y_pred = self.pipeline.predict(X_val)
+        mae = mean_absolute_error(y_val, y_pred)
+        print(f"Price model trained - MAE: ₹{mae:.2f}")
+        
+        self._load_price_data()
+        self.is_trained = True
     
     def predict_price(self, commodity: str, state: str, 
                       days_ahead: int = 7,
                       include_factors: bool = False) -> dict:
         """
-        Predict mandi price with state-specific calibration.
-        
-        Returns:
-            dict with price prediction and confidence metrics
+        Predict mandi price with hybrid ML and lookup approach.
         """
-        commodity = commodity.lower()
+        commodity_clean = commodity.lower()
         
-        # Get base price
-        if (state, commodity) in self.state_price_lookup:
-            base_price = self.state_price_lookup[(state, commodity)]
-            data_source = "state_specific"
+        # ML Prediction if trained
+        ml_price = None
+        if self.is_trained and self.pipeline:
+            future_date = datetime.now() + pd.Timedelta(days=days_ahead)
+            X_pred = pd.DataFrame([{
+                'State': state,
+                'Commodity': commodity.capitalize(),
+                'month': future_date.month,
+                'day': future_date.day
+            }])
+            try:
+                ml_price = float(self.pipeline.predict(X_pred)[0])
+            except:
+                pass
+
+        # Current Price lookup
+        current_price = None
+        if (state, commodity_clean) in self.state_price_lookup:
+            current_price = self.state_price_lookup[(state, commodity_clean)]
+            data_source = "hybrid_ml_real"
             confidence = "high"
-        elif commodity in self.commodity_avg:
-            base_price = self.commodity_avg[commodity]
-            data_source = "national_average"
+        elif commodity_clean in self.commodity_avg:
+            current_price = self.commodity_avg[commodity_clean]
+            data_source = "ml_national"
             confidence = "medium"
         else:
-            # Default fallback prices
             default_prices = {
                 'rice': 2200, 'wheat': 2275, 'maize': 2100, 'cotton': 6500,
                 'sugarcane': 350, 'potato': 1800, 'onion': 2500, 'tomato': 2500
             }
-            base_price = default_prices.get(commodity, 2000)
+            current_price = default_prices.get(commodity_clean, 2000)
             data_source = "fallback"
             confidence = "low"
-        
-        # Apply seasonal factor
-        month = (datetime.now().month + (days_ahead // 30)) % 12 or 12
-        seasonal_adjustment = self._get_seasonal_factor(commodity, month)
-        
-        # Apply trend factor (simple linear trend based on days_ahead)
-        trend_factor = 1.0 + (0.001 * days_ahead)  # 0.1% per day assumption
-        
-        predicted_price = base_price * seasonal_adjustment * trend_factor
+
+        # Predicted Price
+        if ml_price:
+            # Use ML price but bound it by current price +/- 20% to avoid extreme drift
+            predicted_price = max(current_price * 0.8, min(current_price * 1.2, ml_price))
+        else:
+            # Fallback to seasonal lookup logic
+            month = (datetime.now().month + (days_ahead // 30)) % 12 or 12
+            seasonal_adjustment = self._get_seasonal_factor(commodity_clean, month)
+            trend_factor = 1.0 + (0.001 * days_ahead)
+            predicted_price = current_price * seasonal_adjustment * trend_factor
         
         # Calculate confidence interval
-        volatility = 0.15 if confidence == "high" else 0.25 if confidence == "medium" else 0.35
+        volatility = 0.10 if confidence == "high" else 0.20 if confidence == "medium" else 0.30
         margin = predicted_price * volatility
         
+        # Generate recommendation
+        rec = self._generate_recommendation(
+            current_price, predicted_price, volatility, days_ahead
+        )
+        
         result = {
-            'commodity': commodity,
+            'commodity': commodity_clean,
             'state': state,
+            'current_price': round(current_price, 2),
             'predicted_price': round(predicted_price, 2),
+            'price_change_pct': round(((predicted_price - current_price) / current_price) * 100, 1),
             'confidence': confidence,
             'data_source': data_source,
             'confidence_interval': {
                 'lower': round(max(0, predicted_price - margin), 2),
                 'upper': round(predicted_price + margin, 2)
             },
-            'factors': {
-                'base_price': base_price,
-                'seasonal_adjustment': round(seasonal_adjustment, 3),
-                'trend_factor': round(trend_factor, 4)
-            }
+            'prediction_date': (datetime.now() + pd.Timedelta(days=days_ahead)).strftime('%Y-%m-%d'),
+            'days_ahead': days_ahead,
+            'recommendation': rec['action'],
+            'recommendation_reason': rec['reason'],
+            'confidence_score': confidence.upper(),
+            'price_trend': 'UP' if predicted_price > current_price * 1.02 else 'DOWN' if predicted_price < current_price * 0.98 else 'STABLE',
+            'volatility_level': 'HIGH' if volatility > 0.25 else 'MEDIUM' if volatility > 0.15 else 'LOW'
         }
-        
+
         if include_factors:
-            return result
-        return result['predicted_price']
+            result['factors'] = {
+                'ml_predicted': round(ml_price, 2) if ml_price else None,
+                'lookup_base': round(current_price, 2),
+                'seasonal_adjustment': round(float(seasonal_adjustment), 3) if not ml_price else None
+            }
+        
+        return result
+
+    def _generate_recommendation(self, current: float, predicted: float, 
+                                volatility: float, days_ahead: int) -> dict:
+        """Generate sell/hold recommendation based on storage economics."""
+        price_change_pct = ((predicted - current) / current) * 100 if current > 0 else 0
+        
+        # Storage cost calculation
+        storage_cost_per_day = 0.15
+        total_storage_cost = storage_cost_per_day * days_ahead
+        net_gain = (predicted - current) - total_storage_cost
+        
+        if price_change_pct > 5 and net_gain > 0:
+            return {
+                'action': 'STORE_AND_SELL_LATER',
+                'reason': f"Prices expected to rise by {price_change_pct:.1f}%. Predicted gain outweights storage costs."
+            }
+        elif price_change_pct > 2:
+            return {
+                'action': 'HOLD',
+                'reason': "Moderate price increase expected. Hold if you have low-cost storage."
+            }
+        elif price_change_pct < -3:
+            return {
+                'action': 'SELL_NOW',
+                'reason': f"Prices expected to drop by {abs(price_change_pct):.1f}%. Sell now to avoid loss."
+            }
+        else:
+            return {
+                'action': 'NEUTRAL',
+                'reason': "Prices are expected to remain stable. Sell based on your immediate cash needs."
+            }
     
     def _get_seasonal_factor(self, commodity: str, month: int) -> float:
         """Get seasonal price adjustment factor."""
@@ -428,8 +548,14 @@ def get_state_aware_yield_model() -> StateAwareYieldModel:
 
 def get_enhanced_price_model() -> EnhancedPricePredictionModel:
     """Get or create enhanced price model instance."""
-    model = EnhancedPricePredictionModel()
-    model._load_price_data()
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    training_path = os.path.join(base_dir, "data", "model2_training.csv")
+    
+    model = EnhancedPricePredictionModel(training_path)
+    if os.path.exists(training_path):
+        model.train()
+    else:
+        model._load_price_data()
     return model
 
 

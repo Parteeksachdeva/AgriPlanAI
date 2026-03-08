@@ -343,29 +343,12 @@ def get_price_prediction(request: PricePredictionRequest):
     try:
         # Try enhanced model first
         if enhanced_price_model:
-            result = enhanced_price_model.predict_price(
+            prediction = enhanced_price_model.predict_price(
                 commodity=request.commodity,
                 state=request.state,
                 days_ahead=request.days_ahead,
                 include_factors=True
             )
-            
-            # Map to response format
-            prediction = {
-                'commodity': result['commodity'],
-                'state': result['state'],
-                'current_price': result['predicted_price'],  # Use predicted as current for now
-                'predicted_price': result['predicted_price'],
-                'price_change_pct': 0.0,
-                'confidence_interval': result['confidence_interval'],
-                'prediction_date': datetime.now().strftime('%Y-%m-%d'),
-                'days_ahead': request.days_ahead,
-                'recommendation': 'HOLD',
-                'recommendation_reason': f"Price confidence is {result['confidence']}",
-                'confidence_score': result['confidence'].upper(),
-                'price_trend': 'STABLE',
-                'volatility_level': 'MEDIUM'
-            }
         else:
             # Fallback to original model
             prediction = mandi_price_predictor.predict_price(
