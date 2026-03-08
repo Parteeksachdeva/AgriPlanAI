@@ -1,0 +1,137 @@
+State,District,Market,Commodity Group,Commodity,Variety,Grade,Min Price,Max Price,Modal Price,Price Unit,Price Date
+Uttar Pradesh,Ambedkarnagar,Akbarpur APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ambedkarnagar,Tanda Akbarpur APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Amethi,Sultanpur APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2100.00,2072.95,Rs./Quintal,02-03-2026
+Uttar Pradesh,Auraiya,Dibiapur APMC,Cereals,Paddy(Common),Common,FAQ,1850.00,1850.00,1850.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ayodhya,Ayodhya APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ayodhya,Ayodhya APMC,Cereals,Paddy(Common),Other,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ayodhya,Ayodhya APMC,Cereals,Paddy(Common),Samba Masuri,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Azamgarh,Azamgarh APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Badaun,Dataganj APMC,Cereals,Paddy(Common),Sarvati,FAQ,2450.00,2550.00,2500.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Bahraich,Mihipurwa APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bahraich,Naanpara APMC,Cereals,Paddy(Common),Common,FAQ,1790.00,2000.00,1840.69,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bahraich,Rupaidiha APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bahraich,Rupaidiha APMC,Cereals,Paddy(Common),Kandhagiri,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Paddy,FAQ,2200.00,2300.00,2250.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Paddy,FAQ,2250.00,2350.00,2300.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Paddy,FAQ,2200.00,2300.00,2250.00,Rs./Quintal,05-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,2000.00,1920.95,Rs./Quintal,02-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Other,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Balrampur,Panchpedwa APMC,Cereals,Paddy(Common),Paddy,FAQ,2200.00,2350.00,2300.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Balrampur,Tulsipur APMC,Cereals,Paddy(Common),Common,FAQ,2010.00,2070.00,2040.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Balrampur,Tulsipur APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2050.00,2020.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Balrampur,Tulsipur APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2070.00,2040.00,Rs./Quintal,05-03-2026
+Uttar Pradesh,Balrampur,Tulsipur APMC,Cereals,Paddy(Common),Common,FAQ,2010.00,2060.00,2040.00,Rs./Quintal,04-03-2026
+Uttar Pradesh,Balrampur,Tulsipur APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2050.00,2025.00,Rs./Quintal,03-03-2026
+Uttar Pradesh,Balrampur,Utraula APMC,Cereals,Paddy(Common),Common,FAQ,2110.00,2200.00,2151.13,Rs./Quintal,02-03-2026
+Uttar Pradesh,Banda,Atarra APMC,Cereals,Paddy(Common),Common,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Banda,Atarra APMC,Cereals,Paddy(Common),Other,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Banda,Atarra APMC,Cereals,Paddy(Common),Sarvati,FAQ,2700.00,2700.00,2700.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Barabanki APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Barabanki APMC,Cereals,Paddy(Common),Fine,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Barabanki APMC,Cereals,Paddy(Common),Other,FAQ,2600.00,2600.00,2600.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Barabanki APMC,Cereals,Paddy(Common),SuperFine(Basmati),FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Safdarganj APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Safdarganj APMC,Cereals,Paddy(Common),Other,FAQ,2000.00,3000.00,2727.27,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Safdarganj APMC,Cereals,Paddy(Common),Paddy fine,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Safdarganj APMC,Cereals,Paddy(Common),Samba Masuri,FAQ,2280.00,2320.00,2300.55,Rs./Quintal,02-03-2026
+Uttar Pradesh,Barabanki,Safdarganj APMC,Cereals,Paddy(Common),SuperFine(Basmati),FAQ,2500.00,2500.00,2500.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bareilly,Bareilly APMC,Cereals,Paddy(Common),Basmati,FAQ,3000.00,3000.00,3000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bareilly,Bareilly APMC,Cereals,Paddy(Common),Other,FAQ,3000.00,3000.00,3000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Basti,Basti APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2105.00,2102.18,Rs./Quintal,02-03-2026
+Uttar Pradesh,Basti,Basti APMC,Cereals,Paddy(Common),Other,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Bhadohi(Sant Ravi Nagar),Gopiganj APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2150.00,2103.59,Rs./Quintal,02-03-2026
+Uttar Pradesh,Deoria,Devariya APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Etawah,Bharthna APMC,Cereals,Paddy(Common),Basmati,FAQ,3500.00,3600.00,3536.36,Rs./Quintal,02-03-2026
+Uttar Pradesh,Etawah,Bharthna APMC,Cereals,Paddy(Common),Other,FAQ,3000.00,3100.00,3033.33,Rs./Quintal,02-03-2026
+Uttar Pradesh,Fatehpur,Bindki APMC,Cereals,Paddy(Common),Masuri,FAQ,2100.00,2134.00,2119.30,Rs./Quintal,02-03-2026
+Uttar Pradesh,Fatehpur,Bindki APMC,Cereals,Paddy(Common),Other,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Fatehpur,Fatehpur APMC,Cereals,Paddy(Common),Fine,FAQ,2200.00,2210.00,2205.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Fatehpur,Fatehpur APMC,Cereals,Paddy(Common),Common,FAQ,2205.00,2205.00,2205.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Fatehpur,Fatehpur APMC,Cereals,Paddy(Common),Other,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Fatehpur,Khaga APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ghaziabad,Hapur APMC,Cereals,Paddy(Common),Other,FAQ,2700.00,2700.00,2700.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ghazipur,Jangipura APMC,Cereals,Paddy(Common),Common,FAQ,2300.00,2300.00,2300.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Ghazipur,Saidpur APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Gonda,Gonda APMC,Cereals,Paddy(Common),Common,FAQ,1750.00,1750.00,1750.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Gonda,Nawabganj APMC,Cereals,Paddy(Common),Other,FAQ,1700.00,1700.00,1700.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Hardoi APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,2280.00,2144.32,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Hardoi APMC,Cereals,Paddy(Common),Other,FAQ,1800.00,2000.00,1852.85,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Hardoi APMC,Cereals,Paddy(Common),Samba Masuri,FAQ,2300.00,2300.00,2300.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Madhoganj APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,1900.00,1880.79,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Sandi APMC,Cereals,Paddy(Common),Common,FAQ,1920.00,1920.00,1920.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Sandila APMC,Cereals,Paddy(Common),Common,FAQ,1830.00,1830.00,1830.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Sandila APMC,Cereals,Paddy(Common),Other,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Shahabad(New Mandi) APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,1800.00,1800.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Hardoi,Shahabad(New Mandi) APMC,Cereals,Paddy(Common),Other,FAQ,1800.00,1800.00,1800.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jalaun (Orai),Jalaun APMC,Cereals,Paddy(Common),Common,FAQ,3550.00,3550.00,3550.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jalaun (Orai),Jalaun APMC,Cereals,Paddy(Common),Other,FAQ,3800.00,3850.00,3829.32,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jaunpur,Jaunpur APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jaunpur,Mugrabaadshahpur APMC,Cereals,Paddy(Common),Common,FAQ,2150.00,2150.00,2150.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jaunpur,Shahganj APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Jhansi,Moth APMC,Cereals,Paddy(Common),Other,FAQ,4000.00,4070.00,4054.15,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Choubepur APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Choubepur APMC,Cereals,Paddy(Common),Samba Masuri,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Kanpur(Grain) APMC,Cereals,Paddy(Common),Common,FAQ,1850.00,2550.00,2080.93,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Kanpur(Grain) APMC,Cereals,Paddy(Common),Other,FAQ,1850.00,1850.00,1850.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Uttaripura APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur,Varipaal APMC,Cereals,Paddy(Common),Common,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur Dehat,Jhijhank APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,1810.00,1801.96,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kanpur Dehat,Rura APMC,Cereals,Paddy(Common),Common,FAQ,1750.00,1850.00,1800.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Kanpur Dehat,Rura APMC,Cereals,Paddy(Common),Common,FAQ,1925.00,1975.00,1950.00,Rs./Quintal,05-03-2026
+Uttar Pradesh,Kanpur Dehat,Rura APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,1950.00,1925.00,Rs./Quintal,04-03-2026
+Uttar Pradesh,Kanpur Dehat,Rura APMC,Cereals,Paddy(Common),Common,FAQ,1750.00,1850.00,1800.00,Rs./Quintal,03-03-2026
+Uttar Pradesh,Kanpur Dehat,Rura APMC,Cereals,Paddy(Common),Common,FAQ,1850.00,1850.00,1850.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Kushinagar,Kushinagar APMC,Cereals,Paddy(Common),Common,FAQ,2370.00,2370.00,2370.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Lakhimpur,Lakhimpur APMC,Cereals,Paddy(Common),Common,FAQ,1850.00,1865.00,1855.58,Rs./Quintal,02-03-2026
+Uttar Pradesh,Lakhimpur,Paliakala APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,1800.00,1800.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Lucknow,Banthara APMC,Cereals,Paddy(Common),Other,FAQ,2280.00,2300.00,2290.00,Rs./Quintal,08-03-2026
+Uttar Pradesh,Lucknow,Banthara APMC,Cereals,Paddy(Common),Paddy,FAQ,2294.00,2314.00,2304.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Lucknow,Banthara APMC,Cereals,Paddy(Common),Other,FAQ,2450.00,2470.00,2460.00,Rs./Quintal,04-03-2026
+Uttar Pradesh,Lucknow,Banthara APMC,Cereals,Paddy(Common),Other,FAQ,2487.00,2507.00,2497.00,Rs./Quintal,03-03-2026
+Uttar Pradesh,Lucknow,Banthara APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2760.00,2496.80,Rs./Quintal,02-03-2026
+Uttar Pradesh,Maharajganj,Partaval APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Mau(Maunathbhanjan),Doharighat APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Mirzapur,Ahirora APMC,Cereals,Paddy(Common),Common,Non-FAQ,2370.00,2370.00,2370.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Mirzapur,Ahirora APMC,Cereals,Paddy(Common),Common,Non-FAQ,2370.00,2370.00,2370.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Pratapgarh,Pratapgarh APMC,Cereals,Paddy(Common),Common,FAQ,1900.00,1900.00,1900.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Prayagraj,Ajuha APMC,Cereals,Paddy(Common),SuperFine(Basmati),FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Prayagraj,Lediyari APMC,Cereals,Paddy(Common),Common,FAQ,2400.00,2500.00,2450.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Prayagraj,Lediyari APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Prayagraj,Prayagraj APMC,Cereals,Paddy(Common),Common,FAQ,1950.00,2000.00,1997.04,Rs./Quintal,02-03-2026
+Uttar Pradesh,Prayagraj,Prayagraj APMC,Cereals,Paddy(Common),Other,FAQ,2000.00,2000.00,2000.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Raebarelli,Bachranwa APMC,Cereals,Paddy(Common),Common,FAQ,2250.00,2250.00,2250.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Raebarelli,Jayas APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2150.00,2112.05,Rs./Quintal,02-03-2026
+Uttar Pradesh,Raebarelli,Lalganj APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2250.00,2225.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Raebarelli,Lalganj APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2250.00,2225.00,Rs./Quintal,04-03-2026
+Uttar Pradesh,Raebarelli,Lalganj APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2250.00,2225.00,Rs./Quintal,03-03-2026
+Uttar Pradesh,Raebarelli,Lalganj APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2250.00,2225.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Raebarelli,Raibareilly APMC,Cereals,Paddy(Common),Common,FAQ,2210.00,2200.00,2204.27,Rs./Quintal,02-03-2026
+Uttar Pradesh,Raebarelli,Salon APMC,Cereals,Paddy(Common),Common,FAQ,2160.00,2150.00,2155.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Raebarelli,Salon APMC,Cereals,Paddy(Common),Common,FAQ,2160.00,2150.00,2155.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Rampur,Bilaspur APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,2200.00,2200.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sambhal,Chandausi APMC,Cereals,Paddy(Common),Common,FAQ,2645.00,2605.00,2620.20,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sambhal,Muradabad APMC,Cereals,Paddy(Common),Other,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Shahjahanpur,Powayan APMC,Cereals,Paddy(Common),Other,FAQ,1872.00,1850.00,1857.76,Rs./Quintal,02-03-2026
+Uttar Pradesh,Shravasti,Bhinga APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Shravasti,Payagpur APMC,Cereals,Paddy(Common),Common,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Shravasti,Payagpur APMC,Cereals,Paddy(Common),Red,FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Shravasti,Payagpur APMC,Cereals,Paddy(Common),SuperFine(Basmati),FAQ,2050.00,2050.00,2050.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Siddharth Nagar,Bansi APMC,Cereals,Paddy(Common),Common,FAQ,2150.00,2150.00,2150.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Siddharth Nagar,Naugarh APMC,Cereals,Paddy(Common),Common,FAQ,2100.00,2100.00,2100.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Siddharth Nagar,Sahiyapur APMC,Cereals,Paddy(Common),Common,FAQ,2120.00,2120.00,2120.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Siddharth Nagar,Sahiyapur APMC,Cereals,Paddy(Common),Other,FAQ,2120.00,2120.00,2120.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Siddharth Nagar,Shohratgarh APMC,Cereals,Paddy(Common),Common,FAQ,2150.00,2150.00,2150.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sitapur,Hargaon (Laharpur) APMC,Cereals,Paddy(Common),Other,Local,1910.00,1910.00,1910.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Sitapur,Hargaon (Laharpur) APMC,Cereals,Paddy(Common),Other,Local,1890.00,1890.00,1890.00,Rs./Quintal,06-03-2026
+Uttar Pradesh,Sitapur,Hargaon (Laharpur) APMC,Cereals,Paddy(Common),Other,Local,1900.00,1900.00,1900.00,Rs./Quintal,05-03-2026
+Uttar Pradesh,Sitapur,Mehmoodabad APMC,Cereals,Paddy(Common),Common,FAQ,2010.00,2000.00,2003.36,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sitapur,Mehmoodabad APMC,Cereals,Paddy(Common),Other,FAQ,2760.00,2680.00,2728.43,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sitapur,Sitapur APMC,Cereals,Paddy(Common),Common,Local,1850.00,1800.00,1830.00,Rs./Quintal,07-03-2026
+Uttar Pradesh,Sitapur,Sitapur APMC,Cereals,Paddy(Common),Common,FAQ,1800.00,1795.00,1799.24,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sitapur,Sitapur APMC,Cereals,Paddy(Common),Other,FAQ,1830.00,1820.00,1825.78,Rs./Quintal,02-03-2026
+Uttar Pradesh,Sonbhadra,Robertsganj APMC,Cereals,Paddy(Common),Common,FAQ,2350.00,2350.00,2350.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Unnao,Bangarmau APMC,Cereals,Paddy(Common),Common,FAQ,2200.00,1850.00,1953.18,Rs./Quintal,02-03-2026
+Uttar Pradesh,Unnao,Unnao APMC,Cereals,Paddy(Common),Common,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Unnao,Unnao APMC,Cereals,Paddy(Common),Other,FAQ,2400.00,2400.00,2400.00,Rs./Quintal,02-03-2026
+Uttar Pradesh,Varanasi,Varanasi APMC,Cereals,Paddy(Common),Common,FAQ,2250.00,2250.00,2250.00,Rs./Quintal,02-03-2026
