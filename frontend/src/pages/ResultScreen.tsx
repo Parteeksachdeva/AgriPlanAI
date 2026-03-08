@@ -406,27 +406,27 @@ export function ResultScreen() {
                     {[
                       {
                         id: "overview",
-                        label: "Why This Crop?",
+                        label: t("result.tab.overview"),
                         icon: Sprout,
-                        desc: "AI analysis for your farm",
+                        desc: t("result.tab.overview.desc"),
                       },
                       {
                         id: "earnings",
-                        label: "Profit Predictor",
+                        label: t("result.tab.earnings"),
                         icon: Wallet,
-                        desc: "Estimate your earnings",
+                        desc: t("result.tab.earnings.desc"),
                       },
                       {
                         id: "market",
-                        label: "Where to Sell",
+                        label: t("result.tab.market"),
                         icon: TrendingUp,
-                        desc: "Market prices & trends",
+                        desc: t("result.tab.market.desc"),
                       },
                       {
                         id: "planning",
-                        label: "Farming Calendar",
+                        label: t("result.tab.planning"),
                         icon: Calendar,
-                        desc: "When to sow & harvest",
+                        desc: t("result.tab.planning.desc"),
                       },
                     ].map((tab) => (
                       <button
@@ -457,25 +457,25 @@ export function ResultScreen() {
                       <QuickSummary
                         items={[
                           {
-                            label: "AI Confidence",
+                            label: t("result.quick.aiConfidence"),
                             value: `${selectedCropForCalculator.suitability === "traditional" ? "95%" : selectedCropForCalculator.suitability === "common" ? "80%" : "65%"}`,
                             icon: <Brain className="h-4 w-4" />,
                           },
                           {
-                            label: "Expected Yield",
+                            label: t("result.yield"),
                             value: `${selectedCropForCalculator.predicted_yield.toFixed(1)} t/ha`,
                             icon: <Sprout className="h-4 w-4" />,
                           },
                           {
-                            label: "Soil Match",
+                            label: t("result.quick.soilMatch"),
                             value:
                               selectedCropForCalculator.suitability ===
                               "traditional"
-                                ? "Excellent"
+                                ? t("result.quick.soilMatch.excellent")
                                 : selectedCropForCalculator.suitability ===
                                     "common"
-                                  ? "Good"
-                                  : "Fair",
+                                  ? t("result.quick.soilMatch.good")
+                                  : t("result.quick.soilMatch.fair"),
                             icon: <Beaker className="h-4 w-4" />,
                           },
                         ]}
@@ -484,7 +484,7 @@ export function ResultScreen() {
                       {/* AI Explanation - Expandable */}
                       <ExpandableSection
                         title={t("result.bestCrop")}
-                        subtitle="See what our AI analyzed for your farm"
+                        subtitle={t("result.sec.ai.subtitle")}
                         icon={<Brain className="h-5 w-5" />}
                         defaultExpanded={true}
                         variant="highlighted"
@@ -509,7 +509,7 @@ export function ResultScreen() {
                       {/* Soil Recommendations - Expandable */}
                       <ExpandableSection
                         title={t("form.section.soil")}
-                        subtitle="Get your soil ready for this crop"
+                        subtitle={t("result.sec.soil.subtitle")}
                         icon={<Beaker className="h-5 w-5" />}
                       >
                         <SoilRecommendations
@@ -529,17 +529,17 @@ export function ResultScreen() {
                       <QuickSummary
                         items={[
                           {
-                            label: "Expected Revenue",
+                            label: t("result.revenue"),
                             value: `₹${(selectedCropForCalculator.expected_revenue / 1000).toFixed(0)}K`,
                             icon: <Wallet className="h-4 w-4" />,
                           },
                           {
-                            label: "Market Price",
-                            value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}/quintal`,
+                            label: t("result.price"),
+                            value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}${t("result.perQuintal")}`,
                             icon: <TrendingUp className="h-4 w-4" />,
                           },
                           {
-                            label: "Yield",
+                            label: t("result.yield"),
                             value: `${selectedCropForCalculator.predicted_yield.toFixed(1)} t/ha`,
                             icon: <Sprout className="h-4 w-4" />,
                           },
@@ -549,7 +549,7 @@ export function ResultScreen() {
                       {/* Profit Calculator - Expandable */}
                       <ExpandableSection
                         title={t("result.revenue")}
-                        subtitle="Add your costs to see net earnings"
+                        subtitle={t("result.sec.earnings.subtitle")}
                         icon={<Wallet className="h-5 w-5" />}
                         defaultExpanded={true}
                         variant="highlighted"
@@ -577,7 +577,7 @@ export function ResultScreen() {
                       {/* Crop Comparison - Expandable */}
                       <ExpandableSection
                         title={t("result.recommended")}
-                        subtitle="Side-by-side comparison"
+                        subtitle={t("result.sec.compare.subtitle")}
                         icon={<BarChart3 className="h-5 w-5" />}
                       >
                         <CropComparison
@@ -597,12 +597,12 @@ export function ResultScreen() {
                       <QuickSummary
                         items={[
                           {
-                            label: "Current Price",
-                            value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}/quintal`,
+                            label: t("price.current"),
+                            value: `₹${selectedCropForCalculator.avg_price.toFixed(0)}${t("result.perQuintal")}`,
                             icon: <TrendingUp className="h-4 w-4" />,
                           },
                           {
-                            label: "Best Market",
+                            label: t("result.quick.bestMarket"),
                             value: formData.state,
                             icon: <Leaf className="h-4 w-4" />,
                           },
@@ -619,13 +619,13 @@ export function ResultScreen() {
                       <QuickSummary
                         items={[
                           {
-                            label: "Season",
+                            label: t("form.label.season"),
                             value: formData.season,
                             icon: <Calendar className="h-4 w-4" />,
                           },
                           {
-                            label: "Growth Period",
-                            value: "3-4 months",
+                            label: t("result.quick.growthPeriod"),
+                            value: t("result.quick.growthPeriod.value"),
                             icon: <Sprout className="h-4 w-4" />,
                           },
                         ]}
@@ -634,7 +634,7 @@ export function ResultScreen() {
                       {/* Crop Calendar - Expandable */}
                       <ExpandableSection
                         title={t("welcome.feature3.title")}
-                        subtitle="When to sow, care for, and harvest"
+                        subtitle={t("result.sec.calendar.subtitle")}
                         icon={<Calendar className="h-5 w-5" />}
                         defaultExpanded={true}
                         variant="highlighted"
@@ -648,7 +648,7 @@ export function ResultScreen() {
                       {/* Rotation Planner - Expandable */}
                       <ExpandableSection
                         title={t("result.rotation.title")}
-                        subtitle="Plan your next season crops"
+                        subtitle={t("result.sec.rotation.subtitle")}
                         icon={<RotateCcw className="h-5 w-5" />}
                       >
                         <CropRotationPlanner
@@ -664,20 +664,20 @@ export function ResultScreen() {
                 <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
                   <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-amber-500" />
-                    What should you do next?
+                    {t('result.whatsNext.title')}
                   </h4>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {[
                       { 
-                        title: "Check your Profits", 
-                        desc: "Go to Profit Predictor to see how much you can earn after costs.",
+                        title: t('result.whatsNext.profits.title'), 
+                        desc: t('result.whatsNext.profits.desc'),
                         action: () => setActiveTab('earnings'),
                         icon: Wallet,
                         step: "1"
                       },
                       { 
-                        title: "Plan your Season", 
-                        desc: "Visit Farming Calendar to know exactly when to start sowing.",
+                        title: t('result.whatsNext.season.title'), 
+                        desc: t('result.whatsNext.season.desc'),
                         action: () => setActiveTab('planning'),
                         icon: Calendar,
                         step: "2"

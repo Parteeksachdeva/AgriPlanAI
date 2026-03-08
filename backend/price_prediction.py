@@ -26,14 +26,39 @@ class MandiPricePredictor:
         self.seasonal_patterns: Dict = {}
         
     def load_data(self):
-        """Load and preprocess price data."""
+        """Load and preprocess price data.
+        
+        Supports two CSV formats:
+        - Enhanced format (mandi_prices_enhanced.csv): lowercase columns
+          state, commodity, modal_price, min_price, max_price, date
+        - Legacy format (model2_training_extended.csv): capitalized columns
+          State, Commodity, Modal_Price, Min_Price, Max_Price, Arrival_Date, Market
+        """
         if not os.path.exists(self.data_path):
             raise FileNotFoundError(f"Price data not found: {self.data_path}")
             
         df = pd.read_csv(self.data_path)
         
-        # Convert date column
-        df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], format='%d/%m/%Y')
+        # Detect format by checking column names
+        cols = set(df.columns)
+        if 'commodity' in cols and 'state' in cols:
+            # Enhanced format – rename to the capitalized schema used internally
+            df = df.rename(columns={
+                'state': 'State',
+                'commodity': 'Commodity',
+                'modal_price': 'Modal_Price',
+                'min_price': 'Min_Price',
+                'max_price': 'Max_Price',
+                'date': 'Arrival_Date',
+            })
+            # Parse ISO-style dates (YYYY-MM-DD)
+            df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'])
+            # Add a placeholder Market column (not present in enhanced CSV)
+            if 'Market' not in df.columns:
+                df['Market'] = df['State']
+        else:
+            # Legacy format – parse DD/MM/YYYY dates
+            df['Arrival_Date'] = pd.to_datetime(df['Arrival_Date'], format='%d/%m/%Y')
         
         # Sort by date
         df = df.sort_values('Arrival_Date')
@@ -389,20 +414,23 @@ class MandiPricePredictor:
         return {
             'commodity': commodity,
             'state': state,
-            'current_month_best': data['Month'].iloc[-1] == best_month['Month'],
+            'current_month_best': bool(data['Month'].iloc[-1] == best_month['Month']),
             'best_month': {
                 'month': month_names[int(best_month['Month']) - 1],
-                'avg_price': round(best_month['mean'], 2),
-                'price_range': [round(best_month['min'], 2), round(best_month['max'], 2)]
+                'avg_price': round(float(best_month['mean']), 2),
+                'price_range': [round(float(best_month['min']), 2), round(float(best_month['max']), 2)]
             },
             'worst_month': {
                 'month': month_names[int(worst_month['Month']) - 1],
-                'avg_price': round(worst_month['mean'], 2)
+                'avg_price': round(float(worst_month['mean']), 2)
             },
-            'seasonal_pattern': monthly_avg.to_dict('records'),
+            'seasonal_pattern': [
+                {k: (int(v) if k == 'Month' else float(v)) for k, v in row.items()}
+                for row in monthly_avg.to_dict('records')
+            ],
             'price_difference_pct': round(
-                ((best_month['mean'] - worst_month['mean']) / worst_month['mean']) * 100, 1
-            )
+                float((best_month['mean'] - worst_month['mean']) / worst_month['mean']) * 100, 1
+            ) if float(worst_month['mean']) != 0 else 0.0
         }
     
     def get_market_insights(self, commodity: str, state: str) -> Dict:

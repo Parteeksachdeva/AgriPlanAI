@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useLanguage } from '@/i18n';
 import { API_BASE } from '@/api';
 import type { CropResult } from '@/types';
 import { cn } from '@/lib/utils';
@@ -51,15 +52,12 @@ interface AIAnalysisData {
 }
 
 export function AIExplanation({ crop, displayRank, formData }: AIExplanationProps) {
+  const { t } = useLanguage();
   const [analysis, setAnalysis] = useState<AIAnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAIAnalysis();
-  }, [crop.crop, formData.state]);
-
-  const fetchAIAnalysis = async () => {
+  const fetchAIAnalysis = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE}/api/ai-analysis`, {
@@ -90,7 +88,11 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
     } finally {
       setLoading(false);
     }
-  };
+  }, [crop.crop, formData]);
+
+  useEffect(() => {
+    fetchAIAnalysis();
+  }, [fetchAIAnalysis]);
 
   const getImpactIcon = (impact: string) => {
     switch (impact) {
@@ -121,7 +123,7 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-        <p className="text-slate-600">Unable to load AI analysis</p>
+        <p className="text-slate-600">{t('ai.loading.analysis')}</p>
         <p className="text-sm text-slate-400 mt-2">{error}</p>
       </div>
     );
@@ -140,14 +142,14 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
         <div className="flex items-start gap-3">
           <Sparkles className="h-6 w-6 text-amber-300 mt-0.5" />
           <div>
-            <h4 className="font-bold text-lg mb-1">Our AI's Advice</h4>
+            <h4 className="font-bold text-lg mb-1">{t('ai.advice.title')}</h4>
             <p className="text-sm text-violet-100 leading-relaxed font-medium">
-              We've analyzed your farm details against thousands of successful harvests. 
-              <span className="text-white font-bold capitalize"> {crop.crop}</span> is ranked{' '}
-              <span className="text-amber-300 font-bold">#{currentRank}</span> for your conditions.{' '}
-              {currentRank <= 2 ? 'This is an excellent choice with very high success probability!' : 'This is a solid choice that can work well on your farm.'}
-              {analysis.yield_factors.npk_factor < 1.0 && ' We suggest adding some nutrients to your soil for better results. '}
-              Market shows {analysis.price_trend === 'UP' ? 'rising' : 'stable'} prices nearby.
+              {t('ai.advice.body')}{' '}
+              <span className="text-white font-bold capitalize">{crop.crop}</span> {t('ai.advice.ranked')}{' '}
+              <span className="text-amber-300 font-bold">#{currentRank}</span> {t('ai.advice.conditions')}{' '}
+              {currentRank <= 2 ? t('ai.advice.excellent') : t('ai.advice.solid')}
+              {analysis.yield_factors.npk_factor < 1.0 && ` ${t('ai.advice.nutrients')} `}
+              {analysis.price_trend === 'UP' ? t('ai.advice.marketRising') : t('ai.advice.marketStable')}
             </p>
           </div>
         </div>
@@ -160,51 +162,66 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
             <Brain className="h-5 w-5 text-violet-600" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground font-inter">Smart Recommendation</h3>
-            <p className="text-xs text-muted-foreground">Based on local farming data</p>
+            <h3 className="font-bold text-foreground font-inter">{t('ai.smart.title')}</h3>
+            <p className="text-xs text-muted-foreground">{t('ai.smart.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-          <span className="text-xs font-semibold text-emerald-700">Recommended Success Rate</span>
+          <span className="text-xs font-semibold text-emerald-700">{t('ai.successRate')}</span>
           <span className="text-sm font-bold text-emerald-800">{analysis.confidence_score}%</span>
         </div>
       </div>
 
       {/* Feature Importance - Simplified to "Why we chose this" */}
       <div className="bg-white rounded-2xl border p-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-2">
           <Activity className="h-5 w-5 text-violet-600" />
-          <h4 className="font-bold text-slate-800">Why we chose this for you</h4>
+          <h4 className="font-bold text-slate-800">{t('ai.whyChose.title')}</h4>
         </div>
-        <p className="text-xs text-slate-500 mb-4">
-          These are the main reasons why this crop grew well in similar farms:
+        <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+          {t('ai.whyChose.subtitle')}{' '}
+          <span className="font-semibold text-violet-600">{t('ai.whyChose.notGrades')}</span>
+          {t('ai.whyChose.suffix')}
         </p>
         
-        <div className="space-y-3">
-          {analysis.feature_importance.map((feature, idx) => (
-            <div key={idx} className="flex items-center gap-3">
-              <div className={cn("p-1.5 rounded-lg", getImpactColor(feature.impact))}>
-                {getImpactIcon(feature.impact)}
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-bold text-slate-700">{feature.feature === 'annual_rainfall' ? 'Rainfall Matching' : feature.feature === 'humidity' ? 'Climate Match' : feature.feature === 'ph' ? 'Soil pH Level' : feature.feature}</span>
-                  <span className="text-xs font-bold text-slate-600">{feature.importance}%</span>
+        <div className="space-y-4">
+          {analysis.feature_importance.map((feature, idx) => {
+            const featureLabel = 
+              feature.feature === 'Annual Rainfall' || feature.feature === 'Rainfall' ? t('ai.feature.rainfall') : 
+              feature.feature === 'Humidity' ? t('ai.feature.climate') : 
+              feature.feature === 'Ph' ? t('ai.feature.ph') : 
+              feature.feature === 'N Soil' ? t('ai.feature.nitrogen') :
+              feature.feature === 'P Soil' ? t('ai.feature.phosphorus') :
+              feature.feature === 'K Soil' ? t('ai.feature.potassium') : 
+              feature.feature;
+
+            return (
+              <div key={idx} className="flex items-center gap-3">
+                <div className={cn("p-1.5 rounded-lg", getImpactColor(feature.impact))}>
+                  {getImpactIcon(feature.impact)}
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={cn(
-                      "h-full rounded-full",
-                      feature.impact === 'positive' ? 'bg-emerald-500' : 
-                      feature.impact === 'negative' ? 'bg-rose-500' : 'bg-blue-500'
-                    )}
-                    style={{ width: `${feature.importance}%` }}
-                  />
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-bold text-slate-700">{featureLabel}</span>
+                    <span className="text-xs font-medium text-slate-500 italic">
+                      {feature.importance}% {t('ai.influence')}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className={cn(
+                        "h-full rounded-full",
+                        feature.impact === 'positive' ? 'bg-emerald-500' : 
+                        feature.impact === 'negative' ? 'bg-rose-500' : 'bg-blue-500'
+                      )}
+                      style={{ width: `${feature.importance}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -212,12 +229,12 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
       <div className="bg-white rounded-2xl border p-5">
         <div className="flex items-center gap-2 mb-4">
           <Scale className="h-5 w-5 text-amber-600" />
-          <h4 className="font-semibold text-slate-800">Yield Impact Analysis</h4>
+          <h4 className="font-semibold text-slate-800">{t('ai.yield.title')}</h4>
         </div>
         
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-slate-50 rounded-xl p-3">
-            <p className="text-xs text-slate-500 mb-1">NPK Factor</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.yield.npk')}</p>
             <p className={cn(
               "text-lg font-bold",
               analysis.yield_factors.npk_factor >= 1.0 ? 'text-emerald-600' : 'text-amber-600'
@@ -225,11 +242,11 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
               {analysis.yield_factors.npk_factor.toFixed(2)}x
             </p>
             <p className="text-[10px] text-slate-400">
-              {analysis.yield_factors.npk_factor >= 1.0 ? 'Optimal nutrients' : 'Below optimal'}
+              {analysis.yield_factors.npk_factor >= 1.0 ? t('ai.yield.optimal') : t('ai.yield.belowOptimal')}
             </p>
           </div>
           <div className="bg-slate-50 rounded-xl p-3">
-            <p className="text-xs text-slate-500 mb-1">Climate Factor</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.yield.climate')}</p>
             <p className={cn(
               "text-lg font-bold",
               analysis.yield_factors.climate_factor >= 0.95 ? 'text-emerald-600' : 'text-amber-600'
@@ -237,11 +254,11 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
               {analysis.yield_factors.climate_factor.toFixed(2)}x
             </p>
             <p className="text-[10px] text-slate-400">
-              Based on {formData.annual_rainfall}mm rainfall
+              {t('form.label.rainfall')} {formData.annual_rainfall}mm
             </p>
           </div>
           <div className="bg-slate-50 rounded-xl p-3">
-            <p className="text-xs text-slate-500 mb-1">Soil pH Factor</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.yield.soilPh')}</p>
             <p className={cn(
               "text-lg font-bold",
               analysis.yield_factors.soil_factor >= 1.0 ? 'text-emerald-600' : 'text-amber-600'
@@ -249,16 +266,16 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
               {analysis.yield_factors.soil_factor.toFixed(2)}x
             </p>
             <p className="text-[10px] text-slate-400">
-              pH {formData.ph || 6.5}
+              {t('form.label.ph')} {formData.ph || 6.5}
             </p>
           </div>
           <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-3 border border-emerald-200">
-            <p className="text-xs text-emerald-600 mb-1">Overall Factor</p>
+            <p className="text-xs text-emerald-600 mb-1">{t('ai.yield.overall')}</p>
             <p className="text-lg font-bold text-emerald-700">
               {overallYieldFactor.toFixed(2)}x
             </p>
             <p className="text-[10px] text-emerald-500">
-              Combined impact
+              {t('ai.yield.combinedImpact')}
             </p>
           </div>
         </div>
@@ -268,38 +285,42 @@ export function AIExplanation({ crop, displayRank, formData }: AIExplanationProp
       <div className="bg-white rounded-2xl border p-5">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-5 w-5 text-blue-600" />
-          <h4 className="font-semibold text-slate-800">Market Intelligence</h4>
+          <h4 className="font-semibold text-slate-800">{t('ai.market.title')}</h4>
         </div>
         
         <div className="flex gap-4">
           <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
-            <p className="text-xs text-slate-500 mb-1">Price Trend</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.market.priceTrend')}</p>
             <p className={cn(
               "text-lg font-bold",
               analysis.price_trend === 'UP' ? 'text-emerald-600' : 
               analysis.price_trend === 'DOWN' ? 'text-rose-600' : 'text-slate-600'
             )}>
-              {analysis.price_trend}
+              {analysis.price_trend === 'UP' ? t('price.trend.up') : analysis.price_trend === 'DOWN' ? t('price.trend.down') : t('price.trend.stable')}
             </p>
           </div>
           <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
-            <p className="text-xs text-slate-500 mb-1">Volatility</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.market.volatility')}</p>
             <p className={cn(
               "text-lg font-bold",
               analysis.market_volatility === 'HIGH' ? 'text-rose-600' : 
               analysis.market_volatility === 'MEDIUM' ? 'text-amber-600' : 'text-emerald-600'
             )}>
-              {analysis.market_volatility}
+              {analysis.market_volatility === 'HIGH' ? t('ai.market.volatility.high') : 
+               analysis.market_volatility === 'MEDIUM' ? t('ai.market.volatility.medium') : 
+               t('ai.market.volatility.low')}
             </p>
           </div>
           <div className="flex-1 bg-slate-50 rounded-xl p-3 text-center">
-            <p className="text-xs text-slate-500 mb-1">Recommendation</p>
+            <p className="text-xs text-slate-500 mb-1">{t('ai.market.recommendation')}</p>
             <p className={cn(
               "text-sm font-bold",
               analysis.recommendation_strength === 'Strong' ? 'text-emerald-600' : 
               analysis.recommendation_strength === 'Moderate' ? 'text-amber-600' : 'text-rose-600'
             )}>
-              {analysis.recommendation_strength}
+              {analysis.recommendation_strength === 'Strong' ? t('ai.market.strength.strong') :
+               analysis.recommendation_strength === 'Moderate' ? t('ai.market.strength.moderate') :
+               t('ai.market.strength.weak')}
             </p>
           </div>
         </div>
