@@ -44,31 +44,39 @@ Visit `http://localhost:5173` to access the application.
 ## ✨ Features
 
 ### 🤖 AI-Powered Crop Recommendations
-- **Smart Crop Suggestions**: ML-based recommendations considering soil (N, P, K), climate, and rainfall
-- **Yield Prediction**: Accurate yield forecasts in tonnes per hectare
-- **Revenue Estimation**: Expected income based on predicted yield and market prices
-- **Regional Suitability**: Crops categorized as Traditional, Common, or Rare for your state
 
-### 💰 Mandi Price Prediction
-- **Real-time Price Forecasting**: Predict prices 7-30 days ahead
-- **Market Insights**: Price trends, volatility analysis, and stability metrics
-- **Nearby Mandi Comparison**: Find the best market to sell your produce
-- **Seasonal Trends**: Know the best months to sell for maximum profit
+- **Smart Crop Suggestions**: ML-based recommendations considering soil (N, P, K), climate, and rainfall.
+- **Yield Prediction**: Accurate yield forecasts in tonnes per hectare.
+- **Revenue Estimation**: Expected income based on predicted yield and market prices.
+- **Regional Suitability**: Crops categorized as Traditional, Common, or Rare for your state.
+- **Risk Indicators**: Multi-dimensional risk scoring (Low/Medium/High) based on volatility and predictability.
 
-### 🌱 Sustainable Farming
-- **Crop Rotation Planner**: 3-year rotation plans with soil health impact
-- **Soil Recovery Plans**: Nitrogen-fixing crop recommendations
-- **Environmental Suitability**: Checks for rainfall, pH, and climate compatibility
+### 💰 Market Intelligence
+
+- **Real-time Agmarknet Integration**: Prices updated from live market data across Indian mandis.
+- **Real-time Price Forecasting**: Predict prices 7-30 days ahead using enhanced ML models.
+- **Nearby Mandi Comparison**: Find the best market to sell your produce with real-time distance sorting.
+- **Seasonal Trends**: Know the best months to sell for maximum profit.
+
+### 🌱 Sustainable Farming & Soil Health
+
+- **Soil Amendment Recommendations**: Precise nitrogen, phosphorus, and potassium correction plans.
+- **Crop Rotation Planner**: 3-year rotation plans with soil health impact scores.
+- **Soil Recovery Plans**: Nitrogen-fixing crop recommendations based on current soil depletion.
+- **Environmental Suitability**: Checks for rainfall, pH, and climate compatibility.
 
 ### 💬 Intelligent Chatbot
-- **RAG-based Q&A**: Ask questions about crops, farming practices, and government schemes
-- **Document Intelligence**: Powered by ICAR documents and agricultural knowledge base
+
+- **Multilingual Support**: Fully accessible in **English** and **Hindi**.
+- **RAG-based Q&A**: Ask questions about crops, farming practices, and government schemes.
+- **Document Intelligence**: Powered by ICAR documents and agricultural knowledge base.
 
 ### 📊 Comprehensive Analysis
-- **AI Explanation**: Understand why a crop is recommended (feature importance)
-- **Profit Calculator**: Calculate net profit after costs
-- **Crop Calendar**: Visual sowing/harvesting timeline
-- **Crop Comparison**: Side-by-side comparison of multiple crops
+
+- **AI Explanation**: Understand why a crop is recommended (feature importance/SHAP values).
+- **Profit Calculator**: Calculate net profit after costs (seeds, labor, fertilizer, pesticides).
+- **Crop Calendar**: Visual sowing/harvesting timeline customized for your region.
+- **Crop Comparison**: Side-by-side comparison of multiple crops.
 
 ---
 
@@ -77,19 +85,20 @@ Visit `http://localhost:5173` to access the application.
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        AgriPlanAI                               │
+│  (Multilingual: English, Hindi)                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌──────────────┐         ┌─────────────────────────────────┐  │
 │  │   Frontend   │◄───────►│           Backend               │  │
-│  │   (React)    │  HTTP   │         (FastAPI)               │  │
+│  │(React + i18n)│  HTTP   │         (FastAPI)               │  │
 │  └──────────────┘         └─────────────────────────────────┘  │
 │         │                           │                          │
 │         ▼                           ▼                          │
 │  ┌──────────────┐         ┌─────────────────────────────────┐  │
 │  │  FormScreen  │         │      ML Models (XGBoost)        │  │
 │  │ ResultScreen │         │  • Crop Recommendation          │  │
-│  │  Components  │         │  • Yield Prediction             │  │
-│  └──────────────┘         │  • Price Prediction             │  │
-│                           └─────────────────────────────────┘  │
+│  │  Components  │         │  • Yield Prediction (Enhanced)  │  │
+│  │ (Charts, UI) │         │  • Price Forecasting (Realtime) │  │
+│  └──────────────┘         └─────────────────────────────────┘  │
 │                                       │                          │
 │                                       ▼                          │
 │                           ┌─────────────────────────────────┐  │
@@ -109,47 +118,34 @@ Visit `http://localhost:5173` to access the application.
 AgriPlanAI/
 ├── 📂 backend/                    # FastAPI Backend
 │   ├── 📄 main.py                 # API endpoints & orchestration
-│   ├── 📄 model.py                # ML models (XGBoost)
-│   ├── 📄 price_prediction.py     # Mandi price forecasting
+│   ├── 📄 model_enhanced.py       # Updated ML models
+│   ├── 📄 price_prediction.py     # Real-time Mandi price forecasting
 │   ├── 📄 rotation_planner.py     # Crop rotation logic
+│   ├── 📄 weather_service.py      # Climate data integration
 │   ├── 📂 rag/                    # RAG System
 │   │   ├── 📄 ingest.py           # Document ingestion
 │   │   ├── 📄 retrieve.py         # Context retrieval
-│   │   ├── 📄 generate.py         # LLM answer generation
-│   │   └── 📄 ocr_ingest.py       # OCR for PDF documents
-│   ├── 📂 data/                   # Training datasets
-│   │   ├── 📄 model1_training.csv # Crop recommendation data
-│   │   ├── 📄 model2_training.csv # Price prediction data
-│   │   ├── 📄 crop_metadata.json  # Crop information
-│   │   └── 📄 rotation_data.json  # Rotation planning data
-│   ├── 📂 chroma_db/              # Vector database storage
+│   │   └── 📄 generate.py         # LLM answer generation
+│   ├── 📂 data/                   # Datasets (CSV/JSON)
+│   │   ├── 📄 mandi_prices_enhanced.csv # Real Agmarknet scrapped historical data
+│   │   ├── 📄 model1_training.csv # Crop recommendation training data
+│   │   ├── 📄 nutrient_requirements.json # Soil amendment data
+│   │   └── 📄 crop_metadata.json  # Regional suitability & details
 │   └── 📄 requirements.txt        # Python dependencies
 │
 ├── 📂 frontend/                   # React Frontend
 │   ├── 📂 src/
+│   │   ├── 📂 i18n/               # Internationalization (en/hi)
+│   │   ├── 📂 components/         # Reusable features
+│   │   │   ├── 📄 SoilRecommendations.tsx # Amendment logic
+│   │   │   ├── 📄 PricePrediction.tsx # Real-time prices
+│   │   │   ├── 📄 ProfitCalculator.tsx # Net profit math
+│   │   │   └── 📄 AIExplanation.tsx   # Feature importance
 │   │   ├── 📂 pages/              # Main screens
-│   │   │   ├── 📄 FormScreen.tsx  # Input form
-│   │   │   └── 📄 ResultScreen.tsx # Results display
-│   │   ├── 📂 components/         # Reusable components
-│   │   │   ├── 📄 CropRotationPlanner.tsx
-│   │   │   ├── 📄 PricePrediction.tsx
-│   │   │   ├── 📄 AIExplanation.tsx
-│   │   │   ├── 📄 ProfitCalculator.tsx
-│   │   │   ├── 📄 CropCalendar.tsx
-│   │   │   ├── 📄 CropComparison.tsx
-│   │   │   ├── 📄 SoilRecommendations.tsx
-│   │   │   ├── 📄 ResultChatbot.tsx
-│   │   │   └── 📄 Header.tsx
-│   │   ├── 📂 lib/                # Utilities & data
-│   │   │   ├── 📄 crop_calendar_data.ts
-│   │   │   ├── 📄 crop_costs.ts
-│   │   │   ├── 📄 soil_data.ts
-│   │   │   └── 📄 utils.ts
-│   │   ├── 📄 App.tsx             # Main app component
-│   │   ├── 📄 api.ts              # API client
-│   │   └── 📄 types.ts            # TypeScript types
+│   │   │   ├── 📄 WelcomeScreen.tsx # Onboarding tour
+│   │   │   └── 📄 ResultScreen.tsx # Dashboard
+│   │   └── 📄 App.tsx             # Main routing
 │   └── 📄 package.json            # Node dependencies
-│
 └── 📄 README.md                   # This file
 ```
 
@@ -158,83 +154,87 @@ AgriPlanAI/
 ## 🔌 API Endpoints
 
 ### Core Prediction
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/predict` | POST | Get crop recommendations with yield & revenue |
-| `/api/ai-analysis` | POST | Get detailed AI analysis for a crop |
 
-### Price Intelligence
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/price-prediction` | POST | Predict future mandi prices |
-| `/api/price-history/{commodity}/{state}` | GET | Historical price data |
-| `/api/market-insights/{commodity}/{state}` | GET | Market analysis & volatility |
-| `/api/seasonal-trends/{commodity}/{state}` | GET | Best months to sell |
-| `/api/nearby-mandi-prices/{commodity}/{state}` | GET | Compare nearby mandis |
+| Endpoint           | Method | Description                                   |
+| ------------------ | ------ | --------------------------------------------- |
+| `/predict`         | POST   | Get crop recommendations with yield & revenue |
+| `/api/ai-analysis` | POST   | Get detailed AI analysis for a crop           |
 
-### Crop Planning
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/rotation-plan` | POST | Get crop rotation suggestions |
-| `/api/soil-recovery-plan` | POST | Soil recovery recommendations |
+### Price Intelligence (Real-time)
 
-### Chatbot
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/ask` | POST | Ask farming questions (RAG-powered) |
+| Endpoint                   | Method | Description                                           |
+| -------------------------- | ------ | ----------------------------------------------------- |
+| `/api/price-prediction`    | POST   | Predict future mandi prices using live Agmarknet data |
+| `/api/market-insights`     | GET    | Market analysis & volatility trends                   |
+| `/api/nearby-mandi-prices` | GET    | Compare nearby mandis for current rates               |
+
+### Crop Planning & Soil
+
+| Endpoint                  | Method | Description                   |
+| ------------------------- | ------ | ----------------------------- |
+| `/api/rotation-plan`      | POST   | Get crop rotation suggestions |
+| `/api/soil-recovery-plan` | POST   | Soil recovery recommendations |
 
 ---
 
 ## 🧠 Machine Learning Models
 
 ### Model 1: Crop Recommendation (XGBoost Classifier)
+
 - **Input**: Soil nutrients (N, P, K), pH, temperature, humidity, rainfall
 - **Output**: Top-N recommended crops with probabilities
 - **Features**: 7 numerical features
 - **Classes**: 22 crop types
 
 ### Model 2: Yield Prediction (XGBoost Regressor)
+
 - **Input**: Soil & climate data + crop type
 - **Output**: Predicted yield (tonnes/hectare)
 - **Features**: Crop-encoded + environmental features
 
 ### Model 3: Price Prediction (XGBoost Regressor)
+
 - **Input**: State, crop/commodity, seasonal features
 - **Output**: Predicted mandi price (INR/quintal)
-- **Data**: Historical mandi prices from Agmarknet
+- **Data**: Scraped and real-time historical mandi prices from [Agmarknet](https://agmarknet.gov.in/)
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Backend
-- **FastAPI** - High-performance Python web framework
-- **XGBoost** - Gradient boosting for ML models
-- **scikit-learn** - Data preprocessing & pipelines
-- **ChromaDB** - Vector database for RAG
-- **LangChain** - LLM integration for chatbot
-- **pandas/numpy** - Data manipulation
+
+- **FastAPI** - High-performance Python web framework.
+- **XGBoost & Scikit-learn** - Gradient boosting for ML predictions.
+- **ChromaDB & LangChain** - RAG system for intelligent chatbot responses.
+- **Pandas/Numpy** - Real-time market data processing.
 
 ### Frontend
-- **React 18** - UI library with hooks
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **shadcn/ui** - Modern UI components
-- **Recharts** - Data visualization
-- **React Router** - Client-side routing
 
-### Data Sources
-- **Kaggle Crop Dataset** - Training data for crop recommendation
-- **Agmarknet** - Historical mandi prices
-- **ICAR Documents** - Agricultural knowledge base
+- **React 18 & TypeScript** - Type-safe UI development.
+- **Tailwind CSS & shadcn/ui** - Premium design system.
+- **i18next** - Multi-language support (English/Hindi).
+- **Recharts** - Dynamic data visualization.
 
 ---
 
-## 📝 Environment Configuration
+## 📊 Data Sources
+
+To ensure accurate and actionable insights, AgriPlanAI utilizes data from trusted agricultural and meteorological sources:
+
+- **[Agmarknet](https://agmarknet.gov.in/)**: Official source for real-time and **scrapped** historical Mandi price data across India.
+- **[Kaggle Crop Dataset](https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset)**: Primary training data for the crop recommendation engine.
+- **[ICAR](https://icar.org.in/)**: Knowledge base for the RAG-powered farming assistant.
+- **IMD**: Source for regional climate and rainfall historical trends.
+
+---
+
+## � Environment Configuration
 
 ### Backend (.env)
+
 ```env
-# OpenAI API Key for RAG chatbot (optional)
+# OpenAI API Key for RAG chatbot
 OPENAI_API_KEY=your_api_key_here
 
 # ChromaDB settings
@@ -242,6 +242,7 @@ CHROMA_PERSIST_DIR=./chroma_db
 ```
 
 ### Frontend (.env.development)
+
 ```env
 VITE_API_BASE_URL=http://localhost:8000
 ```
@@ -251,6 +252,7 @@ VITE_API_BASE_URL=http://localhost:8000
 ## 🧪 Development
 
 ### Running Tests
+
 ```bash
 # Backend tests
 cd backend
@@ -262,12 +264,14 @@ npm run test
 ```
 
 ### Training Models
+
 ```bash
 cd backend
 python scripts/test_models.py
 ```
 
 ### Ingesting Documents (RAG)
+
 ```bash
 cd backend
 python -c "from rag.ingest import ingest_documents; ingest_documents()"
@@ -275,18 +279,14 @@ python -c "from rag.ingest import ingest_documents; ingest_documents()"
 
 ---
 
-## 🚢 Deployment
+## �🚢 Deployment
 
 ### Docker (Recommended)
+
 ```bash
 # Build and run with Docker Compose
 docker-compose up --build
 ```
-
-### Manual Deployment
-1. **Backend**: Deploy to any ASGI server (Uvicorn, Gunicorn)
-2. **Frontend**: Build static files (`npm run build`) and serve with Nginx
-3. **Environment**: Set production environment variables
 
 ---
 
@@ -300,10 +300,6 @@ We welcome contributions! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Code Style
-- **Python**: Follow PEP 8, use type hints
-- **TypeScript**: Enable strict mode, use interfaces for types
-
 ---
 
 ## 📜 License
@@ -314,9 +310,9 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- **ICAR** - Agricultural research documents
-- **Agmarknet** - Market price data
-- **Kaggle** - Crop recommendation dataset
+- **ICAR** - For agricultural research documents.
+- **Agmarknet** - For the market data that empowers farmers to get better prices.
+- **Kaggle** - For the foundational crop recommendation dataset.
 
 ---
 
